@@ -1,0 +1,35 @@
+{
+    "undergraduate": {
+        "name": "Ciencias Físicas",
+        "campus": "Campus Concepción",
+        "degree": "Licenciado/a en Ciencias Físicas",
+        "title_options": ["Físico/a", "Ingeniero/a Físico/a"],
+        "duration_semesters": 10,
+        "description": "Estudiar Ciencias Físicas permite entender la estructura de las leyes de la Física y tomar parte en el descubrimiento de nuevos fenómenos, desarrollando poderosos métodos de análisis y sus aplicaciones en diversas áreas del conocimiento científico y tecnológico.",
+        "specializations": "A partir del noveno semestre los/las estudiantes eligen una de las especialidades de la carrera: Física e Ingeniería Física.",
+        "cut_scores": {
+            "2024": 701.9,
+            "2023": 691.05
+        },
+        "occupational_field": "Universidades e Instituciones de Educación Superior, Institutos y Centros de Investigación y Desarrollo; Empresas Estatales y Privadas, Consultoría y/o Asesoría.",
+        "curriculum_pdf": "/static/docs/malla_ciencias_fisicas.pdf"
+    },
+    "graduate": [
+        {
+            "id": "magister",
+            "name": "Magíster en Ciencias con mención en Física",
+            "type": "magister",
+            "duration": "4 semestres",
+            "description": "Programa de postgrado orientado a la formación avanzada en investigación en las distintas áreas de la Física.",
+            "url_cfm": "https://www.cfm.cl/postgrado/magister-en-ciencias-con-mencion-en-fisica/"
+        },
+        {
+            "id": "doctorado",
+            "name": "Doctorado en Ciencias Físicas",
+            "type": "doctorado",
+            "duration": "8 semestres",
+            "description": "Programa doctoral que busca formar investigadores independientes capaces de generar conocimiento original en las diferentes áreas de la Física.",
+            "url_cfm": "https://www.cfm.cl/postgrado/doctorado-en-ciencias-fisicas/"
+        }
+    ]
+}

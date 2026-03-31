@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Departamento de Física' %}
+{% set hero_subtitle = 'Facultad de Ciencias Físicas y Matemáticas — Universidad de Concepción' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" id="historia" aria-labelledby="historia-heading">
+    <div class="container content-page">
+        <h2 id="historia-heading" class="section__title">Historia</h2>
+        <p>El Departamento de Física de la Universidad de Concepción tiene una larga tradición en la formación de científicos y la investigación de frontera. Desde su fundación, ha sido un pilar fundamental de la Facultad de Ciencias Físicas y Matemáticas, contribuyendo al desarrollo de la ciencia en Chile y Latinoamérica.</p>
+        <p><em>Contenido en desarrollo — información histórica detallada será incorporada próximamente.</em></p>
+    </div>
+</section>
+
+<section class="section section--alt" id="mision" aria-labelledby="mision-heading">
+    <div class="container content-page">
+        <h2 id="mision-heading" class="section__title">Misión y Visión</h2>
+        <div class="two-col">
+            <div>
+                <h3>Misión</h3>
+                <p>Formar profesionales y científicos de excelencia en el área de la Física, realizar investigación de alto nivel y contribuir a la sociedad a través de la vinculación con el medio y la divulgación científica.</p>
+            </div>
+            <div>
+                <h3>Visión</h3>
+                <p>Ser un referente nacional e internacional en la formación de físicos y en la investigación científica, reconocido por la calidad de sus programas académicos, la productividad de sus investigadores y su contribución al desarrollo del país.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="organigrama" aria-labelledby="organigrama-heading">
+    <div class="container content-page">
+        <h2 id="organigrama-heading" class="section__title">Organigrama</h2>
+        <p><em>Organigrama del departamento será incorporado próximamente.</em></p>
+        <div class="org-placeholder">
+            <div class="org-box org-box--main">Dirección de Departamento</div>
+            <div class="org-row">
+                <div class="org-box">Secretaría Docente</div>
+                <div class="org-box">Jefe de Carrera</div>
+                <div class="org-box">Coordinación de Postgrado</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

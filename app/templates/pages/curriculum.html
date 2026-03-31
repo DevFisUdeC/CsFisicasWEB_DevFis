@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Malla Curricular' %}
+{% set hero_subtitle = 'Ciencias Físicas — ' ~ program.duration_semesters|string ~ ' semestres' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="curriculum-heading">
+    <div class="container content-page">
+        <h2 id="curriculum-heading" class="section__title">Plan de Estudios</h2>
+        <p>La carrera de Ciencias Físicas tiene una duración de {{ program.duration_semesters }} semestres. {{ program.specializations }}</p>
+
+        <div class="cta-banner">
+            <p class="cta-banner__text">La malla curricular detallada está disponible para descarga.</p>
+            <a href="https://admision.udec.cl/wp-content/uploads/2025/05/Ciencias-Fisicas.pdf" target="_blank" rel="noopener" class="btn btn--primary">📄 Descargar Malla Curricular (PDF)</a>
+        </div>
+
+        <p class="text-muted"><em>Malla curricular interactiva en desarrollo — próximamente disponible.</em></p>
+    </div>
+</section>
+{% endblock %}

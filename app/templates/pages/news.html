@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Noticias' %}
+{% set hero_subtitle = 'Últimas noticias del Departamento de Física' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="news-heading">
+    <div class="container">
+        <h2 id="news-heading" class="section__title">Todas las Noticias</h2>
+        <div class="card-grid">
+            {% for article in news %}
+            {% include 'components/news_card.html' %}
+            {% endfor %}
+        </div>
+        {% if not news %}
+        <p class="text-muted text-center">No hay noticias disponibles en este momento.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

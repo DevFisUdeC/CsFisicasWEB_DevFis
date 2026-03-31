@@ -1,0 +1,219 @@
+/*
+ * design-system.css — Tokens de diseño y reset base.
+ * Responsabilidad: Variables CSS, reset, tipografía base.
+ * NO contiene estilos de componentes ni layouts.
+ */
+
+/* ═══════════════════════════════════════════
+   1. CSS Custom Properties (Design Tokens)
+   ═══════════════════════════════════════════ */
+
+:root {
+    /* Colores — Paleta institucional UdeC + Física */
+    --color-primary: #003366;
+    --color-primary-light: #0A6EBD;
+    --color-primary-dark: #002244;
+    --color-accent: #F0C14B;
+    --color-accent-dark: #D4A533;
+
+    /* Superficies */
+    --color-bg: #0D1117;
+    --color-bg-alt: #161B22;
+    --color-bg-card: #1C2128;
+    --color-bg-hover: #21262D;
+    --color-surface-light: #F8F9FA;
+
+    /* Texto */
+    --color-text: #E6EDF3;
+    --color-text-secondary: #8B949E;
+    --color-text-muted: #6E7681;
+    --color-text-on-primary: #FFFFFF;
+
+    /* Estados */
+    --color-success: #2EA043;
+    --color-warning: #D29922;
+    --color-error: #F85149;
+    --color-link: #58A6FF;
+    --color-link-hover: #79C0FF;
+
+    /* Bordes */
+    --color-border: #30363D;
+    --color-border-light: #21262D;
+
+    /* Tipografía */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --line-height: 1.6;
+    --line-height-tight: 1.2;
+
+    /* Espaciado */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --space-4xl: 6rem;
+
+    /* Layout */
+    --max-width: 1200px;
+    --navbar-height: 64px;
+    --border-radius: 8px;
+    --border-radius-sm: 4px;
+    --border-radius-lg: 12px;
+    --border-radius-full: 9999px;
+
+    /* Transiciones */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 400ms ease;
+
+    /* Sombras */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════
+   2. CSS Reset
+   ═══════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-link-hover);
+}
+
+a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-sm);
+}
+
+ul, ol {
+    list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text);
+}
+
+h1 { font-size: var(--font-size-5xl); }
+h2 { font-size: var(--font-size-4xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+
+p {
+    margin-bottom: var(--space-md);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    background: none;
+}
+
+
+/* ═══════════════════════════════════════════
+   3. Accesibilidad
+   ═══════════════════════════════════════════ */
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-accent);
+    color: var(--color-primary-dark);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius);
+    z-index: 9999;
+    transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: var(--space-md);
+}
+
+
+/* ═══════════════════════════════════════════
+   4. Utilidades
+   ═══════════════════════════════════════════ */
+
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-muted); }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}

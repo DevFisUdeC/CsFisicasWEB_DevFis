@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Académicos' %}
+{% set hero_subtitle = 'Directorio del cuerpo académico del Departamento de Física' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="people-heading">
+    <div class="container">
+        <h2 id="people-heading" class="section__title">Cuerpo Académico</h2>
+        <div class="people-grid">
+            {% for person in team %}
+            {% include 'components/person_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

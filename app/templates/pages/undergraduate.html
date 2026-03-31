@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Ciencias Físicas' %}
+{% set hero_subtitle = 'Carrera de Pregrado — Departamento de Física' %}
+{% set hero_cta_text = 'Ver Malla Curricular' %}
+{% set hero_cta_url = url_for('academics.curriculum') %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="program-heading">
+    <div class="container content-page">
+        <h2 id="program-heading" class="section__title">Sobre la Carrera</h2>
+        <p>{{ program.description }}</p>
+        <p>{{ program.specializations }}</p>
+
+        <!-- Info rápida -->
+        <div class="info-grid">
+            <div class="info-card">
+                <span class="info-card__icon">🎓</span>
+                <strong>Grado Académico</strong>
+                <p>{{ program.degree }}</p>
+            </div>
+            <div class="info-card">
+                <span class="info-card__icon">📜</span>
+                <strong>Título Profesional</strong>
+                {% for title in program.title_options %}
+                <p>{{ title }}</p>
+                {% endfor %}
+            </div>
+            <div class="info-card">
+                <span class="info-card__icon">🏛️</span>
+                <strong>Campus</strong>
+                <p>{{ program.campus }}</p>
+            </div>
+            <div class="info-card">
+                <span class="info-card__icon">📅</span>
+                <strong>Duración</strong>
+                <p>{{ program.duration_semesters }} semestres</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Puntajes de corte -->
+<section class="section section--alt" aria-labelledby="scores-heading">
+    <div class="container content-page">
+        <h2 id="scores-heading" class="section__title">Puntajes de Corte</h2>
+        <div class="scores-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Año</th>
+                        <th>Puntaje de Corte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year, score in program.cut_scores.items() %}
+                    <tr>
+                        <td>{{ year }}</td>
+                        <td>{{ score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Campo ocupacional -->
+<section class="section" aria-labelledby="field-heading">
+    <div class="container content-page">
+        <h2 id="field-heading" class="section__title">Campo Ocupacional</h2>
+        <p>{{ program.occupational_field }}</p>
+        <div class="cta-banner">
+            <h3 class="cta-banner__title">¿Quieres postular?</h3>
+            <p class="cta-banner__text">Revisa los requisitos de admisión y postula a Ciencias Físicas en la Universidad de Concepción.</p>
+            <a href="https://admision.udec.cl/ciencias-fisicas/" target="_blank" rel="noopener" class="btn btn--primary">Ir a Admisión UdeC →</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

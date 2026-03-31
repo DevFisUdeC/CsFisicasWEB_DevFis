@@ -1,0 +1,50 @@
+<!-- components/footer.html — Pie de página -->
+<!-- Responsabilidad: Footer con contacto, links rápidos y redes sociales -->
+<footer class="footer" role="contentinfo">
+    <div class="container">
+        <div class="footer__grid">
+            <!-- Columna 1: Info del departamento -->
+            <div class="footer__col">
+                <h3 class="footer__heading">{{ site_name }}</h3>
+                <p class="footer__text">{{ site_subtitle }}</p>
+                <p class="footer__text">Facultad de Ciencias Físicas y Matemáticas</p>
+            </div>
+
+            <!-- Columna 2: Contacto -->
+            <div class="footer__col">
+                <h3 class="footer__heading">Contacto</h3>
+                <ul class="footer__list">
+                    <li>📍 {{ contact_address }}</li>
+                    <li>📧 <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+                    <li>📞 <a href="tel:{{ contact_phone }}">{{ contact_phone }}</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Enlaces rápidos -->
+            <div class="footer__col">
+                <h3 class="footer__heading">Enlaces</h3>
+                <ul class="footer__list">
+                    <li><a href="https://www.udec.cl/" target="_blank" rel="noopener">Universidad de Concepción</a></li>
+                    <li><a href="https://www.cfm.cl/" target="_blank" rel="noopener">Facultad CFM</a></li>
+                    <li><a href="https://admision.udec.cl/ciencias-fisicas/" target="_blank" rel="noopener">Admisión</a></li>
+                    <li><a href="https://noticias.cfm.cl/" target="_blank" rel="noopener">Noticias CFM</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Redes sociales -->
+            <div class="footer__col">
+                <h3 class="footer__heading">Síguenos</h3>
+                <div class="footer__social">
+                    <a href="https://www.facebook.com/CFMUdec/" target="_blank" rel="noopener" aria-label="Facebook">FB</a>
+                    <a href="https://www.instagram.com/cfm_udec/" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+                    <a href="https://twitter.com/CFMUdeC" target="_blank" rel="noopener" aria-label="Twitter">X</a>
+                    <a href="https://www.youtube.com/channel/UCjOs_1HWrXSnEfWRjsSKAfQ" target="_blank" rel="noopener" aria-label="YouTube">YT</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer__bottom">
+            <p>&copy; 2026 {{ site_name }} — {{ site_subtitle }}. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Laboratorios' %}
+{% set hero_subtitle = 'Infraestructura de investigación y docencia' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="labs-heading">
+    <div class="container content-page">
+        <h2 id="labs-heading" class="section__title">Nuestros Laboratorios</h2>
+        <p><em>Información detallada de laboratorios en desarrollo. Se incluirán descripciones, equipamiento y fotos de cada laboratorio.</em></p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,166 @@
+/*
+ * layout.css — Estructura y layout del sitio.
+ * Responsabilidad: Container, grids, secciones, responsive breakpoints.
+ * NO contiene estilos de componentes individuales.
+ */
+
+/* ═══════════════════════════════════════════
+   1. Container
+   ═══════════════════════════════════════════ */
+
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+
+/* ═══════════════════════════════════════════
+   2. Secciones
+   ═══════════════════════════════════════════ */
+
+.section {
+    padding: var(--space-3xl) 0;
+}
+
+.section--alt {
+    background-color: var(--color-bg-alt);
+}
+
+.section__title {
+    margin-bottom: var(--space-xl);
+}
+
+.section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+
+/* ═══════════════════════════════════════════
+   3. Content Page (páginas de texto)
+   ═══════════════════════════════════════════ */
+
+.content-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content-page h2 {
+    margin-top: var(--space-2xl);
+    margin-bottom: var(--space-md);
+}
+
+.content-page h3 {
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
+}
+
+
+/* ═══════════════════════════════════════════
+   4. Grids
+   ═══════════════════════════════════════════ */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-xl);
+}
+
+.card-grid--2 {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    text-align: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-xl);
+}
+
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-xl);
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+}
+
+
+/* ═══════════════════════════════════════════
+   5. Footer layout
+   ═══════════════════════════════════════════ */
+
+.footer__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-2xl);
+}
+
+
+/* ═══════════════════════════════════════════
+   6. Responsive
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-grid--2 {
+        grid-template-columns: 1fr;
+    }
+
+    .research-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .people-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: var(--space-2xl) 0;
+    }
+
+    h1 { font-size: var(--font-size-3xl); }
+    h2 { font-size: var(--font-size-2xl); }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--space-md);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1 { font-size: var(--font-size-2xl); }
+}

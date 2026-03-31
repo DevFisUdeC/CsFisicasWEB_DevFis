@@ -1,0 +1,50 @@
+[
+    {
+        "id": "gravitacion-cosmologia",
+        "name": "Gravitación y Cosmología",
+        "description": "Estudio de la gravitación clásica y cuántica, modelos cosmológicos, energía oscura y materia oscura. Investigación en teorías alternativas de la gravedad y sus implicancias observacionales.",
+        "leader": "Dr. Roberto Navarro",
+        "members": ["Dr. Roberto Navarro"],
+        "keywords": ["Relatividad General", "Cosmología", "Energía Oscura", "Gravedad Cuántica"]
+    },
+    {
+        "id": "materia-condensada",
+        "name": "Física de la Materia Condensada",
+        "description": "Investigación en propiedades electrónicas, magnéticas y ópticas de materiales. Nanotecnología, materiales bidimensionales y superconductividad.",
+        "leader": "Dra. María González",
+        "members": ["Dra. María González"],
+        "keywords": ["Nanomateriales", "Superconductividad", "Materiales 2D", "Magnetismo"]
+    },
+    {
+        "id": "optica-fotonica",
+        "name": "Óptica y Fotónica",
+        "description": "Investigación en óptica no lineal, fotónica integrada, espectroscopía láser y aplicaciones de fibra óptica. Desarrollo de dispositivos fotónicos para telecomunicaciones y sensores.",
+        "leader": "Dr. Carlos Martínez",
+        "members": ["Dr. Carlos Martínez"],
+        "keywords": ["Óptica No Lineal", "Láser", "Fibra Óptica", "Sensores Fotónicos"]
+    },
+    {
+        "id": "fisica-computacional",
+        "name": "Física Computacional",
+        "description": "Desarrollo y aplicación de métodos numéricos y computacionales para resolver problemas en física. Machine learning aplicado a sistemas físicos, simulaciones Monte Carlo y dinámica molecular.",
+        "leader": "Dra. Ana Silva",
+        "members": ["Dra. Ana Silva"],
+        "keywords": ["Simulaciones", "Monte Carlo", "Machine Learning", "HPC"]
+    },
+    {
+        "id": "particulas-nuclear",
+        "name": "Física Nuclear y de Partículas",
+        "description": "Estudio experimental y teórico de las interacciones fundamentales. Colaboración con experimentos internacionales en aceleradores de partículas y detección de neutrinos.",
+        "leader": "Dr. Jorge Ramírez",
+        "members": ["Dr. Jorge Ramírez"],
+        "keywords": ["Modelo Estándar", "QCD", "Neutrinos", "Aceleradores"]
+    },
+    {
+        "id": "astrofisica",
+        "name": "Astrofísica",
+        "description": "Investigación en formación y evolución estelar, medio interestelar, galaxias y cosmología observacional. Uso de telescopios nacionales e internacionales.",
+        "leader": "Dra. Lucía Pérez",
+        "members": ["Dra. Lucía Pérez"],
+        "keywords": ["Estrellas", "Galaxias", "Medio Interestelar", "Observacional"]
+    }
+]

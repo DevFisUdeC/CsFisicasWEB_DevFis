@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section" aria-labelledby="person-heading">
+    <div class="container content-page">
+        <a href="{{ url_for('people.index') }}" class="back-link">← Volver al directorio</a>
+
+        <div class="person-profile">
+            <div class="person-profile__photo">
+                {% if person.photo %}
+                <img src="{{ person.photo }}" alt="Foto de {{ person.name }}">
+                {% else %}
+                <div class="person-card__photo-placeholder person-card__photo-placeholder--large">
+                    <span>👤</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="person-profile__info">
+                <h1 id="person-heading">{{ person.name }}</h1>
+                <p class="person-profile__title">{{ person.title }}</p>
+                {% if person.role %}
+                <p class="person-profile__role">{{ person.role }}</p>
+                {% endif %}
+                <p class="person-profile__area"><strong>Área:</strong> {{ person.area }}</p>
+                <p><strong>Oficina:</strong> {{ person.office }}</p>
+                <p><strong>Email:</strong> <a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
+            </div>
+        </div>
+
+        <h2>Biografía</h2>
+        <p>{{ person.bio }}</p>
+
+        <h2>Líneas de Investigación</h2>
+        <div class="tag-list">
+            {% for line in person.research_lines %}
+            <span class="badge badge--lg">{{ line }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

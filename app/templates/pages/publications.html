@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Publicaciones' %}
+{% set hero_subtitle = 'Producción científica del Departamento de Física' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="pub-heading">
+    <div class="container content-page">
+        <h2 id="pub-heading" class="section__title">Publicaciones Científicas</h2>
+        <p><em>Listado de publicaciones en desarrollo. Se integrará un sistema de búsqueda y filtrado por año, autor y área de investigación.</em></p>
+    </div>
+</section>
+{% endblock %}

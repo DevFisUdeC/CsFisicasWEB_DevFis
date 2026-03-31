@@ -1,0 +1,25 @@
+{# components/person_card.html — Tarjeta de académico #}
+{# Responsabilidad: Renderizar tarjeta de un miembro del equipo #}
+{# Uso: incluir con variable 'person' en contexto #}
+<article class="person-card" aria-labelledby="person-{{ person.slug }}">
+    <div class="person-card__photo">
+        {% if person.photo %}
+        <img src="{{ person.photo }}" alt="Foto de {{ person.name }}" loading="lazy">
+        {% else %}
+        <div class="person-card__photo-placeholder">
+            <span>👤</span>
+        </div>
+        {% endif %}
+    </div>
+    <div class="person-card__info">
+        <h3 id="person-{{ person.slug }}" class="person-card__name">
+            <a href="{{ url_for('people.detail', slug=person.slug) }}">{{ person.name }}</a>
+        </h3>
+        <p class="person-card__title">{{ person.title }}</p>
+        {% if person.role != 'Académica' and person.role != 'Académico' %}
+        <p class="person-card__role">{{ person.role }}</p>
+        {% endif %}
+        <p class="person-card__area">{{ person.area }}</p>
+        <a href="mailto:{{ person.email }}" class="person-card__email">{{ person.email }}</a>
+    </div>
+</article>

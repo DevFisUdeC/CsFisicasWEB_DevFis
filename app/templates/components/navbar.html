@@ -1,0 +1,57 @@
+<!-- components/navbar.html — Barra de navegación responsive -->
+<!-- Responsabilidad: Navegación principal con menú móvil y dropdowns -->
+<header class="navbar" role="banner">
+    <div class="container navbar__inner">
+        <!-- Logo -->
+        <a href="/" class="navbar__logo" aria-label="Inicio — {{ site_name }}">
+            <span class="navbar__logo-icon">⚛</span>
+            <div class="navbar__logo-text">
+                <span class="navbar__logo-title">{{ site_name }}</span>
+                <span class="navbar__logo-subtitle">{{ site_subtitle }}</span>
+            </div>
+        </a>
+
+        <!-- Nav links (desktop) -->
+        <nav class="navbar__nav" role="navigation" aria-label="Navegación principal">
+            <ul class="navbar__menu">
+                {% for item in nav_items %}
+                <li class="navbar__item{% if item.children %} has-dropdown{% endif %}">
+                    <a href="{{ item.url }}" class="navbar__link">{{ item.label }}</a>
+                    {% if item.children %}
+                    <ul class="navbar__dropdown">
+                        {% for child in item.children %}
+                        <li><a href="{{ child.url }}" class="navbar__dropdown-link">{{ child.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+
+        <!-- Hamburger (mobile) -->
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false" id="menu-toggle">
+            <span class="navbar__toggle-bar"></span>
+            <span class="navbar__toggle-bar"></span>
+            <span class="navbar__toggle-bar"></span>
+        </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <nav class="navbar__mobile-menu" id="mobile-menu" role="navigation" aria-label="Menú móvil" hidden>
+        <ul class="navbar__mobile-list">
+            {% for item in nav_items %}
+            <li class="navbar__mobile-item">
+                <a href="{{ item.url }}" class="navbar__mobile-link">{{ item.label }}</a>
+                {% if item.children %}
+                <ul class="navbar__mobile-sub">
+                    {% for child in item.children %}
+                    <li><a href="{{ child.url }}" class="navbar__mobile-sublink">{{ child.label }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</header>

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Contacto' %}
+{% set hero_subtitle = 'Departamento de Física — Universidad de Concepción' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="contact-heading">
+    <div class="container">
+        <div class="two-col">
+            <!-- Info de contacto -->
+            <div class="content-page">
+                <h2 id="contact-heading" class="section__title">Información de Contacto</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-item__icon">📍</span>
+                        <div>
+                            <strong>Dirección</strong>
+                            <p>{{ contact_address }}</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-item__icon">📧</span>
+                        <div>
+                            <strong>Correo Electrónico</strong>
+                            <p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-item__icon">📞</span>
+                        <div>
+                            <strong>Teléfono</strong>
+                            <p><a href="tel:{{ contact_phone }}">{{ contact_phone }}</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-item__icon">🕐</span>
+                        <div>
+                            <strong>Horario de Atención</strong>
+                            <p>Lunes a Viernes, 08:30 — 17:30 hrs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mapa placeholder -->
+            <div>
+                <h2 class="section__title">Ubicación</h2>
+                <div class="map-placeholder">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3179.7!2d-73.0352!3d-36.8270!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9669b5!2sFacultad+de+Ciencias+F%C3%ADsicas+y+Matem%C3%A1ticas!5e0!3m2!1ses!2scl!4v1"
+                        width="100%" height="400" style="border:0; border-radius: 8px;"
+                        allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Ubicación del Departamento de Física en Google Maps">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

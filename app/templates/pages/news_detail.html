@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section" aria-labelledby="article-heading">
+    <div class="container content-page">
+        <a href="{{ url_for('news.index') }}" class="back-link">← Volver a noticias</a>
+
+        <article>
+            <div class="card__meta">
+                <span class="card__date">{{ article.date }}</span>
+                <span class="card__category badge">{{ article.category }}</span>
+            </div>
+            <h1 id="article-heading">{{ article.title }}</h1>
+
+            {% if article.image %}
+            <img src="{{ article.image }}" alt="{{ article.title }}" class="article-image" loading="lazy">
+            {% endif %}
+
+            <div class="article-content">
+                <p>{{ article.content }}</p>
+            </div>
+
+            {% if article.source %}
+            <p class="text-muted">
+                <strong>Fuente:</strong> <a href="{{ article.source }}" target="_blank" rel="noopener">Ver nota original →</a>
+            </p>
+            {% endif %}
+        </article>
+    </div>
+</section>
+{% endblock %}

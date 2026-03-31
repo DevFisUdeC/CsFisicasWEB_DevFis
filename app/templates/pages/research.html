@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% set hero_title = 'Investigación' %}
+{% set hero_subtitle = 'Líneas de investigación del Departamento de Física' %}
+{% set hero_cta_text = false %}
+{% include 'components/hero.html' %}
+
+<section class="section" aria-labelledby="research-heading">
+    <div class="container">
+        <h2 id="research-heading" class="section__title">Líneas de Investigación</h2>
+        <div class="research-grid">
+            {% for line in research_lines %}
+            <article class="research-card" id="{{ line.id }}">
+                <h3 class="research-card__title">{{ line.name }}</h3>
+                <p class="research-card__desc">{{ line.description }}</p>
+                <p class="research-card__leader"><strong>Líder:</strong> {{ line.leader }}</p>
+                <div class="research-card__tags">
+                    {% for keyword in line.keywords %}
+                    <span class="badge">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

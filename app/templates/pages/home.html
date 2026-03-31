@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block meta_description %}Departamento de Física, Facultad de Ciencias Físicas y Matemáticas, Universidad de Concepción. Formación, investigación y divulgación en ciencias físicas.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+{% set hero_title = 'Departamento de Física' %}
+{% set hero_subtitle = 'Formamos científicas y científicos capaces de comprender, investigar y transformar el mundo a través de la física, cultivando la curiosidad, el pensamiento crítico y una profunda vocación por el conocimiento.' %}
+{% set hero_cta_text = 'Conoce nuestra investigación' %}
+{% set hero_cta_url = url_for('research.index') %}
+{% set hero_cta2_text = 'Postula a Ciencias Físicas' %}
+{% set hero_cta2_url = url_for('academics.undergraduate') %}
+{% include 'components/hero.html' %}
+
+<!-- Cifras clave -->
+<section class="section" aria-labelledby="stats-heading">
+    <div class="container">
+        <h2 id="stats-heading" class="section__title">El Departamento en Cifras</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-card__number">{{ stats.academics }}</span>
+                <span class="stat-card__label">Académicos</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">{{ stats.students }}</span>
+                <span class="stat-card__label">Estudiantes</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">{{ stats.labs }}</span>
+                <span class="stat-card__label">Laboratorios</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">{{ stats.publications }}</span>
+                <span class="stat-card__label">Publicaciones</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Noticias destacadas -->
+<section class="section section--alt" aria-labelledby="news-heading">
+    <div class="container">
+        <div class="section__header">
+            <h2 id="news-heading" class="section__title">Noticias Recientes</h2>
+            <a href="{{ url_for('news.index') }}" class="btn btn--outline btn--sm">Ver todas →</a>
+        </div>
+        <div class="card-grid">
+            {% for article in news %}
+            {% include 'components/news_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA de investigación -->
+<section class="section" aria-labelledby="research-cta-heading">
+    <div class="container">
+        <div class="cta-banner">
+            <h2 id="research-cta-heading" class="cta-banner__title">Investigación de Frontera</h2>
+            <p class="cta-banner__text">Nuestros grupos de investigación trabajan en áreas como gravitación, materia condensada, óptica, física computacional, partículas y astrofísica.</p>
+            <a href="{{ url_for('research.index') }}" class="btn btn--primary">Explorar líneas de investigación</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

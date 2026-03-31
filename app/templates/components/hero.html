@@ -1,0 +1,17 @@
+{# components/hero.html — Sección hero reutilizable #}
+{# Responsabilidad: Banner principal con título, subtítulo y CTA #}
+{# Uso: set variables antes de incluir este componente #}
+<section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+        <h1 id="hero-title" class="hero__title">{{ hero_title | default('Departamento de Física') }}</h1>
+        <p class="hero__subtitle">{{ hero_subtitle | default('') }}</p>
+        {% if hero_cta_text %}
+        <div class="hero__actions">
+            <a href="{{ hero_cta_url | default('#') }}" class="btn btn--primary">{{ hero_cta_text }}</a>
+            {% if hero_cta2_text %}
+            <a href="{{ hero_cta2_url | default('#') }}" class="btn btn--outline">{{ hero_cta2_text }}</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>

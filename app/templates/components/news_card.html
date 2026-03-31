@@ -1,0 +1,24 @@
+{# components/news_card.html — Tarjeta de noticia #}
+{# Responsabilidad: Renderizar una sola tarjeta de noticia #}
+{# Uso: incluir con variable 'article' en contexto #}
+<article class="card" aria-labelledby="news-{{ article.slug }}">
+    <div class="card__image-wrapper">
+        {% if article.image %}
+        <img src="{{ article.image }}" alt="{{ article.title }}" class="card__image" loading="lazy">
+        {% else %}
+        <div class="card__image-placeholder">
+            <span>⚛</span>
+        </div>
+        {% endif %}
+    </div>
+    <div class="card__body">
+        <div class="card__meta">
+            <span class="card__date">{{ article.date }}</span>
+            <span class="card__category badge">{{ article.category }}</span>
+        </div>
+        <h3 id="news-{{ article.slug }}" class="card__title">
+            <a href="{{ url_for('news.detail', slug=article.slug) }}">{{ article.title }}</a>
+        </h3>
+        <p class="card__summary">{{ article.summary }}</p>
+    </div>
+</article>
