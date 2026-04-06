@@ -2,26 +2,98 @@
 
 {% block content %}
 {% set hero_title = 'Investigación' %}
-{% set hero_subtitle = 'Líneas de investigación del Departamento de Física' %}
+{% set hero_subtitle = 'Explorando las fronteras del conocimiento físico' %}
 {% set hero_cta_text = false %}
 {% include 'components/hero.html' %}
 
-<section class="section" aria-labelledby="research-heading">
+<!-- Introducción a la Investigación -->
+<section class="section" aria-labelledby="research-intro-heading">
+    <div class="container content-page">
+        <div class="research-intro">
+            <div class="research-intro__content">
+                <h2 id="research-intro-heading" class="research-intro__title">Ciencia de Frontera</h2>
+                <p class="research-intro__lead">
+                    El Departamento de Física de la Universidad de Concepción mantiene una activa producción científica 
+                    con más de <strong>300 publicaciones</strong> en revistas indexadas durante la última década, 
+                    contribuyendo al avance del conocimiento en diversas áreas de la física fundamental y aplicada.
+                </p>
+                <p class="research-intro__text">
+                    Nuestros grupos de investigación participan en colaboraciones internacionales de primer nivel, 
+                    incluyendo experimentos en el CERN, observatorios astronómicos en Chile y redes de investigación 
+                    en física teórica. Esta actividad se traduce en formación de capital humano avanzado a través 
+                    de programas de Magíster y Doctorado acreditados.
+                </p>
+                <div class="research-intro__stats">
+                    <div class="research-intro__stat">
+                        <span class="research-intro__stat-number">6</span>
+                        <span class="research-intro__stat-label">Líneas de Investigación</span>
+                    </div>
+                    <div class="research-intro__stat">
+                        <span class="research-intro__stat-number">15+</span>
+                        <span class="research-intro__stat-label">Proyectos Activos</span>
+                    </div>
+                    <div class="research-intro__stat">
+                        <span class="research-intro__stat-number">40+</span>
+                        <span class="research-intro__stat-label">Investigadores</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Líneas de Investigación -->
+<section class="section section--alt" aria-labelledby="research-lines-heading">
     <div class="container">
-        <h2 id="research-heading" class="section__title">Líneas de Investigación</h2>
+        <h2 id="research-lines-heading" class="section__title">Líneas de Investigación</h2>
+        <p class="section__subtitle">Áreas de desarrollo científico activo en nuestro departamento</p>
+        
         <div class="research-grid">
             {% for line in research_lines %}
             <article class="research-card" id="{{ line.id }}">
-                <h3 class="research-card__title">{{ line.name }}</h3>
+                <div class="research-card__header">
+                    <span class="research-card__number">{{ loop.index }}</span>
+                    <h3 class="research-card__title">{{ line.name }}</h3>
+                </div>
                 <p class="research-card__desc">{{ line.description }}</p>
-                <p class="research-card__leader"><strong>Líder:</strong> {{ line.leader }}</p>
-                <div class="research-card__tags">
-                    {% for keyword in line.keywords %}
-                    <span class="badge">{{ keyword }}</span>
-                    {% endfor %}
+                <div class="research-card__footer">
+                    <p class="research-card__leader">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>{{ line.leader }}</span>
+                    </p>
+                    <div class="research-card__tags">
+                        {% for keyword in line.keywords %}
+                        <span class="badge badge--sm">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
             </article>
             {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Colaboraciones y Financiamiento -->
+<section class="section" aria-labelledby="funding-heading">
+    <div class="container content-page">
+        <h2 id="funding-heading" class="section__title">Financiamiento y Colaboraciones</h2>
+        <div class="funding-list">
+            <div class="funding-item">
+                <h3 class="funding-item__title">ANID / FONDECYT</h3>
+                <p class="funding-item__text">Proyectos de investigación regular, iniciación y postdoctorado financiados por la Agencia Nacional de Investigación y Desarrollo de Chile.</p>
+            </div>
+            <div class="funding-item">
+                <h3 class="funding-item__title">Colaboraciones Internacionales</h3>
+                <p class="funding-item__text">Participación activa en redes de investigación con instituciones de Europa, Estados Unidos, Asia y Latinoamérica, incluyendo colaboraciones con el CERN.</p>
+            </div>
+            <div class="funding-item">
+                <h3 class="funding-item__title">Observatorios Astronómicos</h3>
+                <p class="funding-item__text">Acceso a tiempo de observación en instalaciones de clase mundial como ALMA, VLT, Gemini y otros observatorios ubicados en el norte de Chile.</p>
+            </div>
+            <div class="funding-item">
+                <h3 class="funding-item__title">Centros de Excelencia</h3>
+                <p class="funding-item__text">Vinculación con centros de investigación nacionales como el Centro de Óptica y Fotónica (CEFOP) y programas de investigación asociativa.</p>
+            </div>
         </div>
     </div>
 </section>

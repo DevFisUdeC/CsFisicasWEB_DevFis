@@ -2,9 +2,9 @@
 
 {% block content %}
 {% set hero_title = 'Ciencias Físicas' %}
-{% set hero_subtitle = 'Carrera de Pregrado — Departamento de Física' %}
+{% set hero_subtitle = 'Carrera de Pregrado — Departamento de Ciencias Físicas' %}
 {% set hero_cta_text = 'Ver Malla Curricular' %}
-{% set hero_cta_url = url_for('academics.curriculum') %}
+{% set hero_cta_url = '#malla-curricular' %}
 {% include 'components/hero.html' %}
 
 <section class="section" aria-labelledby="program-heading">
@@ -13,68 +13,240 @@
         <p>{{ program.description }}</p>
         <p>{{ program.specializations }}</p>
 
-        <!-- Info rápida -->
-        <div class="info-grid">
-            <div class="info-card">
-                <span class="info-card__icon">🎓</span>
-                <strong>Grado Académico</strong>
-                <p>{{ program.degree }}</p>
+        <!-- Info rápida - Rediseñado con filas elegantes -->
+        <div class="info-rows">
+            <div class="info-row info-row--1">
+                <span class="info-row__label">Grado Académico</span>
+                <span class="info-row__value">{{ program.degree }}</span>
             </div>
-            <div class="info-card">
-                <span class="info-card__icon">📜</span>
-                <strong>Título Profesional</strong>
-                {% for title in program.title_options %}
-                <p>{{ title }}</p>
-                {% endfor %}
-            </div>
-            <div class="info-card">
-                <span class="info-card__icon">🏛️</span>
-                <strong>Campus</strong>
-                <p>{{ program.campus }}</p>
-            </div>
-            <div class="info-card">
-                <span class="info-card__icon">📅</span>
-                <strong>Duración</strong>
-                <p>{{ program.duration_semesters }} semestres</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Puntajes de corte -->
-<section class="section section--alt" aria-labelledby="scores-heading">
-    <div class="container content-page">
-        <h2 id="scores-heading" class="section__title">Puntajes de Corte</h2>
-        <div class="scores-table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Año</th>
-                        <th>Puntaje de Corte</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for year, score in program.cut_scores.items() %}
-                    <tr>
-                        <td>{{ year }}</td>
-                        <td>{{ score }}</td>
-                    </tr>
+            <div class="info-row info-row--2">
+                <span class="info-row__label">Título Profesional</span>
+                <span class="info-row__value">
+                    {% for title in program.title_options %}
+                    <span>{{ title }}</span>
                     {% endfor %}
-                </tbody>
-            </table>
+                </span>
+            </div>
+            <div class="info-row info-row--3">
+                <span class="info-row__label">Campus</span>
+                <span class="info-row__value">{{ program.campus }}</span>
+            </div>
+            <div class="info-row info-row--4">
+                <span class="info-row__label">Duración</span>
+                <span class="info-row__value">{{ program.duration_semesters }} semestres</span>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Campo ocupacional -->
+<!-- Campo Ocupacional -->
 <section class="section" aria-labelledby="field-heading">
     <div class="container content-page">
         <h2 id="field-heading" class="section__title">Campo Ocupacional</h2>
-        <p>{{ program.occupational_field }}</p>
-        <div class="cta-banner">
+        
+        <p class="field-intro">
+            Los egresados de Ciencias Físicas tienen una alta empleabilidad en sectores estratégicos de Chile y el mundo. 
+            La formación rigurosa en física y matemáticas los prepara para roles en investigación, desarrollo tecnológico e innovación.
+        </p>
+
+        <!-- Indicadores destacados -->
+        <div class="field-stats">
+            <div class="field-stat">
+                <span class="field-stat__number">70%</span>
+                <span class="field-stat__label">del cielo observable está en Chile</span>
+            </div>
+            <div class="field-stat">
+                <span class="field-stat__number">12+</span>
+                <span class="field-stat__label">observatorios de clase mundial</span>
+            </div>
+            <div class="field-stat">
+                <span class="field-stat__number">2025</span>
+                <span class="field-stat__label">Chile miembro asociado CERN</span>
+            </div>
+        </div>
+
+        <!-- Sectores de trabajo -->
+        <h3 class="field-section-title">Sectores de Inserción Laboral</h3>
+        
+        <div class="field-sectors">
+            <div class="field-sector">
+                <div class="field-sector__icon">🔬</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Investigación y Academia</h4>
+                    <p class="field-sector__desc">Universidades nacionales e internacionales, centros de investigación como CEFOP, institutos de física teórica y experimental. Programas de doctorado en Chile y el extranjero.</p>
+                </div>
+            </div>
+            
+            <div class="field-sector">
+                <div class="field-sector__icon">🔭</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Observatorios Astronómicos</h4>
+                    <p class="field-sector__desc">ALMA, VLT (Paranal), Gemini Sur, CTIO, y el futuro ELT. Chile alberga la mayor concentración de infraestructura astronómica del mundo, generando demanda constante de físicos e ingenieros.</p>
+                </div>
+            </div>
+            
+            <div class="field-sector">
+                <div class="field-sector__icon">⚛️</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Colaboraciones Internacionales</h4>
+                    <p class="field-sector__desc">Participación en experimentos del CERN (ATLAS, CMS), proyectos de detección de ondas gravitacionales (LIGO), y redes de investigación en física de partículas y cosmología.</p>
+                </div>
+            </div>
+            
+            <div class="field-sector">
+                <div class="field-sector__icon">🏭</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Industria Tecnológica</h4>
+                    <p class="field-sector__desc">Empresas de I+D, desarrollo de software científico, instrumentación electrónica, sensores y dispositivos ópticos. Startups de tecnología y consultoría especializada.</p>
+                </div>
+            </div>
+            
+            <div class="field-sector">
+                <div class="field-sector__icon">⛏️</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Minería y Energía</h4>
+                    <p class="field-sector__desc">Geoprospección, caracterización de materiales, modelamiento de procesos, energías renovables. Chile como líder mundial en minería del cobre requiere profesionales con sólida formación física.</p>
+                </div>
+            </div>
+            
+            <div class="field-sector">
+                <div class="field-sector__icon">🏥</div>
+                <div class="field-sector__content">
+                    <h4 class="field-sector__title">Física Médica y Salud</h4>
+                    <p class="field-sector__desc">Radioterapia, imagenología médica, protección radiológica en hospitales y clínicas. Desarrollo de equipamiento médico y dosimetría.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nota sobre especialidades -->
+        <div class="field-note">
+            <strong>Físico/a:</strong> Orientación hacia investigación fundamental, docencia universitaria y desarrollo científico.
+            <br>
+            <strong>Ingeniero/a Físico/a:</strong> Orientación hacia aplicaciones tecnológicas, desarrollo de productos e innovación industrial.
+        </div>
+    </div>
+</section>
+
+<!-- Información de Admisión -->
+<section class="section section--alt" aria-labelledby="admission-heading">
+    <div class="container content-page">
+        <h2 id="admission-heading" class="section__title">Información de Admisión</h2>
+
+        <!-- Datos principales en grid -->
+        <div class="info-grid-cards">
+            <div class="info-grid-card">
+                <span class="info-grid-card__value">13046</span>
+                <span class="info-grid-card__label">Código Demre</span>
+            </div>
+            <div class="info-grid-card">
+                <span class="info-grid-card__value">45</span>
+                <span class="info-grid-card__label">Vacantes</span>
+            </div>
+            <div class="info-grid-card">
+                <span class="info-grid-card__value">500</span>
+                <span class="info-grid-card__label">Puntaje Mínimo</span>
+            </div>
+            <div class="info-grid-card">
+                <span class="info-grid-card__value">6</span>
+                <span class="info-grid-card__label">Años de duración</span>
+            </div>
+        </div>
+
+        <!-- Puntajes de corte en tabla -->
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Requisito</th>
+                    <th>Puntajes de Corte</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2025</td>
+                    <td>605</td>
+                </tr>
+                <tr>
+                    <td>2024</td>
+                    <td>701,9</td>
+                </tr>
+                <tr>
+                    <td>2023</td>
+                    <td>691,05</td>
+                </tr>
+                <tr>
+                    <td>Ponderado Mínimo</td>
+                    <td>500</td>
+                </tr>
+                <tr>
+                    <td>Promedio Ciencias y Matemáticas Mínimo</td>
+                    <td>485</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-table__note">
+            Una vez aprobado el primer año, los/las estudiantes podrán elegir una de las especialidades que conducen al
+            grado de Licenciado/a en Ciencias Físicas y al título profesional de Físico/a o Ingeniero/a Físico/a.
+        </div>
+    </div>
+</section>
+
+<!-- Plan de Estudios / Malla Curricular -->
+<section class="section section--alt" id="malla-curricular" aria-labelledby="curriculum-heading">
+    <div class="container content-page">
+        <h2 id="curriculum-heading" class="section__title">Plan de Estudios</h2>
+        <p>La carrera de Ciencias Físicas tiene una duración de {{ program.duration_semesters }} semestres. {{
+            program.specializations }}</p>
+
+        <div class="curriculum-image">
+            <a href="{{ url_for('static', filename='docs/Ciencias-Fisicas_malla.jpg') }}" target="_blank" rel="noopener"
+                title="Clic para ver en tamaño completo">
+                <img src="{{ url_for('static', filename='docs/Ciencias-Fisicas_malla.jpg') }}"
+                    alt="Malla Curricular de Ciencias Físicas" class="curriculum-image__img">
+            </a>
+            <p class="curriculum-image__caption">Clic en la imagen para verla en tamaño completo</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- Arancel y Costos -->
+<section class="section" aria-labelledby="tuition-heading">
+    <div class="container content-page">
+        <h2 id="tuition-heading" class="section__title">Arancel y Costos 2025</h2>
+
+        <table class="info-table info-table--highlight">
+            <tbody>
+                <tr>
+                    <td>Arancel Anual</td>
+                    <td>$ 6.769.301</td>
+                </tr>
+                <tr>
+                    <td>Beca Interna UdeC (*)</td>
+                    <td>- $ 333.702</td>
+                </tr>
+                <tr>
+                    <td>Arancel menos Beca</td>
+                    <td>$ 6.435.599</td>
+                </tr>
+                <tr>
+                    <td>Valor Matrícula</td>
+                    <td>$ 52.795</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-table__note">
+            (*) Al momento de matricularse, cada estudiante, nuevo y antiguo, que no cuente con gratuidad, accederá a
+            esta beca sin necesidad de postular.
+        </div>
+
+        <div class="cta-banner" style="margin-top: var(--space-2xl);">
             <h3 class="cta-banner__title">¿Quieres postular?</h3>
-            <p class="cta-banner__text">Revisa los requisitos de admisión y postula a Ciencias Físicas en la Universidad de Concepción.</p>
-            <a href="https://admision.udec.cl/ciencias-fisicas/" target="_blank" rel="noopener" class="btn btn--primary">Ir a Admisión UdeC →</a>
+            <p class="cta-banner__text">Revisa los requisitos de admisión y postula a Ciencias Físicas en la Universidad
+                de Concepción.</p>
+            <a href="https://admision.udec.cl/ciencias-fisicas/" target="_blank" rel="noopener"
+                class="btn btn--primary">Ir a Admisión UdeC →</a>
         </div>
     </div>
 </section>

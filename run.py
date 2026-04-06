@@ -3,6 +3,9 @@ run.py — Entry point para el servidor de desarrollo Flask.
 Responsabilidad: Iniciar la aplicación con la configuración correcta.
 """
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from app import create_app
 
 app = create_app('development')

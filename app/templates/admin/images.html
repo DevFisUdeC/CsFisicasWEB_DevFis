@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+{% block title %}Galería de Imágenes{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">Galería de Imágenes</h2>
+        <p class="admin-page-header__subtitle">{{ images|length }} imagen(es) en la galería. Usa las URLs para insertarlas en noticias y perfiles.</p>
+    </div>
+</div>
+
+<!-- Upload Form -->
+<form method="POST" action="{{ url_for('admin.upload_image') }}" enctype="multipart/form-data"
+      class="admin-form" style="margin-bottom:var(--space-2xl);">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-form__row">
+        <div class="admin-form__group" style="margin-bottom:0;">
+            <label for="images" class="admin-form__label">Subir imágenes (PNG, JPG, WebP)</label>
+            <div class="admin-form__file-input-wrapper">
+                <input type="file" id="images" name="images"
+                       accept="image/png, image/jpeg, image/webp"
+                       multiple
+                       data-image-preview="upload-preview">
+            </div>
+            <div id="upload-preview" class="admin-form__image-preview--new"></div>
+        </div>
+        <div class="admin-form__group" style="margin-bottom:0; display:flex; align-items:flex-end;">
+            <button type="submit" class="btn btn--primary" style="width:100%;">Subir Imágenes</button>
+        </div>
+    </div>
+</form>
+
+<!-- Image Gallery Grid -->
+{% if images %}
+<div class="image-gallery">
+    {% for img in images %}
+    <div class="image-gallery__item">
+        <div class="image-gallery__thumb">
+            <img src="{{ img.url }}" alt="{{ img.filename }}" loading="lazy">
+        </div>
+        <div class="image-gallery__info">
+            <p class="image-gallery__name">{{ img.filename }}</p>
+            <p class="image-gallery__name" style="color:var(--color-text-muted);">{{ img.size_kb }} KB</p>
+        </div>
+        <div class="image-gallery__actions">
+            <button type="button" class="image-gallery__copy-btn" data-copy="{{ img.url }}" title="Copiar URL">Copiar URL</button>
+            <form action="{{ url_for('admin.delete_image') }}" method="POST"
+                  data-confirm="¿Eliminar '{{ img.filename }}'? Esta acción no se puede deshacer." style="margin:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="filename" value="{{ img.filename }}">
+                <button type="submit" class="image-gallery__copy-btn" style="color:var(--color-error);">Eliminar</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center; padding:var(--space-3xl); color:var(--color-text-muted);">
+    <p style="font-size:3rem; margin-bottom:var(--space-md);">🖼️</p>
+    <p>No hay imágenes en la galería aún.</p>
+    <p style="font-size:var(--font-size-sm);">Sube imágenes usando el formulario de arriba.</p>
+</div>
+{% endif %}
+{% endblock %}

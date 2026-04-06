@@ -2,7 +2,7 @@
 
 {% block content %}
 {% set hero_title = 'Postgrado' %}
-{% set hero_subtitle = 'Programas de Magíster y Doctorado en Física' %}
+{% set hero_subtitle = 'Programas de Magíster y Doctorado en Ciencias Físicas' %}
 {% set hero_cta_text = false %}
 {% include 'components/hero.html' %}
 
@@ -12,11 +12,12 @@
         <div class="card-grid card-grid--2">
             {% for prog in programs %}
             <article class="info-card info-card--large" id="{{ prog.id }}">
-                <span class="info-card__icon">{% if prog.type == 'doctorado' %}🎓{% else %}📚{% endif %}</span>
+                <span class="info-card__icon">{% if prog.type == 'doctorado' %}🎓{% else %}📘{% endif %}</span>
                 <h3>{{ prog.name }}</h3>
                 <p><strong>Duración:</strong> {{ prog.duration }}</p>
                 <p>{{ prog.description }}</p>
-                <a href="{{ prog.url_cfm }}" target="_blank" rel="noopener" class="btn btn--outline btn--sm">Más información en CFM →</a>
+                <a href="{{ prog.url_cfm }}" target="_blank" rel="noopener" class="btn btn--outline btn--sm">Más
+                    información en CFM →</a>
             </article>
             {% endfor %}
         </div>

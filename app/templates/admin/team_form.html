@@ -1,0 +1,130 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if member %}Editar Académico{% else %}Nuevo Académico{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">{% if member %}Editar Académico{% else %}Agregar Nuevo Académico{% endif %}</h2>
+        <p class="admin-page-header__subtitle">
+            <a href="{{ url_for('admin.team_list') }}" style="color:var(--color-link);">← Volver a Académicos</a>
+        </p>
+    </div>
+</div>
+
+<!-- Form -->
+<form method="POST" enctype="multipart/form-data"
+      action="{% if member %}{{ url_for('admin.edit_member', slug=member.slug) }}{% else %}{{ url_for('admin.create_member') }}{% endif %}"
+      class="admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Sección: Información Personal -->
+    <h3 class="admin-form__section-title">Información Personal</h3>
+
+    <!-- Nombre + Email -->
+    <div class="admin-form__row">
+        <div class="admin-form__group">
+            <label for="name" class="admin-form__label">Nombre Completo *</label>
+            <input type="text" id="name" name="name"
+                   value="{{ member.name if member else '' }}"
+                   required placeholder="Ej: Dr. Roberto Navarro"
+                   class="admin-form__control">
+        </div>
+        <div class="admin-form__group">
+            <label for="email" class="admin-form__label">Email Institucional *</label>
+            <input type="email" id="email" name="email"
+                   value="{{ member.email if member else '' }}"
+                   required placeholder="usuario@udec.cl"
+                   class="admin-form__control">
+        </div>
+    </div>
+
+    <!-- Cargo + Rol + Área -->
+    <div class="admin-form__row--3">
+        <div class="admin-form__group">
+            <label for="title" class="admin-form__label">Cargo Académico *</label>
+            <select id="title" name="title" class="admin-form__control">
+                {% set titles = ['Profesor Titular', 'Profesora Titular', 'Profesor Asociado', 'Profesora Asociada', 'Profesor Asistente', 'Profesora Asistente', 'Instructor', 'Instructora'] %}
+                {% for t in titles %}
+                <option value="{{ t }}" {% if member and member.title == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="admin-form__group">
+            <label for="role" class="admin-form__label">Rol en el Departamento *</label>
+            <input type="text" id="role" name="role"
+                   value="{{ member.role if member else '' }}"
+                   required placeholder="Ej: Jefe de Carrera, Académico/a..."
+                   class="admin-form__control">
+        </div>
+        <div class="admin-form__group">
+            <label for="area" class="admin-form__label">Área de Investigación *</label>
+            <input type="text" id="area" name="area"
+                   value="{{ member.area if member else '' }}"
+                   required placeholder="Ej: Física Teórica"
+                   class="admin-form__control">
+        </div>
+    </div>
+
+    <!-- Oficina -->
+    <div class="admin-form__group">
+        <label for="office" class="admin-form__label">Oficina</label>
+        <input type="text" id="office" name="office"
+               value="{{ member.office if member else '' }}"
+               placeholder="Ej: Oficina 312, Edificio CFM"
+               class="admin-form__control">
+    </div>
+
+    <!-- Sección: Fotografía -->
+    <h3 class="admin-form__section-title">Fotografía</h3>
+
+    <div class="admin-form__group">
+        <label for="photo" class="admin-form__label">Foto de Perfil</label>
+        {% if member and member.photo %}
+        <div class="admin-form__image-preview">
+            <img src="{{ member.photo }}" alt="{{ member.name }}">
+        </div>
+        <span class="admin-form__hint">Foto actual — Sube una nueva para reemplazarla.</span>
+        {% endif %}
+        <div class="admin-form__file-input-wrapper">
+            <input type="file" id="photo" name="photo"
+                   accept="image/png, image/jpeg, image/webp"
+                   data-image-preview="photo-preview-new">
+        </div>
+        <div id="photo-preview-new" class="admin-form__image-preview--new"></div>
+        <span class="admin-form__hint">Formatos: PNG, JPG, WebP. Recomendado: foto cuadrada de al menos 300x300px.</span>
+    </div>
+
+    <!-- Sección: Académica -->
+    <h3 class="admin-form__section-title">Información Académica</h3>
+
+    <!-- Biografía -->
+    <div class="admin-form__group">
+        <label for="bio" class="admin-form__label">Biografía</label>
+        <textarea id="bio" name="bio" rows="4"
+                  placeholder="Breve descripción del perfil académico, formación e intereses de investigación..."
+                  class="admin-form__control">{{ member.bio if member else '' }}</textarea>
+        <span class="admin-form__hint">Se muestra en la página de perfil del académico.</span>
+    </div>
+
+    <!-- Líneas de Investigación (Tag Input) -->
+    <div class="admin-form__group">
+        <label class="admin-form__label">Líneas de Investigación</label>
+        <div class="tag-input">
+            <input type="hidden" name="research_lines" class="tag-input__hidden"
+                   value="{{ member.research_lines | join(', ') if member and member.research_lines else '' }}">
+            <input type="text" class="tag-input__field"
+                   placeholder="Escribe y presiona Enter para agregar...">
+        </div>
+        <span class="admin-form__hint">Presiona Enter o coma para agregar cada línea. Ej: Gravitación, Cosmología, Física Teórica</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="admin-form__actions">
+        <a href="{{ url_for('admin.team_list') }}" class="btn btn--ghost">Cancelar</a>
+        <button type="submit" class="btn btn--primary">
+            {% if member %}Guardar Cambios{% else %}Agregar Académico{% endif %}
+        </button>
+    </div>
+</form>
+{% endblock %}

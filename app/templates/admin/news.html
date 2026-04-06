@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}Noticias{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">Gestión de Noticias</h2>
+        <p class="admin-page-header__subtitle">{{ news|length }} noticia(s) publicada(s)</p>
+    </div>
+    <a href="{{ url_for('admin.create_news_view') }}" class="btn btn--primary">+ Nueva Noticia</a>
+</div>
+
+<!-- News Table -->
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width:110px;">Fecha</th>
+                <th>Título</th>
+                <th style="width:130px;">Categoría</th>
+                <th style="width:80px;">Imagen</th>
+                <th class="admin-table__cell--actions">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in news %}
+            <tr>
+                <td class="admin-table__cell--muted">{{ article.date }}</td>
+                <td>
+                    <div class="admin-table__cell--bold">{{ article.title }}</div>
+                    <div class="admin-table__cell--muted" style="margin-top:2px;">{{ article.summary[:80] }}{% if article.summary|length > 80 %}...{% endif %}</div>
+                </td>
+                <td><span class="badge">{{ article.category }}</span></td>
+                <td>
+                    {% if article.image %}
+                    <img src="{{ article.image }}" alt="" class="admin-table__photo" style="border-radius:var(--border-radius-sm); width:48px; height:32px;">
+                    {% else %}
+                    <span class="admin-table__cell--muted">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('admin.edit_news_view', slug=article.slug) }}" class="btn btn--ghost">Editar</a>
+                        <form action="{{ url_for('admin.delete_news_view', slug=article.slug) }}" method="POST"
+                              data-confirm="¿Eliminar la noticia '{{ article.title }}'? Esta acción no se puede deshacer.">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn--danger">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="admin-table__empty">No hay noticias publicadas. ¡Crea la primera!</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

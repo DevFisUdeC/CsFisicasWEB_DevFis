@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión — Panel Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-header__icon">⚛️</div>
+                <h1 class="login-header__title">Panel de Administración</h1>
+                <p class="login-header__subtitle">Departamento de Física — UdeC</p>
+            </div>
+            
+            {% if error %}
+            <div class="login-error">{{ error }}</div>
+            {% endif %}
+            
+            <form class="login-form" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="login-field">
+                    <label for="username" class="login-field__label">Usuario</label>
+                    <input type="text" id="username" name="username" class="login-field__input" 
+                           placeholder="Ingrese su usuario" required autofocus>
+                </div>
+                
+                <div class="login-field">
+                    <label for="password" class="login-field__label">Contraseña</label>
+                    <input type="password" id="password" name="password" class="login-field__input" 
+                           placeholder="Ingrese su contraseña" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Iniciar Sesión</button>
+            </form>
+            
+            <div class="login-footer">
+                <a href="/" class="login-footer__link">← Volver al sitio principal</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

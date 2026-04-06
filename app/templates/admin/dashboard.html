@@ -1,0 +1,131 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">Dashboard</h2>
+        <p class="admin-page-header__subtitle">Resumen general del contenido del sitio</p>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="admin-stats">
+    <a href="{{ url_for('admin.news_list') }}" class="admin-stat-card" style="text-decoration:none;">
+        <div class="admin-stat-card__icon">📰</div>
+        <div>
+            <div class="admin-stat-card__number">{{ news|length }}</div>
+            <div class="admin-stat-card__label">Noticias publicadas</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.team_list') }}" class="admin-stat-card" style="text-decoration:none;">
+        <div class="admin-stat-card__icon">👥</div>
+        <div>
+            <div class="admin-stat-card__number">{{ team|length }}</div>
+            <div class="admin-stat-card__label">Académicos registrados</div>
+        </div>
+    </a>
+    <a href="{{ url_for('admin.image_gallery') }}" class="admin-stat-card" style="text-decoration:none;">
+        <div class="admin-stat-card__icon">🖼️</div>
+        <div>
+            <div class="admin-stat-card__number">{{ images|length }}</div>
+            <div class="admin-stat-card__label">Imágenes en galería</div>
+        </div>
+    </a>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-page-header">
+    <h3 class="admin-page-header__title" style="font-size:var(--font-size-xl);">Acciones Rápidas</h3>
+</div>
+<div class="admin-stats" style="margin-bottom:var(--space-2xl);">
+    <a href="{{ url_for('admin.create_news_view') }}" class="btn btn--primary" style="text-align:center;">+ Nueva Noticia</a>
+    <a href="{{ url_for('admin.create_member') }}" class="btn btn--primary" style="text-align:center;">+ Nuevo Académico</a>
+    <a href="{{ url_for('admin.image_gallery') }}" class="btn btn--outline" style="text-align:center;border-width:1px;">Subir Imágenes</a>
+</div>
+
+<!-- Recent News -->
+<div class="admin-page-header">
+    <h3 class="admin-page-header__title" style="font-size:var(--font-size-xl);">Últimas Noticias</h3>
+    <a href="{{ url_for('admin.news_list') }}" class="btn btn--ghost">Ver todas →</a>
+</div>
+<div class="admin-table-wrapper" style="margin-bottom:var(--space-2xl);">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width:110px;">Fecha</th>
+                <th>Título</th>
+                <th style="width:130px;">Categoría</th>
+                <th class="admin-table__cell--actions">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in news[:5] %}
+            <tr>
+                <td class="admin-table__cell--muted">{{ article.date }}</td>
+                <td class="admin-table__cell--bold">{{ article.title }}</td>
+                <td><span class="badge">{{ article.category }}</span></td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('admin.edit_news_view', slug=article.slug) }}" class="btn btn--ghost">Editar</a>
+                        <form action="{{ url_for('admin.delete_news_view', slug=article.slug) }}" method="POST"
+                              data-confirm="¿Eliminar la noticia '{{ article.title }}'? Esta acción no se puede deshacer.">
+                            <button type="submit" class="btn btn--danger">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="admin-table__empty">No hay noticias creadas aún.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Recent Team -->
+<div class="admin-page-header">
+    <h3 class="admin-page-header__title" style="font-size:var(--font-size-xl);">Académicos</h3>
+    <a href="{{ url_for('admin.team_list') }}" class="btn btn--ghost">Ver todos →</a>
+</div>
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width:50px;"></th>
+                <th>Nombre</th>
+                <th>Área</th>
+                <th>Rol</th>
+                <th class="admin-table__cell--actions">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in team[:5] %}
+            <tr>
+                <td>
+                    {% if member.photo %}
+                    <img src="{{ member.photo }}" alt="" class="admin-table__photo">
+                    {% else %}
+                    <div class="admin-table__photo-placeholder">{{ member.name[0] }}</div>
+                    {% endif %}
+                </td>
+                <td class="admin-table__cell--bold">{{ member.name }}</td>
+                <td class="admin-table__cell--muted">{{ member.area }}</td>
+                <td><span class="badge">{{ member.role }}</span></td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('admin.edit_member', slug=member.slug) }}" class="btn btn--ghost">Editar</a>
+                        <form action="{{ url_for('admin.delete_member', slug=member.slug) }}" method="POST"
+                              data-confirm="¿Eliminar a '{{ member.name }}' del directorio? Esta acción no se puede deshacer.">
+                            <button type="submit" class="btn btn--danger">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="admin-table__empty">No hay académicos registrados aún.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

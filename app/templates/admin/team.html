@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+{% block title %}Académicos{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">Gestión de Académicos</h2>
+        <p class="admin-page-header__subtitle">{{ team|length }} académico(s) registrado(s)</p>
+    </div>
+    <a href="{{ url_for('admin.create_member') }}" class="btn btn--primary">+ Nuevo Académico</a>
+</div>
+
+<!-- Team Table -->
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width:50px;"></th>
+                <th>Nombre</th>
+                <th>Cargo</th>
+                <th>Área</th>
+                <th>Rol</th>
+                <th>Email</th>
+                <th class="admin-table__cell--actions">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in team %}
+            <tr>
+                <td>
+                    {% if member.photo %}
+                    <img src="{{ member.photo }}" alt="{{ member.name }}" class="admin-table__photo">
+                    {% else %}
+                    <div class="admin-table__photo-placeholder">{{ member.name[0] }}</div>
+                    {% endif %}
+                </td>
+                <td class="admin-table__cell--bold">{{ member.name }}</td>
+                <td class="admin-table__cell--muted">{{ member.title }}</td>
+                <td class="admin-table__cell--muted">{{ member.area }}</td>
+                <td><span class="badge">{{ member.role }}</span></td>
+                <td class="admin-table__cell--muted">{{ member.email }}</td>
+                <td>
+                    <div class="admin-table__actions">
+                        <a href="{{ url_for('admin.edit_member', slug=member.slug) }}" class="btn btn--ghost">Editar</a>
+                        <form action="{{ url_for('admin.delete_member', slug=member.slug) }}" method="POST"
+                              data-confirm="¿Eliminar a '{{ member.name }}' del directorio? Esta acción no se puede deshacer.">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn--danger">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="admin-table__empty">No hay académicos registrados. ¡Agrega el primero!</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

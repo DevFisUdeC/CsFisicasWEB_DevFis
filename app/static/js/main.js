@@ -19,7 +19,6 @@ function highlightActiveNav() {
         const href = link.getAttribute('href');
         if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
             link.classList.add('navbar__link--active');
-            link.style.color = 'var(--color-text)';
         }
     });
 }

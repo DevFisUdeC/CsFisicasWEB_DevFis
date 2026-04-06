@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel de Administración{% endblock %} — CsFisicasWEB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <h1 class="admin-header__title">
+            <span>⚛</span> Panel de Administración
+        </h1>
+        <div class="admin-header__actions">
+            <a href="/" target="_blank" class="admin-header__link">Ver Sitio en Vivo ↗</a>
+            <a href="{{ url_for('admin.logout') }}" class="admin-header__link admin-header__link--danger">Cerrar Sesión</a>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <ul class="admin-nav">
+                <li class="admin-nav__item">
+                    <a href="{{ url_for('admin.dashboard') }}"
+                       class="admin-nav__link {% if active_section == 'dashboard' %}admin-nav__link--active{% endif %}">
+                        <span class="admin-nav__icon">📊</span> Dashboard
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a href="{{ url_for('admin.news_list') }}"
+                       class="admin-nav__link {% if active_section == 'news' %}admin-nav__link--active{% endif %}">
+                        <span class="admin-nav__icon">📰</span> Noticias
+                        <span class="admin-nav__badge">{{ news_count }}</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a href="{{ url_for('admin.team_list') }}"
+                       class="admin-nav__link {% if active_section == 'team' %}admin-nav__link--active{% endif %}">
+                        <span class="admin-nav__icon">👥</span> Académicos
+                        <span class="admin-nav__badge">{{ team_count }}</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a href="{{ url_for('admin.image_gallery') }}"
+                       class="admin-nav__link {% if active_section == 'images' %}admin-nav__link--active{% endif %}">
+                        <span class="admin-nav__icon">🖼️</span> Imágenes
+                        <span class="admin-nav__badge">{{ images_count }}</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="admin-flash">
+          {% for category, message in messages %}
+            <div class="admin-toast admin-toast--{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Logs
+app.log
+app.log.*
+
 # C extensions
 *.so
 
@@ -49,3 +53,6 @@ Thumbs.db
 
 # Flask session
 .webassets-cache
+
+# User-uploaded content (managed via CMS admin)
+app/static/img/uploads/

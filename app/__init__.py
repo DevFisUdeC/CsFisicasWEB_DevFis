@@ -13,12 +13,27 @@ def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
+    _init_extensions(app)
     _register_blueprints(app)
     _register_context_processors(app)
     _register_error_handlers(app)
 
     return app
 
+def _init_extensions(app):
+    """Inicializa extensiones como Supabase, CSRF y rate limiter."""
+    from app.database import init_supabase
+    from flask_wtf.csrf import CSRFProtect
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+
+    init_supabase(app)
+
+    csrf = CSRFProtect()
+    csrf.init_app(app)
+
+    limiter = Limiter(get_remote_address, app=app, default_limits=[], storage_uri="memory://")
+    app.extensions['limiter'] = limiter
 
 def _register_blueprints(app):
     """Registra todos los blueprints de la aplicación."""
@@ -27,12 +42,18 @@ def _register_blueprints(app):
     from app.routes.research import research_bp
     from app.routes.people import people_bp
     from app.routes.news import news_bp
+    from app.routes.admin import admin_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(academics_bp, url_prefix='/academics')
     app.register_blueprint(research_bp, url_prefix='/research')
     app.register_blueprint(people_bp, url_prefix='/people')
     app.register_blueprint(news_bp, url_prefix='/news')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+
+    limiter = app.extensions.get('limiter')
+    if limiter:
+        limiter.limit("10/minute")(app.view_functions['admin.login'])
 
 
 def _register_context_processors(app):
@@ -66,11 +87,6 @@ def _get_nav_items():
     """Estructura de navegación del sitio."""
     return [
         {
-            'label': 'Inicio',
-            'url': '/',
-            'children': [],
-        },
-        {
             'label': 'Departamento',
             'url': '/about',
             'children': [
@@ -89,7 +105,7 @@ def _get_nav_items():
             'url': '/academics/undergraduate',
             'children': [
                 {'label': 'Ciencias Físicas', 'url': '/academics/undergraduate'},
-                {'label': 'Malla Curricular', 'url': '/academics/curriculum'},
+                {'label': 'Malla Curricular', 'url': '/academics/undergraduate#malla-curricular'},
             ],
         },
         {

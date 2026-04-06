@@ -17,6 +17,15 @@ class Config:
     CONTACT_ADDRESS = 'Avda. Esteban Iturra s/n, Barrio Universitario, Concepción, Chile'
 
 
+    ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
+    ADMIN_PASS = os.environ.get('ADMIN_PASS', 'admin')
+    ADMIN_PASS_HASH = os.environ.get('ADMIN_PASS_HASH', '')
+    SUPABASE_URL = os.environ.get('SUPABASE_URL')
+    SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
+    SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
+    SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'uploads')
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
+
 class DevelopmentConfig(Config):
     """Configuración para desarrollo local."""
     DEBUG = True

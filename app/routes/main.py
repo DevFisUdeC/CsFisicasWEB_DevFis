@@ -3,7 +3,10 @@ app/routes/main.py — Rutas principales del sitio.
 Responsabilidad: Home, About (Departamento), Contact.
 """
 
+import logging
 from flask import Blueprint, render_template
+
+logger = logging.getLogger(__name__)
 
 main_bp = Blueprint('main', __name__)
 
@@ -21,6 +24,7 @@ def home():
         'labs': 15,
         'publications': '300+',
     }
+    logger.info("Página de inicio renderizada.")
     return render_template('pages/home.html',
                            news=news,
                            stats=stats,
@@ -30,6 +34,7 @@ def home():
 @main_bp.route('/about')
 def about():
     """Página sobre el departamento."""
+    logger.info("Página del departamento renderizada.")
     return render_template('pages/about.html',
                            page_title='Departamento')
 
@@ -37,5 +42,6 @@ def about():
 @main_bp.route('/contact')
 def contact():
     """Página de contacto."""
+    logger.info("Página de contacto renderizada.")
     return render_template('pages/contact.html',
                            page_title='Contacto')

@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if article %}Editar Noticia{% else %}Nueva Noticia{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">{% if article %}Editar Noticia{% else %}Crear Nueva Noticia{% endif %}</h2>
+        <p class="admin-page-header__subtitle">
+            <a href="{{ url_for('admin.news_list') }}" style="color:var(--color-link);">← Volver a Noticias</a>
+        </p>
+    </div>
+</div>
+
+<!-- Form -->
+<form method="POST" enctype="multipart/form-data"
+      action="{% if article %}{{ url_for('admin.edit_news_view', slug=article.slug) }}{% else %}{{ url_for('admin.create_news_view') }}{% endif %}"
+      class="admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Título -->
+    <div class="admin-form__group">
+        <label for="title" class="admin-form__label">Título de la Noticia *</label>
+        <input type="text" id="title" name="title"
+               value="{{ article.title if article else '' }}"
+               required placeholder="Ej: Seminario Internacional de Física 2026"
+               class="admin-form__control">
+    </div>
+
+    <!-- Fecha + Categoría -->
+    <div class="admin-form__row">
+        <div class="admin-form__group">
+            <label for="date" class="admin-form__label">Fecha de Publicación *</label>
+            <input type="date" id="date" name="date"
+                   value="{{ article.date if article else today_date }}"
+                   required class="admin-form__control">
+        </div>
+        <div class="admin-form__group">
+            <label for="category" class="admin-form__label">Categoría *</label>
+            <select id="category" name="category" class="admin-form__control">
+                {% set categories = ['Noticias', 'Eventos', 'Investigación', 'Comunidad', 'Departamento'] %}
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if article and article.category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Imagen -->
+    <div class="admin-form__group">
+        <label for="image" class="admin-form__label">Imagen Destacada</label>
+        {% if article and article.image %}
+        <div class="admin-form__image-preview">
+            <img src="{{ article.image }}" alt="Imagen actual">
+        </div>
+        <span class="admin-form__hint">Imagen actual: {{ article.image }} — Sube una nueva para reemplazarla.</span>
+        {% endif %}
+        <div class="admin-form__file-input-wrapper">
+            <input type="file" id="image" name="image"
+                   accept="image/png, image/jpeg, image/webp"
+                   data-image-preview="image-preview-new">
+        </div>
+        <div id="image-preview-new" class="admin-form__image-preview--new"></div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="admin-form__group">
+        <label for="summary" class="admin-form__label">Resumen Corto *</label>
+        <textarea id="summary" name="summary" required rows="3"
+                  placeholder="Aparece en las tarjetas de noticias del sitio..."
+                  class="admin-form__control">{{ article.summary if article else '' }}</textarea>
+        <span class="admin-form__hint">Máximo 2-3 oraciones. Se muestra en el listado de noticias.</span>
+    </div>
+
+    <!-- Contenido -->
+    <div class="admin-form__group">
+        <label for="content" class="admin-form__label">Contenido Completo *</label>
+        <textarea id="content" name="content" required rows="12"
+                  placeholder="Escribe aquí el cuerpo completo de la noticia..."
+                  class="admin-form__control">{{ article.content if article else '' }}</textarea>
+    </div>
+
+    <!-- Fuente -->
+    <div class="admin-form__group">
+        <label for="source" class="admin-form__label">Fuente (URL original, opcional)</label>
+        <input type="url" id="source" name="source"
+               value="{{ article.source if article and article.source else '' }}"
+               placeholder="https://noticias.cfm.cl/..."
+               class="admin-form__control">
+    </div>
+
+    <!-- Actions -->
+    <div class="admin-form__actions">
+        <a href="{{ url_for('admin.news_list') }}" class="btn btn--ghost">Cancelar</a>
+        <button type="submit" class="btn btn--primary">
+            {% if article %}Guardar Cambios{% else %}Publicar Noticia{% endif %}
+        </button>
+    </div>
+</form>
+{% endblock %}

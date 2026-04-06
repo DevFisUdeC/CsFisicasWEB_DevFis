@@ -11,26 +11,26 @@
 {% set hero_cta2_url = url_for('academics.undergraduate') %}
 {% include 'components/hero.html' %}
 
-<!-- Cifras clave -->
-<section class="section" aria-labelledby="stats-heading">
+<!-- Bienvenida -->
+<section class="section" aria-labelledby="welcome-heading">
     <div class="container">
-        <h2 id="stats-heading" class="section__title">El Departamento en Cifras</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-card__number">{{ stats.academics }}</span>
-                <span class="stat-card__label">Académicos</span>
+        <div class="welcome-split">
+            <div class="welcome-split__content">
+                <h2 id="welcome-heading" class="welcome-split__title">Formando el futuro de la física en Chile</h2>
+                <p class="welcome-split__text">
+                    Desde 1965, el Departamento de Física de la Universidad de Concepción ha sido un pilar fundamental en la formación de científicos de excelencia y en el desarrollo de investigación de frontera en nuestro país.
+                </p>
+                <blockquote class="welcome-split__quote">
+                    "Nuestro compromiso es cultivar el pensamiento crítico y la pasión por descubrir las leyes fundamentales del universo, preparando a las nuevas generaciones para los desafíos del futuro."
+                </blockquote>
+                <div class="welcome-split__author">
+                    <span>—</span>
+                    <strong>Departamento de Física</strong>
+                    <span>Universidad de Concepción</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <span class="stat-card__number">{{ stats.students }}</span>
-                <span class="stat-card__label">Estudiantes</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-card__number">{{ stats.labs }}</span>
-                <span class="stat-card__label">Laboratorios</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-card__number">{{ stats.publications }}</span>
-                <span class="stat-card__label">Publicaciones</span>
+            <div class="welcome-split__image">
+                <img src="{{ url_for('static', filename='img/logo-dpto-fisica.png') }}" alt="Logo del Departamento de Física">
             </div>
         </div>
     </div>
