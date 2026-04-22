@@ -56,3 +56,7 @@ Thumbs.db
 
 # User-uploaded content (managed via CMS admin)
 app/static/img/uploads/
+
+# Local-only development artifacts
+Docs/
+CsFisicasWEB.code-workspace
