@@ -98,6 +98,27 @@ Archivo `.env` (local):
 4. Abrir:
    - `http://127.0.0.1:5000`
 
+## Despliegue en Vercel
+
+El proyecto ya incluye configuración para Vercel:
+
+- `api/index.py` como entrypoint serverless Flask en modo `production`.
+- `vercel.json` para enrutar todo el tráfico hacia la app Flask.
+
+Pasos para desplegar:
+
+1. Importar el repositorio `DevFisUdeC/CsFisicasWEB_DevFis` en Vercel.
+2. En `Project Settings > Environment Variables`, definir:
+   - `SECRET_KEY`
+   - `ADMIN_USER`
+   - `ADMIN_PASS_HASH` (recomendado en producción)
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_KEY`
+   - `SUPABASE_BUCKET` (opcional)
+3. Ejecutar deploy (Production).
+
+Nota: si faltan `SUPABASE_URL` o `SUPABASE_SERVICE_KEY`, la app fallará al iniciar por diseño de seguridad.
+
 ## Dependencias principales
 
 - `flask==3.1.0`
