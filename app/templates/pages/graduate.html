@@ -12,7 +12,7 @@
         <div class="card-grid card-grid--2">
             {% for prog in programs %}
             <article class="info-card info-card--large" id="{{ prog.id }}">
-                <span class="info-card__icon">{% if prog.type == 'doctorado' %}🎓{% else %}📘{% endif %}</span>
+                <span class="info-card__icon">{% if prog.type == 'doctorado' %}{% else %}{% endif %}</span>
                 <h3>{{ prog.name }}</h3>
                 <p><strong>Duración:</strong> {{ prog.duration }}</p>
                 <p>{{ prog.description }}</p>
