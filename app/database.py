@@ -9,24 +9,35 @@ from supabase import create_client, Client
 
 logger = logging.getLogger(__name__)
 
-_supabase: Client | None = None
+_supabase_service: Client | None = None
+_supabase_public: Client | None = None
 
 
 def init_supabase(app) -> Client:
-    """Inicializa el cliente Supabase con la service_key del config de Flask."""
-    global _supabase
+    """Inicializa clientes Supabase (service + public)."""
+    global _supabase_service, _supabase_public
     url = app.config.get('SUPABASE_URL', '')
-    key = app.config.get('SUPABASE_SERVICE_KEY', '')
-    if not url or not key:
+    service_key = app.config.get('SUPABASE_SERVICE_KEY', '')
+    anon_key = app.config.get('SUPABASE_ANON_KEY', '')
+    if not url or not service_key:
         logger.error("SUPABASE_URL o SUPABASE_SERVICE_KEY no configuradas.")
         raise RuntimeError("Faltan credenciales de Supabase. Revisa tu .env")
-    _supabase = create_client(url, key)
-    logger.info("Cliente Supabase inicializado correctamente.")
-    return _supabase
+    _supabase_service = create_client(url, service_key)
+    if anon_key:
+        _supabase_public = create_client(url, anon_key)
+        logger.info("Clientes Supabase inicializados: service y public.")
+    else:
+        _supabase_public = _supabase_service
+        logger.warning("SUPABASE_ANON_KEY no configurada; cliente public usa service_role (menos seguro).")
+    return _supabase_service
 
 
-def get_supabase() -> Client:
-    """Retorna el cliente Supabase ya inicializado."""
-    if _supabase is None:
+def get_supabase(role: str = 'service') -> Client:
+    """Retorna cliente Supabase según rol: service/public."""
+    if role == 'public':
+        if _supabase_public is None:
+            raise RuntimeError("Supabase public no inicializado. Llama init_supabase(app) primero.")
+        return _supabase_public
+    if _supabase_service is None:
         raise RuntimeError("Supabase no inicializado. Llama init_supabase(app) primero.")
-    return _supabase
+    return _supabase_service

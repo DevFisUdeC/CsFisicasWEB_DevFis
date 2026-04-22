@@ -17,6 +17,7 @@ def create_app(config_name='default'):
     _register_blueprints(app)
     _register_context_processors(app)
     _register_error_handlers(app)
+    _register_security_headers(app)
 
     return app
 
@@ -32,7 +33,8 @@ def _init_extensions(app):
     csrf = CSRFProtect()
     csrf.init_app(app)
 
-    limiter = Limiter(get_remote_address, app=app, default_limits=[], storage_uri="memory://")
+    limiter_storage = app.config.get('RATELIMIT_STORAGE_URI', 'memory://')
+    limiter = Limiter(get_remote_address, app=app, default_limits=[], storage_uri=limiter_storage)
     app.extensions['limiter'] = limiter
 
 def _register_blueprints(app):
@@ -81,6 +83,19 @@ def _register_error_handlers(app):
     @app.errorhandler(500)
     def internal_error(error):
         return render_template('pages/errors/500.html'), 500
+
+
+def _register_security_headers(app):
+    """Aplica cabeceras de seguridad en respuestas HTTP."""
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault('X-Content-Type-Options', 'nosniff')
+        response.headers.setdefault('X-Frame-Options', 'DENY')
+        response.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+        response.headers.setdefault('Content-Security-Policy', "default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; object-src 'none'")
+        if not app.debug:
+            response.headers.setdefault('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+        return response
 
 
 def _get_nav_items():

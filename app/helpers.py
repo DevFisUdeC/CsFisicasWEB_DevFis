@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import time
+import imghdr
 
 from werkzeug.utils import secure_filename
 
@@ -58,7 +59,7 @@ def get_news():
     """Retorna todas las noticias ordenadas por fecha descendente."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('news').select('*').order('date', desc=True).execute()
+        resp = get_supabase(role='public').table('news').select('*').order('date', desc=True).execute()
         return resp.data or []
     except Exception as e:
         logger.error(f"Error al obtener noticias de Supabase: {e}")
@@ -69,7 +70,7 @@ def get_news_by_slug(slug):
     """Retorna una noticia por su slug, o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('news').select('*').eq('slug', slug).limit(1).execute()
+        resp = get_supabase(role='public').table('news').select('*').eq('slug', slug).limit(1).execute()
         return resp.data[0] if resp.data else None
     except Exception as e:
         logger.error(f"Error al obtener noticia '{slug}': {e}")
@@ -80,7 +81,7 @@ def create_news(data):
     """Inserta una noticia nueva. Retorna el registro insertado o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('news').insert(data).execute()
+        resp = get_supabase(role='service').table('news').insert(data).execute()
         logger.info(f"Noticia creada en Supabase: {data.get('title')}")
         return resp.data[0] if resp.data else None
     except Exception as e:
@@ -92,7 +93,7 @@ def update_news(slug, data):
     """Actualiza una noticia por slug. Retorna el registro actualizado o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('news').update(data).eq('slug', slug).execute()
+        resp = get_supabase(role='service').table('news').update(data).eq('slug', slug).execute()
         logger.info(f"Noticia actualizada en Supabase: {slug}")
         return resp.data[0] if resp.data else None
     except Exception as e:
@@ -104,7 +105,7 @@ def delete_news_by_slug(slug):
     """Elimina una noticia por slug. Retorna True si se eliminó."""
     from app.database import get_supabase
     try:
-        get_supabase().table('news').delete().eq('slug', slug).execute()
+        get_supabase(role='service').table('news').delete().eq('slug', slug).execute()
         logger.info(f"Noticia eliminada de Supabase: {slug}")
         return True
     except Exception as e:
@@ -120,7 +121,7 @@ def get_team():
     """Retorna todos los académicos."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('team_members').select('*').order('name').execute()
+        resp = get_supabase(role='public').table('team_members').select('*').order('name').execute()
         return resp.data or []
     except Exception as e:
         logger.error(f"Error al obtener equipo de Supabase: {e}")
@@ -131,7 +132,7 @@ def get_member_by_slug(slug):
     """Retorna un académico por su slug, o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('team_members').select('*').eq('slug', slug).limit(1).execute()
+        resp = get_supabase(role='public').table('team_members').select('*').eq('slug', slug).limit(1).execute()
         return resp.data[0] if resp.data else None
     except Exception as e:
         logger.error(f"Error al obtener académico '{slug}': {e}")
@@ -142,7 +143,7 @@ def create_team_member(data):
     """Inserta un académico nuevo. Retorna el registro o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('team_members').insert(data).execute()
+        resp = get_supabase(role='service').table('team_members').insert(data).execute()
         logger.info(f"Académico creado en Supabase: {data.get('name')}")
         return resp.data[0] if resp.data else None
     except Exception as e:
@@ -154,7 +155,7 @@ def update_team_member(slug, data):
     """Actualiza un académico por slug. Retorna el registro actualizado o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase().table('team_members').update(data).eq('slug', slug).execute()
+        resp = get_supabase(role='service').table('team_members').update(data).eq('slug', slug).execute()
         logger.info(f"Académico actualizado en Supabase: {slug}")
         return resp.data[0] if resp.data else None
     except Exception as e:
@@ -166,7 +167,7 @@ def delete_team_member_by_slug(slug):
     """Elimina un académico por slug. Retorna True si se eliminó."""
     from app.database import get_supabase
     try:
-        get_supabase().table('team_members').delete().eq('slug', slug).execute()
+        get_supabase(role='service').table('team_members').delete().eq('slug', slug).execute()
         logger.info(f"Académico eliminado de Supabase: {slug}")
         return True
     except Exception as e:
@@ -181,7 +182,7 @@ def delete_team_member_by_slug(slug):
 def _get_storage_url(bucket, filename):
     """Construye la URL pública de un archivo en Supabase Storage."""
     from app.database import get_supabase
-    resp = get_supabase().storage.from_(bucket).get_public_url(filename)
+    resp = get_supabase(role='service').storage.from_(bucket).get_public_url(filename)
     return resp
 
 
@@ -197,14 +198,24 @@ def upload_to_storage(file, bucket='uploads', allowed_extensions=None):
         logger.warning(f"Extensión no permitida: {ext}")
         return None
 
+    from flask import current_app
     from app.database import get_supabase
     filename = secure_filename(f"{int(time.time())}_{file.filename}")
     content = file.read()
+    max_size = current_app.config.get('MAX_UPLOAD_FILE_SIZE', 5 * 1024 * 1024)
+    if len(content) > max_size:
+        logger.warning(f"Archivo excede límite de tamaño ({len(content)} > {max_size} bytes).")
+        return None
+    detected = imghdr.what(None, h=content)
+    allowed_detected = {'png', 'jpeg', 'webp', 'gif'}
+    if detected not in allowed_detected:
+        logger.warning(f"Contenido no válido de imagen detectado: {detected}")
+        return None
     mime_map = {'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'webp': 'image/webp', 'gif': 'image/gif'}
     content_type = mime_map.get(ext, 'application/octet-stream')
 
     try:
-        get_supabase().storage.from_(bucket).upload(
+        get_supabase(role='service').storage.from_(bucket).upload(
             path=filename,
             file=content,
             file_options={"content-type": content_type},
@@ -221,7 +232,7 @@ def list_storage_files(bucket='uploads'):
     """Lista archivos del bucket de Supabase Storage."""
     from app.database import get_supabase
     try:
-        files = get_supabase().storage.from_(bucket).list()
+        files = get_supabase(role='service').storage.from_(bucket).list()
         result = []
         for f in files:
             if f.get('name', '').startswith('.'):
@@ -244,7 +255,7 @@ def delete_from_storage(filename, bucket='uploads'):
     """Elimina un archivo de Supabase Storage."""
     from app.database import get_supabase
     try:
-        get_supabase().storage.from_(bucket).remove([filename])
+        get_supabase(role='service').storage.from_(bucket).remove([filename])
         logger.info(f"Imagen eliminada de Storage: {filename}")
         return True
     except Exception as e:

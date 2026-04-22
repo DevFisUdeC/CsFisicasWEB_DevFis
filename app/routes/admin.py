@@ -5,6 +5,7 @@ Datos: Supabase (PostgreSQL + Storage).
 """
 
 from datetime import datetime
+from urllib.parse import urlparse
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
 from app.helpers import (
     get_news, get_news_by_slug, create_news, update_news, delete_news_by_slug,
@@ -15,6 +16,14 @@ from app.helpers import (
 from app.auth import login_required
 
 admin_bp = Blueprint('admin', __name__)
+
+
+def _is_safe_next_url(next_url: str | None) -> bool:
+    """Permite solo redirecciones internas relativas al sitio."""
+    if not next_url:
+        return False
+    parsed = urlparse(next_url)
+    return parsed.scheme == '' and parsed.netloc == '' and next_url.startswith('/') and not next_url.startswith('//')
 
 
 # ─── Context Processor: inyecta contadores en todas las vistas admin ────────
@@ -65,9 +74,13 @@ def login():
                 f"Intento de login fallido en panel admin. Usuario provisto: {request.form['username']}")
         else:
             session['logged_in'] = True
+            session.permanent = True
             current_app.logger.info("Admin login exitoso")
             flash("Bienvenido al Panel de Administración", "success")
-            return redirect(request.args.get('next') or url_for('admin.dashboard'))
+            next_url = request.args.get('next')
+            if _is_safe_next_url(next_url):
+                return redirect(next_url)
+            return redirect(url_for('admin.dashboard'))
     return render_template('admin/login.html', error=error)
 
 
@@ -289,6 +302,10 @@ def image_gallery():
 def upload_image():
     """Sube una o más imágenes a Supabase Storage."""
     files = request.files.getlist('images')
+    max_files = current_app.config.get('MAX_UPLOAD_FILES', 10)
+    if len(files) > max_files:
+        flash(f"Máximo permitido por carga: {max_files} archivos.", "error")
+        return redirect(url_for('admin.image_gallery'))
     bucket = current_app.config.get('SUPABASE_BUCKET', 'uploads')
     allowed = current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'webp'})
     uploaded = 0

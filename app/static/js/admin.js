@@ -98,9 +98,14 @@ function addTag(container, hiddenInput, text) {
     const textField = container.querySelector('.tag-input__field');
     const tag = document.createElement('span');
     tag.className = 'tag-input__tag';
-    tag.innerHTML = `${text} <span class="tag-input__remove" title="Eliminar">&times;</span>`;
+    tag.appendChild(document.createTextNode(`${text} `));
+    const remove = document.createElement('span');
+    remove.className = 'tag-input__remove';
+    remove.title = 'Eliminar';
+    remove.textContent = '×';
+    tag.appendChild(remove);
 
-    tag.querySelector('.tag-input__remove').addEventListener('click', () => {
+    remove.addEventListener('click', () => {
         tag.remove();
         syncTags(container, hiddenInput);
     });
