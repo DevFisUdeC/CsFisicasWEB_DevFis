@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block meta_description %}Recursos para estudiantes de Ciencias Físicas: reglamentos, calendarios, prácticas, memorias y enlaces académicos clave.{% endblock %}
+
+{% block content %}
+{% set hero_title = 'Estudiantes de Ciencias Físicas' %}
+{% set hero_subtitle = 'Accede a reglamentos, calendarios, documentos y recursos clave para tu trayectoria académica.' %}
+{% set hero_cta_text = 'Ver reglamentos' %}
+{% set hero_cta_url = '#reglamentos' %}
+{% set hero_cta2_text = 'Calendario académico' %}
+{% set hero_cta2_url = '#calendario' %}
+{% include 'components/hero.html' %}
+
+<section class="section" id="reglamentos" aria-labelledby="reglamentos-heading">
+    <div class="container content-page">
+        <h2 id="reglamentos-heading">Reglamentos y protocolos</h2>
+        <p class="text-muted">Documentación central para continuidad de estudios, docencia y convivencia universitaria.</p>
+        <div class="resource-grid">
+            <article class="resource-card">
+                <h3>Reglamento de Docencia de Pregrado</h3>
+                <p>Normativa general para inscripción, evaluación y permanencia académica.</p>
+                <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/docencia/reglamentos/" target="_blank" rel="noopener">Abrir recurso</a>
+            </article>
+            <article class="resource-card">
+                <h3>Protocolo de continuidad de estudios</h3>
+                <p>Guía formal para solicitudes académicas y regularización de situación curricular.</p>
+                <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/docencia/formulario-solicitud-alumno/" target="_blank" rel="noopener">Ver formulario</a>
+            </article>
+            <article class="resource-card">
+                <h3>Bienestar estudiantil</h3>
+                <p>Servicios y apoyos DISE para salud, beneficios y acompañamiento estudiantil.</p>
+                <a class="btn btn--outline btn--sm" href="https://dise.udec.cl/" target="_blank" rel="noopener">Ir a DISE</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section section--alt" id="calendario" aria-labelledby="calendario-heading">
+    <div class="container content-page">
+        <h2 id="calendario-heading">Calendario y horarios</h2>
+        <p class="text-muted">Fechas académicas, hitos de docencia e información para la planificación semestral.</p>
+        <div class="resource-grid">
+            <article class="resource-card resource-card--compact">
+                <h3>Calendario de Docencia</h3>
+                <p>Planificación oficial de periodos, cierres y evaluaciones.</p>
+            </article>
+            <article class="resource-card resource-card--compact">
+                <h3>Agenda académica</h3>
+                <p>Fechas de inscripción, suspensión, reincorporación y trámites críticos.</p>
+            </article>
+            <article class="resource-card resource-card--compact">
+                <h3>Comisiones y horarios</h3>
+                <p>Revisión de bloques de clases y ajustes de carga académica con tutoría.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="practicas" aria-labelledby="practicas-heading">
+    <div class="container content-page">
+        <h2 id="practicas-heading">Prácticas, memorias y titulación</h2>
+        <p class="text-muted">Recursos para preparar la práctica profesional, memoria de título y seguimiento del egreso.</p>
+        <div class="resource-grid">
+            <article class="resource-card">
+                <h3>Formato de memoria</h3>
+                <p>Plantilla y lineamientos para estandarizar la entrega de memoria de título.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('academics.undergraduate') }}#malla-curricular">Ver pregrado</a>
+            </article>
+            <article class="resource-card">
+                <h3>Portafolio de investigación</h3>
+                <p>Líneas y laboratorios para proyectar temas de memoria y colaboración científica.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('research.index') }}">Ir a investigación</a>
+            </article>
+            <article class="resource-card">
+                <h3>Publicaciones y referencias</h3>
+                <p>Catálogo de publicaciones del departamento para explorar antecedentes de trabajo.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('research.publications') }}">Ver publicaciones</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section section--alt" id="egresados" aria-labelledby="egresados-heading">
+    <div class="container content-page">
+        <h2 id="egresados-heading">Egresados y proyección académica</h2>
+        <p class="text-muted">Próximamente incorporaremos listado de titulados, líneas de inserción y oportunidades de postgrado.</p>
+        <div class="cta-banner cta-banner--light">
+            <h3 class="cta-banner__title">¿Buscas oportunidades de postgrado?</h3>
+            <p class="cta-banner__text">Revisa la oferta de magíster y doctorado del departamento y de la Facultad CFM.</p>
+            <a href="{{ url_for('academics.graduate') }}" class="btn btn--primary">Explorar postgrado</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

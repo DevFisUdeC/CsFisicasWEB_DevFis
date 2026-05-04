@@ -30,6 +30,12 @@ class Config:
     MAX_UPLOAD_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_FILE_SIZE', str(5 * 1024 * 1024)))
     MAX_UPLOAD_FILES = int(os.environ.get('MAX_UPLOAD_FILES', '10'))
     RATELIMIT_STORAGE_URI = os.environ.get('RATELIMIT_STORAGE_URI', 'memory://')
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO').upper()
+    LOG_FORMAT = os.environ.get(
+        'LOG_FORMAT',
+        '%(asctime)s | %(levelname)s | %(name)s | %(message)s'
+    )
+    LOG_DATE_FORMAT = os.environ.get('LOG_DATE_FORMAT', '%Y-%m-%d %H:%M:%S')
 
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
@@ -40,6 +46,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     SESSION_COOKIE_SECURE = False
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG').upper()
 
 
 class ProductionConfig(Config):
@@ -47,6 +54,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     SESSION_COOKIE_SECURE = True
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'WARNING').upper()
 
 
 class TestingConfig(Config):
@@ -54,6 +62,7 @@ class TestingConfig(Config):
     DEBUG = True
     TESTING = True
     SESSION_COOKIE_SECURE = False
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG').upper()
 
 
 config = {

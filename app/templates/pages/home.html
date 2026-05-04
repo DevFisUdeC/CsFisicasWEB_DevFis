@@ -4,14 +4,45 @@
 {% block content %}
 <!-- Hero Section -->
 {% set hero_title = 'Departamento de Física' %}
-{% set hero_subtitle = 'Formamos científicas y científicos capaces de comprender, investigar y transformar el mundo a través de la física, cultivando la curiosidad, el pensamiento crítico y una profunda vocación por el conocimiento.' %}
-{% set hero_cta_text = 'Conoce nuestra investigación' %}
-{% set hero_cta_url = url_for('research.index') %}
+{% set hero_subtitle = 'Formación de excelencia, investigación de frontera y recursos académicos para la comunidad de Ciencias Físicas de la Universidad de Concepción.' %}
+{% set hero_cta_text = 'Ver recursos para estudiantes' %}
+{% set hero_cta_url = url_for('main.students') %}
 {% set hero_cta2_text = 'Postula a Ciencias Físicas' %}
 {% set hero_cta2_url = url_for('academics.undergraduate') %}
 {% include 'components/hero.html' %}
 
-<!-- Bienvenida -->
+<!-- Accesos por audiencia -->
+<section class="section section--compact" aria-labelledby="audience-heading">
+    <div class="container">
+        <div class="section__header">
+            <h2 id="audience-heading" class="section__title">Accesos rápidos</h2>
+        </div>
+        <div class="quick-access-grid">
+            <article class="quick-access-card">
+                <h3 class="quick-access-card__title">Futuro estudiante</h3>
+                <p class="quick-access-card__text">Conoce perfil de ingreso, malla curricular y campo laboral.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('academics.undergraduate') }}">Explorar pregrado</a>
+            </article>
+            <article class="quick-access-card">
+                <h3 class="quick-access-card__title">Estudiantes</h3>
+                <p class="quick-access-card__text">Reglamentos, calendarios, prácticas y recursos de apoyo académico.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('main.students') }}">Ir a estudiantes</a>
+            </article>
+            <article class="quick-access-card">
+                <h3 class="quick-access-card__title">Postgrado</h3>
+                <p class="quick-access-card__text">Programas de magíster y doctorado para continuidad de estudios.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('academics.graduate') }}">Ver programas</a>
+            </article>
+            <article class="quick-access-card">
+                <h3 class="quick-access-card__title">Investigación</h3>
+                <p class="quick-access-card__text">Líneas de trabajo, publicaciones y laboratorios del departamento.</p>
+                <a class="btn btn--outline btn--sm" href="{{ url_for('research.index') }}">Abrir investigación</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Bienvenida institucional -->
 <section class="section" aria-labelledby="welcome-heading">
     <div class="container">
         <div class="welcome-split">
@@ -40,8 +71,8 @@
 <section class="section section--alt" aria-labelledby="news-heading">
     <div class="container">
         <div class="section__header">
-            <h2 id="news-heading" class="section__title">Noticias Recientes</h2>
-            <a href="{{ url_for('news.index') }}" class="btn btn--outline btn--sm">Ver todas →</a>
+            <h2 id="news-heading" class="section__title">Noticias recientes</h2>
+            <a href="{{ url_for('news.index') }}" class="btn btn--outline btn--sm">Ver todas</a>
         </div>
         <div class="card-grid">
             {% for article in news %}
@@ -56,7 +87,7 @@
     <div class="container">
         <div class="cta-banner">
             <h2 id="research-cta-heading" class="cta-banner__title">Investigación de Frontera</h2>
-            <p class="cta-banner__text">Nuestros grupos de investigación trabajan en áreas como gravitación, materia condensada, óptica, física computacional, partículas y astrofísica.</p>
+            <p class="cta-banner__text">Nuestros grupos de investigación trabajan en áreas como gravitación, materia condensada, óptica, física computacional y física de partículas.</p>
             <a href="{{ url_for('research.index') }}" class="btn btn--primary">Explorar líneas de investigación</a>
         </div>
     </div>

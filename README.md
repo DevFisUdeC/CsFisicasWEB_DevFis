@@ -87,6 +87,9 @@ Archivo `.env` (local):
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_KEY`
 - `SUPABASE_BUCKET` (opcional, default: `uploads`)
+- `APP_ENV` (`development` o `production`)
+- `LOG_LEVEL` (`DEBUG`, `INFO`, `WARNING`, `ERROR`)
+- `FLASK_DEBUG` (`true`/`false`, opcional para sobreescribir debug)
 
 ## Ejecución local
 
@@ -97,6 +100,35 @@ Archivo `.env` (local):
    - `python run.py`
 4. Abrir:
    - `http://127.0.0.1:5000`
+
+### Modo debug (logs detallados en terminal)
+
+PowerShell:
+
+- `$env:APP_ENV="development"`
+- `$env:LOG_LEVEL="DEBUG"`
+- `$env:FLASK_DEBUG="true"`
+- `python run.py`
+
+Con esta configuración se habilita:
+
+- Trazabilidad por request (`REQUEST START/END`)
+- Trazabilidad por función backend (`ENTER/EXIT/ERROR`) en rutas/helpers/auth/database
+- Trazabilidad frontend en consola del navegador (`window.appLog`) para:
+  - carga de página,
+  - clicks de navegación y botones,
+  - toggle/cierre de menú móvil,
+  - carga de iframes (ej. mapas),
+  - errores de carga de imágenes.
+
+### Modo producción local (logs acotados)
+
+PowerShell:
+
+- `$env:APP_ENV="production"`
+- `$env:LOG_LEVEL="WARNING"`
+- `$env:FLASK_DEBUG="false"`
+- `python run.py`
 
 ## Despliegue en Vercel
 

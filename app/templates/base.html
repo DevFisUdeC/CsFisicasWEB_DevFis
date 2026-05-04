@@ -31,8 +31,45 @@
     {% include 'components/footer.html' %}
 
     <!-- Scripts -->
+    <script>
+        window.APP_DEBUG = {{ 'true' if config.DEBUG else 'false' }};
+        window.sendClientTrace = function(eventName, payload) {
+            if (!window.APP_DEBUG) return;
+            try {
+                const body = {
+                    event: eventName || 'unknown',
+                    path: window.location.pathname || '',
+                    label: payload && payload.label ? String(payload.label).slice(0, 120) : '',
+                    href: payload && payload.href ? String(payload.href).slice(0, 250) : '',
+                    level: payload && payload.level ? String(payload.level).toLowerCase() : 'info',
+                    meta: payload && payload.meta ? JSON.stringify(payload.meta).slice(0, 500) : ''
+                };
+                const query = new URLSearchParams(body).toString();
+                fetch('/_trace/client-event?' + query, {
+                    method: 'GET',
+                    keepalive: true,
+                    credentials: 'same-origin',
+                }).catch(() => {});
+            } catch (_) {}
+        };
+        window.appLog = function(level, message, payload) {
+            if (!window.APP_DEBUG) return;
+            const ts = new Date().toISOString();
+            const prefix = '[APP ' + level + '] ' + ts + ' | ' + message;
+            if (payload !== undefined) {
+                console.log(prefix, payload);
+            } else {
+                console.log(prefix);
+            }
+        };
+        window.appLog('INFO', 'Debug frontend habilitado', { path: window.location.pathname });
+        window.sendClientTrace('page_view', { label: document.title || 'sin_titulo', level: 'info' });
+    </script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if config.DEBUG %}
+    <script src="{{ url_for('static', filename='js/debug-trace.js') }}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

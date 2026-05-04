@@ -5,6 +5,7 @@ Responsabilidad: Listado de académicos y perfiles individuales.
 
 import logging
 from flask import Blueprint, render_template, abort
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -34,3 +35,10 @@ def detail(slug):
     return render_template('pages/person_detail.html',
                            person=person,
                            page_title=person['name'])
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)

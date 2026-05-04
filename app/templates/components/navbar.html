@@ -1,6 +1,16 @@
 <!-- components/navbar.html — Barra de navegación responsive -->
 <!-- Responsabilidad: Navegación principal con menú móvil y dropdowns -->
 <header class="navbar" role="banner">
+    <div class="navbar__topbar">
+        <div class="container navbar__topbar-inner">
+            <span class="navbar__topbar-text">Facultad de Ciencias Físicas y Matemáticas · Universidad de Concepción</span>
+            <div class="navbar__topbar-links">
+                <a href="https://admision.udec.cl/ciencias-fisicas/" target="_blank" rel="noopener">Admisión</a>
+                <a href="https://www.cfm.cl/" target="_blank" rel="noopener">CFM</a>
+                <a href="{{ url_for('main.students') }}">Estudiantes</a>
+            </div>
+        </div>
+    </div>
     <div class="container navbar__inner">
         <!-- Logo Departamento -->
         <a href="/" class="navbar__logo" aria-label="Inicio — {{ site_name }}">

@@ -7,6 +7,7 @@ Datos: Supabase (PostgreSQL + Storage).
 from datetime import datetime
 from urllib.parse import urlparse
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
+import logging
 from app.helpers import (
     get_news, get_news_by_slug, create_news, update_news, delete_news_by_slug,
     get_team, get_member_by_slug, create_team_member, update_team_member, delete_team_member_by_slug,
@@ -14,15 +15,19 @@ from app.helpers import (
     slugify,
 )
 from app.auth import login_required
+from app.logging_utils import auto_trace_module_functions
 
 admin_bp = Blueprint('admin', __name__)
+logger = logging.getLogger(__name__)
 
 
 def _is_safe_next_url(next_url: str | None) -> bool:
     """Permite solo redirecciones internas relativas al sitio."""
     if not next_url:
+        logger.debug("safe_next_url | vacío o nulo")
         return False
     parsed = urlparse(next_url)
+    logger.debug("safe_next_url | next=%s | scheme=%s | netloc=%s", next_url, parsed.scheme, parsed.netloc)
     return parsed.scheme == '' and parsed.netloc == '' and next_url.startswith('/') and not next_url.startswith('//')
 
 
@@ -43,6 +48,7 @@ def inject_admin_counts():
 
 def _upload(file_field):
     """Atajo para subir un archivo a Supabase Storage desde request.files."""
+    logger.debug("upload helper | file_field=%s", file_field)
     f = request.files.get(file_field)
     bucket = current_app.config.get('SUPABASE_BUCKET', 'uploads')
     allowed = current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'webp'})
@@ -332,3 +338,10 @@ def delete_image():
     else:
         flash("No se pudo eliminar la imagen.", "error")
     return redirect(url_for('admin.image_gallery'))
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)

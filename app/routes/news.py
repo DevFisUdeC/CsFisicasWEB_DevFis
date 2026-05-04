@@ -5,6 +5,7 @@ Responsabilidad: Listado de noticias y vista de noticia individual.
 
 import logging
 from flask import Blueprint, render_template, abort
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -34,3 +35,10 @@ def detail(slug):
     return render_template('pages/news_detail.html',
                            article=article,
                            page_title=article['title'])
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)

@@ -11,6 +11,7 @@ import time
 import imghdr
 
 from werkzeug.utils import secure_filename
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -276,3 +277,10 @@ def slugify(text):
     text = text.lower().strip()
     text = re.sub(r'[^a-z0-9]+', '-', text)
     return text.strip('-')
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)

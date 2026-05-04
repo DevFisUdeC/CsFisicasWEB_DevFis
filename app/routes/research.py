@@ -5,6 +5,7 @@ Responsabilidad: Líneas de investigación, Publicaciones, Laboratorios.
 
 import logging
 from flask import Blueprint, render_template
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -36,3 +37,10 @@ def labs():
     logger.info("Página de laboratorios renderizada.")
     return render_template('pages/labs.html',
                            page_title='Laboratorios')
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)

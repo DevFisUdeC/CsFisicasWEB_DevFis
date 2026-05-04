@@ -5,6 +5,7 @@ Responsabilidad: Pregrado, Postgrado, Malla Curricular.
 
 import logging
 from flask import Blueprint, render_template
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -33,5 +34,12 @@ def graduate():
     return render_template('pages/graduate.html',
                            programs=grad_programs,
                            page_title='Postgrado')
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)
 
 

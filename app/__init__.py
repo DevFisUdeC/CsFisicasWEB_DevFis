@@ -4,8 +4,13 @@ Responsabilidad: Crear y configurar la instancia de la aplicación,
 registrar blueprints y context processors.
 """
 
-from flask import Flask
+import logging
+import time
+from logging.config import dictConfig
+
+from flask import Flask, request, g
 from config import config
+from app.logging_utils import trace_function
 
 
 def create_app(config_name='default'):
@@ -13,13 +18,108 @@ def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
+    _configure_logging(app)
     _init_extensions(app)
     _register_blueprints(app)
     _register_context_processors(app)
     _register_error_handlers(app)
     _register_security_headers(app)
+    _register_request_logging(app)
+    _instrument_view_functions(app)
 
     return app
+
+
+def _configure_logging(app):
+    """Configura logging por entorno con salida detallada a terminal."""
+    level = app.config.get('LOG_LEVEL', 'INFO').upper()
+    log_format = app.config.get('LOG_FORMAT')
+    date_format = app.config.get('LOG_DATE_FORMAT')
+
+    # Normaliza nivel inválido a INFO para evitar errores de configuración.
+    if level not in {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}:
+        level = 'INFO'
+
+    dictConfig(
+        {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'standard': {
+                    'format': log_format,
+                    'datefmt': date_format,
+                },
+            },
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'standard',
+                    'level': level,
+                },
+            },
+            'root': {
+                'level': level,
+                'handlers': ['console'],
+            },
+            'loggers': {
+                # Mantiene el nivel de requests HTTP más acotado en producción.
+                'werkzeug': {
+                    'level': 'INFO' if app.debug else 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
+            },
+        }
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.info("Logging inicializado.")
+    logger.info("Entorno activo: %s", 'development' if app.debug else 'production')
+    logger.info("Nivel de log activo: %s", level)
+
+
+def _register_request_logging(app):
+    """Traza ciclo HTTP completo en cada request."""
+    req_logger = logging.getLogger('app.request')
+
+    @app.before_request
+    def log_request_start():
+        g._request_started = time.perf_counter()
+        req_logger.info(
+            "REQUEST START | method=%s | path=%s | query=%s | remote=%s",
+            request.method,
+            request.path,
+            request.query_string.decode('utf-8', errors='ignore'),
+            request.remote_addr,
+        )
+
+    @app.after_request
+    def log_request_end(response):
+        started = getattr(g, '_request_started', None)
+        elapsed_ms = ((time.perf_counter() - started) * 1000) if started else -1
+        req_logger.info(
+            "REQUEST END | method=%s | path=%s | status=%s | elapsed_ms=%.2f",
+            request.method,
+            request.path,
+            response.status_code,
+            elapsed_ms,
+        )
+        return response
+
+
+def _instrument_view_functions(app):
+    """Envuelve todas las vistas Flask para traza ENTER/EXIT/ERROR por función."""
+    view_logger = logging.getLogger('app.views')
+    tracer = trace_function(view_logger)
+    wrapped = 0
+
+    for endpoint, func in list(app.view_functions.items()):
+        if endpoint == 'static':
+            continue
+        app.view_functions[endpoint] = tracer(func)
+        wrapped += 1
+
+    view_logger.info("View functions instrumentadas: %s", wrapped)
 
 def _init_extensions(app):
     """Inicializa extensiones como Supabase, CSRF y rate limiter."""
@@ -129,6 +229,16 @@ def _get_nav_items():
             'children': [
                 {'label': 'Magíster en Física', 'url': '/academics/graduate#magister'},
                 {'label': 'Doctorado en Cs. Físicas', 'url': '/academics/graduate#doctorado'},
+            ],
+        },
+        {
+            'label': 'Estudiantes',
+            'url': '/students',
+            'children': [
+                {'label': 'Reglamentos y protocolos', 'url': '/students#reglamentos'},
+                {'label': 'Calendario y horarios', 'url': '/students#calendario'},
+                {'label': 'Prácticas y memorias', 'url': '/students#practicas'},
+                {'label': 'Egresados', 'url': '/students#egresados'},
             ],
         },
         {

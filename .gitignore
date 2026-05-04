@@ -59,6 +59,7 @@ app/static/img/uploads/
 
 # Local-only development artifacts
 Docs/
+Registro/
 CsFisicasWEB.code-workspace
 
 .vercel

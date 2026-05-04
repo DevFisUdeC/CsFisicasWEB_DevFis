@@ -6,6 +6,7 @@ para operaciones CRUD desde el backend Flask.
 
 import logging
 from supabase import create_client, Client
+from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
@@ -41,3 +42,10 @@ def get_supabase(role: str = 'service') -> Client:
     if _supabase_service is None:
         raise RuntimeError("Supabase no inicializado. Llama init_supabase(app) primero.")
     return _supabase_service
+
+
+auto_trace_module_functions(
+    globals(),
+    logger=logger,
+    exclude={'auto_trace_module_functions'}
+)
