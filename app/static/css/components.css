@@ -55,10 +55,10 @@
 
 .navbar__inner {
     display: grid;
-    grid-template-columns: minmax(220px, max-content) 1fr max-content;
+    grid-template-columns: minmax(140px, 175px) minmax(0, 1fr) minmax(235px, max-content);
     align-items: center;
     height: var(--navbar-height);
-    gap: var(--space-md);
+    gap: var(--space-lg);
     overflow: visible;
 }
 
@@ -70,6 +70,10 @@
     text-decoration: none;
     flex-shrink: 0;
     min-width: 220px;
+}
+
+.navbar__logo--dept {
+    min-width: 0;
 }
 
 .navbar__logo:hover {
@@ -90,13 +94,25 @@
     align-items: center;
     gap: var(--space-sm);
     flex-shrink: 0;
+    justify-self: end;
+    padding-left: var(--space-sm);
+    background-color: var(--color-bg-alt);
+    position: relative;
+    z-index: 2;
 }
 
 .navbar__udec-logo {
     display: flex;
     align-items: center;
     position: relative;
-    z-index: 1;
+    z-index: 2;
+}
+
+.navbar__udec-logo--left {
+    justify-self: center;
+    padding-right: 0;
+    margin-left: clamp(6px, 0.8vw, 14px);
+    background-color: var(--color-bg-alt);
 }
 
 /* Pseudo-elemento para controlar exactamente el tamaño del resplandor */
@@ -117,16 +133,20 @@
     pointer-events: none;
 }
 
+.navbar__udec-logo--left::before {
+    display: none;
+}
+
 .navbar__udec-logo-img {
-    height: clamp(56px, 6.5vw, 76px);
+    height: clamp(60px, 6.7vw, 79px);
     width: auto;
-    max-width: 160px;
+    max-width: 180px;
     object-fit: contain;
-    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
 }
 
 .navbar__logo-title {
-    font-size: var(--font-size-sm);
+    font-size: 0.95rem;
     font-weight: var(--font-weight-bold);
     display: block;
     line-height: 1.2;
@@ -134,7 +154,7 @@
 }
 
 .navbar__logo-subtitle {
-    font-size: var(--font-size-xs);
+    font-size: 0.78rem;
     color: var(--color-text-secondary);
     display: block;
     white-space: nowrap;
@@ -144,8 +164,9 @@
     width: 100%;
     min-width: 0;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: visible;
+    padding-left: var(--space-xs);
 }
 
 .navbar__menu {
@@ -154,6 +175,8 @@
     gap: 0;
     flex-wrap: nowrap;
     min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
 }
 
 .navbar__item {
@@ -284,11 +307,48 @@
 }
 
 @media (max-width: 1320px) {
+    .navbar__inner {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
     .navbar__nav {
         display: none;
     }
+
+    .navbar__right {
+        justify-self: auto;
+        margin-left: auto;
+        gap: var(--space-xs);
+        flex-shrink: 0;
+    }
+
+    .navbar__logo--dept {
+        gap: var(--space-xs);
+        min-width: 0;
+    }
+
+    .navbar__logo--dept .navbar__logo-title {
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .navbar__logo--dept .navbar__logo-subtitle {
+        display: none;
+    }
+
     .navbar__toggle {
         display: flex;
+        order: -1;
+        margin-right: var(--space-xs);
+        padding: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    .navbar__udec-logo-img {
+        height: clamp(54px, 6.6vw, 74px);
+        max-width: 170px;
     }
 }
 
@@ -314,17 +374,37 @@
 
 @media (max-width: 1440px) {
     .navbar__inner {
-        grid-template-columns: minmax(200px, max-content) 1fr max-content;
+        grid-template-columns: minmax(135px, 170px) minmax(0, 1fr) minmax(270px, max-content);
         gap: var(--space-sm);
-    }
-
-    .navbar__logo {
-        min-width: 200px;
     }
 
     .navbar__link {
         padding: 0.3rem 0.45rem;
         font-size: 0.82rem;
+    }
+}
+
+@media (max-width: 1800px) and (min-width: 1321px) {
+    .navbar__inner {
+        grid-template-columns: minmax(125px, 160px) minmax(0, 1fr) minmax(190px, max-content);
+        gap: var(--space-sm);
+    }
+
+    .navbar__logo--dept .navbar__logo-subtitle {
+        display: none;
+    }
+
+    .navbar__logo--dept .navbar__logo-title {
+        font-size: 0.88rem;
+    }
+
+    .navbar__logo--dept .navbar__logo-img {
+        max-width: 96px;
+    }
+
+    .navbar__link {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.8rem;
     }
 }
 

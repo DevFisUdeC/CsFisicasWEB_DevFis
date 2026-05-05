@@ -12,15 +12,11 @@
         </div>
     </div>
     <div class="container navbar__inner">
-        <!-- Logo Departamento -->
-        <a href="/" class="navbar__logo" aria-label="Inicio — {{ site_name }}">
-            <img src="{{ url_for('static', filename='img/logo-dpto-fisica.png') }}"
-                 alt="Logo {{ site_name }}"
-                 class="navbar__logo-img">
-            <div class="navbar__logo-text">
-                <span class="navbar__logo-title">{{ site_name }}</span>
-                <span class="navbar__logo-subtitle">{{ site_subtitle }}</span>
-            </div>
+        <!-- Logo UdeC (izquierda) -->
+        <a href="https://www.udec.cl" target="_blank" rel="noopener" class="navbar__udec-logo navbar__udec-logo--left" aria-label="Universidad de Concepción">
+            <img src="{{ url_for('static', filename='img/logo-udec.png') }}"
+                 alt="Logo Universidad de Concepción"
+                 class="navbar__udec-logo-img">
         </a>
 
         <!-- Nav links (desktop) -->
@@ -41,12 +37,16 @@
             </ul>
         </nav>
 
-        <!-- Logo UdeC + Hamburger -->
+        <!-- Logo Departamento (derecha) + Hamburger -->
         <div class="navbar__right">
-            <a href="https://www.udec.cl" target="_blank" rel="noopener" class="navbar__udec-logo" aria-label="Universidad de Concepción">
-                <img src="{{ url_for('static', filename='img/logo-udec.png') }}"
-                     alt="Logo Universidad de Concepción"
-                     class="navbar__udec-logo-img">
+            <a href="/" class="navbar__logo navbar__logo--dept" aria-label="Inicio — {{ site_name }}">
+                <img src="{{ url_for('static', filename='img/logo-dpto-fisica.png') }}"
+                     alt="Logo {{ site_name }}"
+                     class="navbar__logo-img">
+                <div class="navbar__logo-text">
+                    <span class="navbar__logo-title">{{ site_name }}</span>
+                    <span class="navbar__logo-subtitle">{{ site_subtitle }}</span>
+                </div>
             </a>
             <!-- Hamburger (mobile) -->
             <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false" id="menu-toggle">
