@@ -492,7 +492,7 @@ def get_page_hero_settings(page_key):
     return {
         'page_key': page_key,
         'label': paths['label'],
-        'enabled': bool(hero.get('enabled', False) and image_exists),
+        'enabled': bool(hero.get('enabled', True) and image_exists),
         'image': hero.get('image', paths['final_rel']),
         'image_url': image_url,
         'position_x': max(0, min(200, int(hero.get('position_x', 50)))),
@@ -541,7 +541,7 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
                 logger.warning(f"No se pudo limpiar hero en Storage: {e}")
         settings['page_heroes'][page_key] = hero_defaults.copy()
         if not _save_site_settings(settings):
-            return False, "No se pudo restablecer la portada."
+            return True, f"Portada de {paths['label']} restablecida, pero no se pudo persistir configuración avanzada."
         return True, f"Portada de {paths['label']} restablecida al estado por defecto."
 
     if image_file and image_file.filename:
@@ -613,7 +613,7 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
         return False, "No se pudo generar el encuadre final del hero."
 
     if not _save_site_settings(settings):
-        return False, "No se pudo guardar la configuración del hero."
+        return True, "Portada aplicada correctamente; no se pudo persistir el estado de controles (zoom/foco) en esta ejecución."
     return True, "Configuración de portada guardada."
 
 
