@@ -229,6 +229,44 @@ def _upload_storage_bytes(path, content, content_type='application/octet-stream'
         return False
 
 
+def _convert_image_bytes(content, target_format='JPEG', quality=88):
+    """Convierte bytes de imagen a otro formato."""
+    with Image.open(BytesIO(content)) as img:
+        if img.mode not in ('RGB', 'RGBA'):
+            img = img.convert('RGB')
+        elif img.mode == 'RGBA':
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1])
+            img = background
+        out = BytesIO()
+        save_kwargs = {}
+        if target_format.upper() in {'JPEG', 'WEBP'}:
+            save_kwargs['quality'] = quality
+        img.save(out, format=target_format.upper(), **save_kwargs)
+        return out.getvalue()
+
+
+def _upload_storage_image_bytes(path, image_bytes):
+    """Sube imagen a Storage con fallback de mimes/formatos."""
+    candidates = []
+    candidates.append((image_bytes, 'image/webp'))
+    try:
+        candidates.append((_convert_image_bytes(image_bytes, target_format='JPEG', quality=88), 'image/jpeg'))
+    except Exception as e:
+        logger.warning(f"No se pudo generar fallback JPEG para Storage ({path}): {e}")
+    try:
+        candidates.append((_convert_image_bytes(image_bytes, target_format='PNG', quality=92), 'image/png'))
+    except Exception as e:
+        logger.warning(f"No se pudo generar fallback PNG para Storage ({path}): {e}")
+
+    for payload, mime in candidates:
+        if _upload_storage_bytes(path, payload, content_type=mime):
+            if mime != 'image/webp':
+                logger.warning("Imagen hero guardada con mime fallback: %s", mime)
+            return True
+    return False
+
+
 def _download_storage_bytes(path):
     """Descarga bytes desde Storage."""
     if not _hero_storage_enabled():
@@ -458,7 +496,7 @@ def _build_page_hero_from_original(page_key, hero_settings):
     final_bytes = _build_page_hero_image_bytes(original_content, hero_settings)
 
     if _hero_storage_enabled():
-        if not _upload_storage_bytes(paths['storage_final'], final_bytes, content_type='image/webp'):
+        if not _upload_storage_image_bytes(paths['storage_final'], final_bytes):
             raise RuntimeError("No se pudo guardar imagen final en Storage.")
         _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
 
@@ -559,7 +597,7 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
         try:
             optimized = _normalize_home_hero_image(content)
             if _hero_storage_enabled():
-                if not _upload_storage_bytes(paths['storage_original'], optimized, content_type='image/webp'):
+                if not _upload_storage_image_bytes(paths['storage_original'], optimized):
                     return False, "No se pudo guardar la imagen original en Storage."
                 _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
             try:
