@@ -70,6 +70,12 @@ _PAGE_HERO_CONTEXTS = {
         'original_image_rel': 'img/hero/contact-hero-original.webp',
     },
 }
+_HERO_SETTINGS_STORAGE_OBJECT = 'hero/site-settings.json'
+_HERO_STORAGE_PREFIX = 'hero'
+_HERO_STORAGE_FILES_CACHE = {
+    'fetched_at': 0.0,
+    'files': set(),
+}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -128,40 +134,167 @@ def _default_site_settings():
 def _load_site_settings():
     """Carga configuración de sitio desde archivo JSON local."""
     settings = _default_site_settings()
-    if not _SITE_SETTINGS_FILE.exists():
-        return settings
+    disk_settings = _load_site_settings_from_storage()
+    if disk_settings is None and _SITE_SETTINGS_FILE.exists():
+        try:
+            with _SITE_SETTINGS_FILE.open('r', encoding='utf-8') as f:
+                disk_settings = json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"No se pudo cargar site_settings.json local: {e}")
 
-    try:
-        with _SITE_SETTINGS_FILE.open('r', encoding='utf-8') as f:
-            disk_settings = json.load(f)
-            if isinstance(disk_settings, dict):
-                # Compatibilidad con estructura antigua (home_hero al nivel raíz).
-                if 'home_hero' in disk_settings and isinstance(disk_settings.get('home_hero'), dict):
-                    disk_settings.setdefault('page_heroes', {})
-                    disk_settings['page_heroes'].setdefault('home', {})
-                    disk_settings['page_heroes']['home'].update(disk_settings.get('home_hero', {}))
-                    disk_settings.pop('home_hero', None)
+    if isinstance(disk_settings, dict):
+        # Compatibilidad con estructura antigua (home_hero al nivel raíz).
+        if 'home_hero' in disk_settings and isinstance(disk_settings.get('home_hero'), dict):
+            disk_settings.setdefault('page_heroes', {})
+            disk_settings['page_heroes'].setdefault('home', {})
+            disk_settings['page_heroes']['home'].update(disk_settings.get('home_hero', {}))
+            disk_settings.pop('home_hero', None)
 
-                for key, value in disk_settings.items():
-                    if key == 'page_heroes' and isinstance(value, dict):
-                        settings['page_heroes'].update(value)
-                    else:
-                        settings[key] = value
-    except (json.JSONDecodeError, OSError) as e:
-        logger.error(f"No se pudo cargar site_settings.json: {e}")
+        for key, value in disk_settings.items():
+            if key == 'page_heroes' and isinstance(value, dict):
+                settings['page_heroes'].update(value)
+            else:
+                settings[key] = value
     return settings
 
 
 def _save_site_settings(settings):
     """Guarda configuración de sitio en archivo JSON local."""
+    stored_remote = _save_site_settings_to_storage(settings)
     try:
         _SITE_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
         with _SITE_SETTINGS_FILE.open('w', encoding='utf-8') as f:
             json.dump(settings, f, ensure_ascii=False, indent=2)
         return True
     except OSError as e:
-        logger.error(f"No se pudo guardar site_settings.json: {e}")
+        logger.warning(f"No se pudo guardar site_settings.json local: {e}")
+        return stored_remote
+
+
+def _hero_storage_enabled():
+    """Indica si portadas deben persistirse en Supabase Storage."""
+    try:
+        from flask import current_app
+        return bool(current_app.config.get('HERO_USE_SUPABASE_STORAGE', True))
+    except RuntimeError:
+        return True
+
+
+def _hero_storage_bucket():
+    """Bucket usado para configuraciones/imagenes hero."""
+    from flask import current_app
+    return current_app.config.get('SUPABASE_BUCKET', 'uploads')
+
+
+def _hero_storage_prefix():
+    """Prefijo de objetos hero en bucket."""
+    from flask import current_app
+    prefix = str(current_app.config.get('HERO_STORAGE_PREFIX', _HERO_STORAGE_PREFIX)).strip('/')
+    return prefix or _HERO_STORAGE_PREFIX
+
+
+def _hero_settings_storage_object():
+    """Path del JSON de settings hero en Storage."""
+    return f"{_hero_storage_prefix()}/site-settings.json"
+
+
+def _upload_storage_bytes(path, content, content_type='application/octet-stream'):
+    """Sube bytes a Storage con upsert."""
+    if not _hero_storage_enabled():
         return False
+    from app.database import get_supabase
+    try:
+        get_supabase(role='service').storage.from_(_hero_storage_bucket()).upload(
+            path=path,
+            file=content,
+            file_options={"content-type": content_type, "upsert": "true"},
+        )
+        return True
+    except Exception as e:
+        logger.error(f"No se pudo subir objeto a Storage ({path}): {e}")
+        return False
+
+
+def _download_storage_bytes(path):
+    """Descarga bytes desde Storage."""
+    if not _hero_storage_enabled():
+        return None
+    from app.database import get_supabase
+    try:
+        data = get_supabase(role='service').storage.from_(_hero_storage_bucket()).download(path)
+        if isinstance(data, bytes):
+            return data
+        if hasattr(data, 'read'):
+            return data.read()
+    except Exception as e:
+        logger.warning(f"No se pudo descargar objeto de Storage ({path}): {e}")
+    return None
+
+
+def _list_hero_storage_files():
+    """Lista archivos hero en Storage con caché corta."""
+    if not _hero_storage_enabled():
+        return set()
+    now = time.time()
+    if now - _HERO_STORAGE_FILES_CACHE['fetched_at'] < 20:
+        return _HERO_STORAGE_FILES_CACHE['files']
+
+    from app.database import get_supabase
+    files = set()
+    prefix = _hero_storage_prefix()
+    try:
+        listed = get_supabase(role='service').storage.from_(_hero_storage_bucket()).list(prefix)
+        for item in listed or []:
+            name = item.get('name')
+            if name:
+                files.add(f"{prefix}/{name}")
+    except Exception as e:
+        logger.warning(f"No se pudo listar objetos hero en Storage: {e}")
+
+    _HERO_STORAGE_FILES_CACHE['fetched_at'] = now
+    _HERO_STORAGE_FILES_CACHE['files'] = files
+    return files
+
+
+def _storage_object_exists(path):
+    """Verifica existencia de un objeto hero en Storage."""
+    return path in _list_hero_storage_files()
+
+
+def _load_site_settings_from_storage():
+    """Carga settings hero desde Storage cuando están disponibles."""
+    if not _hero_storage_enabled():
+        return None
+    raw = _download_storage_bytes(_hero_settings_storage_object())
+    if not raw:
+        return None
+    try:
+        payload = raw.decode('utf-8')
+        data = json.loads(payload)
+        return data if isinstance(data, dict) else None
+    except (UnicodeDecodeError, json.JSONDecodeError) as e:
+        logger.error(f"No se pudo decodificar settings hero desde Storage: {e}")
+        return None
+
+
+def _save_site_settings_to_storage(settings):
+    """Guarda settings hero como JSON en Storage."""
+    if not _hero_storage_enabled():
+        return False
+    try:
+        data = json.dumps(settings, ensure_ascii=False, indent=2).encode('utf-8')
+    except (TypeError, ValueError) as e:
+        logger.error(f"No se pudo serializar settings hero: {e}")
+        return False
+    ok = _upload_storage_bytes(
+        _hero_settings_storage_object(),
+        data,
+        content_type='application/json',
+    )
+    if ok:
+        # Fuerza recarga de cache de lista para reflejar nuevos objetos.
+        _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
+    return ok
 
 
 def _normalize_home_hero_image(content, max_width=3200, quality=92):
@@ -197,6 +330,8 @@ def _get_page_hero_paths(page_key):
         'original_rel': context['original_image_rel'],
         'final_abs': _STATIC_DIR / context['final_image_rel'],
         'original_abs': _STATIC_DIR / context['original_image_rel'],
+        'storage_final': f"{_hero_storage_prefix()}/{page_key}-hero.webp",
+        'storage_original': f"{_hero_storage_prefix()}/{page_key}-hero-original.webp",
     }
 
 
@@ -205,20 +340,9 @@ def get_page_hero_contexts():
     return [{'key': key, 'label': cfg['label']} for key, cfg in _PAGE_HERO_CONTEXTS.items()]
 
 
-def _build_page_hero_from_original(page_key, hero_settings, output_max_width=2200, quality=86, target_ratio=(1600 / 420)):
-    """Genera imagen final del hero aplicando recortes y zoom."""
-    paths = _get_page_hero_paths(page_key)
-    original_path = paths['original_abs']
-    final_path = paths['final_abs']
-
-    if not original_path.exists() and final_path.exists():
-        original_path.parent.mkdir(parents=True, exist_ok=True)
-        original_path.write_bytes(final_path.read_bytes())
-
-    if not original_path.exists():
-        raise FileNotFoundError("No existe imagen original de portada.")
-
-    with Image.open(original_path) as img:
+def _build_page_hero_image_bytes(original_content, hero_settings, output_max_width=2200, quality=86, target_ratio=(1600 / 420)):
+    """Genera bytes WEBP finales del hero aplicando recortes y zoom."""
+    with Image.open(BytesIO(original_content)) as img:
         if img.mode != 'RGB':
             img = img.convert('RGB')
 
@@ -280,26 +404,68 @@ def _build_page_hero_from_original(page_key, hero_settings, output_max_width=220
         composed.paste(fg, (fg_x, fg_y))
         if bool(hero_settings.get('blur_enabled', False)):
             composed = composed.filter(ImageFilter.GaussianBlur(radius=8))
-        img = composed
 
+        out = BytesIO()
+        composed.save(out, format='WEBP', quality=quality, method=6)
+        return out.getvalue()
+
+
+def _build_page_hero_from_original(page_key, hero_settings):
+    """Genera imagen final hero en local y Storage (cuando esté habilitado)."""
+    paths = _get_page_hero_paths(page_key)
+    original_path = paths['original_abs']
+    final_path = paths['final_abs']
+
+    original_content = _download_storage_bytes(paths['storage_original'])
+    if original_content is None and original_path.exists():
+        original_content = original_path.read_bytes()
+
+    if not original_content and final_path.exists():
+        original_content = final_path.read_bytes()
+
+    if not original_content:
+        raise FileNotFoundError("No existe imagen original de portada.")
+
+    final_bytes = _build_page_hero_image_bytes(original_content, hero_settings)
+
+    if _hero_storage_enabled():
+        if not _upload_storage_bytes(paths['storage_final'], final_bytes, content_type='image/webp'):
+            raise RuntimeError("No se pudo guardar imagen final en Storage.")
+        _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
+
+    try:
         final_path.parent.mkdir(parents=True, exist_ok=True)
-        img.save(final_path, format='WEBP', quality=quality, method=6)
+        final_path.write_bytes(final_bytes)
+    except OSError as e:
+        if not _hero_storage_enabled():
+            raise
+        logger.warning(f"No se pudo guardar respaldo local de hero final: {e}")
 
 
 def get_page_hero_settings(page_key):
     """Retorna configuración efectiva del hero para una página."""
     if page_key not in _PAGE_HERO_CONTEXTS:
         return None
+    from flask import url_for
     paths = _get_page_hero_paths(page_key)
     settings = _load_site_settings()
     hero = settings.get('page_heroes', {}).get(page_key, {})
-    image_exists = paths['final_abs'].exists()
+    local_exists = paths['final_abs'].exists()
+    storage_exists = _storage_object_exists(paths['storage_final'])
+    image_exists = storage_exists or local_exists
+    if storage_exists:
+        image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
+    elif local_exists:
+        image_url = url_for('static', filename=paths['final_rel'])
+    else:
+        image_url = ''
     zoom_raw = max(0.01, min(10.0, float(hero.get('zoom', 1.0))))
     return {
         'page_key': page_key,
         'label': paths['label'],
         'enabled': bool(hero.get('enabled', False) and image_exists),
         'image': hero.get('image', paths['final_rel']),
+        'image_url': image_url,
         'position_x': max(0, min(200, int(hero.get('position_x', 50)))),
         'position_y': max(0, min(200, int(hero.get('position_y', 45)))),
         'zoom': zoom_raw,
@@ -310,7 +476,7 @@ def get_page_hero_settings(page_key):
         'overlay_opacity': float(hero.get('overlay_opacity', 0.45)),
         'blur_enabled': bool(hero.get('blur_enabled', False)),
         'image_exists': image_exists,
-        'original_image_exists': paths['original_abs'].exists(),
+        'original_image_exists': paths['original_abs'].exists() or _storage_object_exists(paths['storage_original']),
     }
 
 
@@ -327,10 +493,23 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
     settings['page_heroes'][page_key] = hero
 
     if delete_image:
-        if paths['final_abs'].exists():
-            paths['final_abs'].unlink()
-        if paths['original_abs'].exists():
-            paths['original_abs'].unlink()
+        from app.database import get_supabase
+        try:
+            if paths['final_abs'].exists():
+                paths['final_abs'].unlink()
+            if paths['original_abs'].exists():
+                paths['original_abs'].unlink()
+        except OSError as e:
+            logger.warning(f"No se pudieron eliminar respaldos locales del hero: {e}")
+        if _hero_storage_enabled():
+            try:
+                get_supabase(role='service').storage.from_(_hero_storage_bucket()).remove([
+                    paths['storage_final'],
+                    paths['storage_original'],
+                ])
+                _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
+            except Exception as e:
+                logger.warning(f"No se pudo limpiar hero en Storage: {e}")
         settings['page_heroes'][page_key] = hero_defaults.copy()
         if not _save_site_settings(settings):
             return False, "No se pudo restablecer la portada."
@@ -350,9 +529,18 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
             return False, "Formato de imagen no válido para hero."
         try:
             optimized = _normalize_home_hero_image(content)
-            paths['original_abs'].parent.mkdir(parents=True, exist_ok=True)
-            with paths['original_abs'].open('wb') as f:
-                f.write(optimized)
+            if _hero_storage_enabled():
+                if not _upload_storage_bytes(paths['storage_original'], optimized, content_type='image/webp'):
+                    return False, "No se pudo guardar la imagen original en Storage."
+                _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
+            try:
+                paths['original_abs'].parent.mkdir(parents=True, exist_ok=True)
+                with paths['original_abs'].open('wb') as f:
+                    f.write(optimized)
+            except OSError as e:
+                if not _hero_storage_enabled():
+                    raise
+                logger.warning(f"No se pudo guardar respaldo local de hero original: {e}")
             hero['image'] = paths['final_rel']
         except Exception as e:
             logger.error(f"No se pudo guardar imagen hero: {e}")

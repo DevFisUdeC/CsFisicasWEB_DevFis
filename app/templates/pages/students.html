@@ -8,7 +8,7 @@
 {% set hero_cta_url = '#reglamentos' %}
 {% set hero_cta2_text = 'Calendario académico' %}
 {% set hero_cta2_url = '#calendario' %}
-{% set hero_background_image = url_for('static', filename=page_hero.image) if page_hero and page_hero.enabled else '' %}
+{% set hero_background_image = page_hero.image_url if page_hero and page_hero.enabled else '' %}
 {% set hero_background_position_x = 50 %}
 {% set hero_background_position_y = 50 %}
 {% set hero_overlay_opacity = page_hero.overlay_opacity if page_hero else 0.45 %}

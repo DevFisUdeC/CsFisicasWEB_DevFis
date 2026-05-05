@@ -4,13 +4,14 @@
       "enabled": true,
       "image": "img/hero/home-hero.webp",
       "position_x": 46,
-      "position_y": 76,
+      "position_y": 79,
       "zoom": 1.31,
       "crop_left": 0,
       "crop_right": 0,
       "crop_top": 2,
       "crop_bottom": 0,
-      "overlay_opacity": 0.4
+      "overlay_opacity": 0.4,
+      "blur_enabled": false
     },
     "about": {
       "enabled": true,

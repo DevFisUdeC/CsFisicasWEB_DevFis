@@ -25,6 +25,8 @@ class Config:
     SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
     SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
     SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'uploads')
+    HERO_USE_SUPABASE_STORAGE = os.environ.get('HERO_USE_SUPABASE_STORAGE', 'true').lower() in {'1', 'true', 'yes', 'on'}
+    HERO_STORAGE_PREFIX = os.environ.get('HERO_STORAGE_PREFIX', 'hero')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', str(200 * 1024 * 1024)))
     MAX_UPLOAD_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_FILE_SIZE', str(20 * 1024 * 1024)))

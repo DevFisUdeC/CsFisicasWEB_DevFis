@@ -323,7 +323,7 @@ def about_hero_settings():
 @admin_bp.route('/appearance/page-hero/<page_key>', methods=['GET', 'POST'])
 @login_required
 def page_hero_settings(page_key):
-    """Configuración local de portada por página (sin DB)."""
+    """Configuración de portada por página con Storage + fallback local."""
     hero = get_page_hero_settings(page_key)
     if not hero:
         flash("La página solicitada no tiene configuración de portada.", "error")
@@ -342,8 +342,10 @@ def page_hero_settings(page_key):
         return redirect(url_for('admin.page_hero_settings', page_key=page_key))
 
     preview_url = ''
-    if hero.get('image_exists') and hero.get('image'):
-        preview_url = f"{url_for('static', filename=hero['image'])}?v={int(time.time())}"
+    if hero.get('image_exists'):
+        image_url = hero.get('image_url', '')
+        if image_url:
+            preview_url = f"{image_url}?v={int(time.time())}"
 
     return render_template(
         'admin/page_hero.html',
