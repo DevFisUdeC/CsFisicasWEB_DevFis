@@ -304,14 +304,25 @@ def _save_site_settings_to_storage(settings):
     except (TypeError, ValueError) as e:
         logger.error(f"No se pudo serializar settings hero: {e}")
         return False
-    ok = _upload_storage_bytes(
-        _hero_settings_storage_object(),
-        data,
-        content_type='application/json',
-    )
+    settings_path = _hero_settings_storage_object()
+    # Algunos buckets aceptan solo mimes de imagen; intentamos una cadena de fallback.
+    mime_candidates = ['application/json', 'text/plain', 'application/octet-stream', 'image/webp']
+    ok = False
+    for mime in mime_candidates:
+        ok = _upload_storage_bytes(
+            settings_path,
+            data,
+            content_type=mime,
+        )
+        if ok:
+            if mime != 'application/json':
+                logger.warning("site-settings hero guardado con mime fallback: %s", mime)
+            break
     if ok:
         # Fuerza recarga de cache de lista para reflejar nuevos objetos.
         _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
+    else:
+        logger.error("No se pudo guardar settings hero en Storage con ningún mime permitido.")
     return ok
 
 
