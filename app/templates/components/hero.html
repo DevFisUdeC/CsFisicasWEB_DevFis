@@ -1,7 +1,16 @@
 {# components/hero.html — Sección hero reutilizable #}
 {# Responsabilidad: Banner principal con título, subtítulo y CTA #}
 {# Uso: set variables antes de incluir este componente #}
-<section class="hero" aria-labelledby="hero-title">
+<section
+    class="hero{% if hero_background_image %} hero--with-image{% endif %}"
+    aria-labelledby="hero-title"
+    style="
+      --hero-bg-image: url('{{ hero_background_image | default('') }}');
+      --hero-bg-pos-x: {{ hero_background_position_x | default(50) }}%;
+      --hero-bg-pos-y: {{ hero_background_position_y | default(45) }}%;
+      --hero-overlay-opacity: {{ hero_overlay_opacity | default(0.45) }};
+    "
+>
     <div class="container hero__inner">
         <h1 id="hero-title" class="hero__title">{{ hero_title | default('Departamento de Física') }}</h1>
         <p class="hero__subtitle">{{ hero_subtitle | default('') }}</p>

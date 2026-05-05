@@ -26,8 +26,9 @@ class Config:
     SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
     SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'uploads')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
-    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', str(10 * 1024 * 1024)))
-    MAX_UPLOAD_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_FILE_SIZE', str(5 * 1024 * 1024)))
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', str(200 * 1024 * 1024)))
+    MAX_UPLOAD_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_FILE_SIZE', str(20 * 1024 * 1024)))
+    MAX_HERO_UPLOAD_FILE_SIZE = int(os.environ.get('MAX_HERO_UPLOAD_FILE_SIZE', str(120 * 1024 * 1024)))
     MAX_UPLOAD_FILES = int(os.environ.get('MAX_UPLOAD_FILES', '10'))
     RATELIMIT_STORAGE_URI = os.environ.get('RATELIMIT_STORAGE_URI', 'memory://')
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO').upper()

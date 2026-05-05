@@ -1,0 +1,116 @@
+{
+  "page_heroes": {
+    "home": {
+      "enabled": true,
+      "image": "img/hero/home-hero.webp",
+      "position_x": 46,
+      "position_y": 76,
+      "zoom": 1.31,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 2,
+      "crop_bottom": 0,
+      "overlay_opacity": 0.4
+    },
+    "about": {
+      "enabled": true,
+      "image": "img/hero/about-hero.webp",
+      "position_x": 45,
+      "position_y": 45,
+      "zoom": 0.09,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 22,
+      "crop_bottom": 11,
+      "overlay_opacity": 0.15
+    },
+    "people": {
+      "enabled": true,
+      "image": "img/hero/people-hero.webp",
+      "position_x": 24,
+      "position_y": 0,
+      "zoom": 0.25,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 8,
+      "crop_bottom": 30,
+      "overlay_opacity": 0.35
+    },
+    "undergraduate": {
+      "enabled": true,
+      "image": "img/hero/undergraduate-hero.webp",
+      "position_x": 48,
+      "position_y": 88,
+      "zoom": 0.97,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 0,
+      "crop_bottom": 0,
+      "overlay_opacity": 0.55
+    },
+    "graduate": {
+      "enabled": true,
+      "image": "img/hero/graduate-hero.webp",
+      "position_x": 0,
+      "position_y": 58,
+      "zoom": 0.97,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 30,
+      "crop_bottom": 7,
+      "overlay_opacity": 0.65
+    },
+    "students": {
+      "enabled": true,
+      "image": "img/hero/students-hero.webp",
+      "position_x": 50,
+      "position_y": 45,
+      "zoom": 0.01,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 0,
+      "crop_bottom": 0,
+      "overlay_opacity": 0.45,
+      "blur_enabled": true
+    },
+    "research": {
+      "enabled": true,
+      "image": "img/hero/research-hero.webp",
+      "position_x": 0,
+      "position_y": 0,
+      "zoom": 0.93,
+      "crop_left": 0,
+      "crop_right": 17,
+      "crop_top": 8,
+      "crop_bottom": 30,
+      "overlay_opacity": 0.45,
+      "blur_enabled": false
+    },
+    "news": {
+      "enabled": true,
+      "image": "img/hero/news-hero.webp",
+      "position_x": 25,
+      "position_y": 0,
+      "zoom": 1.35,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 0,
+      "crop_bottom": 6,
+      "overlay_opacity": 0.45,
+      "blur_enabled": false
+    },
+    "contact": {
+      "enabled": true,
+      "image": "img/hero/contact-hero.webp",
+      "position_x": 0,
+      "position_y": 79,
+      "zoom": 0.93,
+      "crop_left": 0,
+      "crop_right": 0,
+      "crop_top": 0,
+      "crop_bottom": 0,
+      "overlay_opacity": 0.5,
+      "blur_enabled": true
+    }
+  }
+}

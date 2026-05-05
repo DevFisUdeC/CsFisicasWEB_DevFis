@@ -10,15 +10,66 @@ import os
 import time
 import imghdr
 from io import BytesIO
+from pathlib import Path
 
 from werkzeug.utils import secure_filename
 from PIL import Image
+from PIL import ImageFilter
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
 _DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 _cache = {}
+_SITE_SETTINGS_FILE = Path(_DATA_DIR) / 'site_settings.json'
+_STATIC_DIR = Path(__file__).resolve().parent / 'static'
+_PAGE_HERO_CONTEXTS = {
+    'home': {
+        'label': 'Home',
+        'final_image_rel': 'img/hero/home-hero.webp',
+        'original_image_rel': 'img/hero/home-hero-original.webp',
+    },
+    'about': {
+        'label': 'Departamento',
+        'final_image_rel': 'img/hero/about-hero.webp',
+        'original_image_rel': 'img/hero/about-hero-original.webp',
+    },
+    'people': {
+        'label': 'Académicos',
+        'final_image_rel': 'img/hero/people-hero.webp',
+        'original_image_rel': 'img/hero/people-hero-original.webp',
+    },
+    'undergraduate': {
+        'label': 'Pregrado',
+        'final_image_rel': 'img/hero/undergraduate-hero.webp',
+        'original_image_rel': 'img/hero/undergraduate-hero-original.webp',
+    },
+    'graduate': {
+        'label': 'Postgrado',
+        'final_image_rel': 'img/hero/graduate-hero.webp',
+        'original_image_rel': 'img/hero/graduate-hero-original.webp',
+    },
+    'students': {
+        'label': 'Estudiantes',
+        'final_image_rel': 'img/hero/students-hero.webp',
+        'original_image_rel': 'img/hero/students-hero-original.webp',
+    },
+    'research': {
+        'label': 'Investigación',
+        'final_image_rel': 'img/hero/research-hero.webp',
+        'original_image_rel': 'img/hero/research-hero-original.webp',
+    },
+    'news': {
+        'label': 'Noticias',
+        'final_image_rel': 'img/hero/news-hero.webp',
+        'original_image_rel': 'img/hero/news-hero-original.webp',
+    },
+    'contact': {
+        'label': 'Contacto',
+        'final_image_rel': 'img/hero/contact-hero.webp',
+        'original_image_rel': 'img/hero/contact-hero-original.webp',
+    },
+}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -52,6 +103,311 @@ def get_research_lines():
 def get_programs():
     """Retorna los programas académicos (dato estático, JSON)."""
     return load_json('programs.json')
+
+
+def _default_site_settings():
+    """Configuración por defecto editable por panel admin."""
+    page_heroes = {}
+    for key, cfg in _PAGE_HERO_CONTEXTS.items():
+        page_heroes[key] = {
+            'enabled': False,
+            'image': cfg['final_image_rel'],
+            'position_x': 50,
+            'position_y': 45,
+            'zoom': 1.0,
+            'crop_left': 0,
+            'crop_right': 0,
+            'crop_top': 0,
+            'crop_bottom': 0,
+            'overlay_opacity': 0.45,
+            'blur_enabled': False,
+        }
+    return {'page_heroes': page_heroes}
+
+
+def _load_site_settings():
+    """Carga configuración de sitio desde archivo JSON local."""
+    settings = _default_site_settings()
+    if not _SITE_SETTINGS_FILE.exists():
+        return settings
+
+    try:
+        with _SITE_SETTINGS_FILE.open('r', encoding='utf-8') as f:
+            disk_settings = json.load(f)
+            if isinstance(disk_settings, dict):
+                # Compatibilidad con estructura antigua (home_hero al nivel raíz).
+                if 'home_hero' in disk_settings and isinstance(disk_settings.get('home_hero'), dict):
+                    disk_settings.setdefault('page_heroes', {})
+                    disk_settings['page_heroes'].setdefault('home', {})
+                    disk_settings['page_heroes']['home'].update(disk_settings.get('home_hero', {}))
+                    disk_settings.pop('home_hero', None)
+
+                for key, value in disk_settings.items():
+                    if key == 'page_heroes' and isinstance(value, dict):
+                        settings['page_heroes'].update(value)
+                    else:
+                        settings[key] = value
+    except (json.JSONDecodeError, OSError) as e:
+        logger.error(f"No se pudo cargar site_settings.json: {e}")
+    return settings
+
+
+def _save_site_settings(settings):
+    """Guarda configuración de sitio en archivo JSON local."""
+    try:
+        _SITE_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with _SITE_SETTINGS_FILE.open('w', encoding='utf-8') as f:
+            json.dump(settings, f, ensure_ascii=False, indent=2)
+        return True
+    except OSError as e:
+        logger.error(f"No se pudo guardar site_settings.json: {e}")
+        return False
+
+
+def _normalize_home_hero_image(content, max_width=3200, quality=92):
+    """Normaliza imagen original del hero y la exporta como WEBP."""
+    with Image.open(BytesIO(content)) as img:
+        if img.mode not in ('RGB', 'RGBA'):
+            img = img.convert('RGB')
+        elif img.mode == 'RGBA':
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1])
+            img = background
+
+        width, height = img.size
+        if width > max_width:
+            ratio = max_width / float(width)
+            new_size = (max_width, int(height * ratio))
+            resampling = Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS
+            img = img.resize(new_size, resampling)
+
+        out = BytesIO()
+        img.save(out, format='WEBP', quality=quality, method=6)
+        return out.getvalue()
+
+
+def _get_page_hero_paths(page_key):
+    """Resuelve paths de imagen final/original para un contexto de portada."""
+    context = _PAGE_HERO_CONTEXTS.get(page_key)
+    if not context:
+        raise KeyError(f"Contexto de hero no soportado: {page_key}")
+    return {
+        'label': context['label'],
+        'final_rel': context['final_image_rel'],
+        'original_rel': context['original_image_rel'],
+        'final_abs': _STATIC_DIR / context['final_image_rel'],
+        'original_abs': _STATIC_DIR / context['original_image_rel'],
+    }
+
+
+def get_page_hero_contexts():
+    """Retorna contextos disponibles para configuración de portada."""
+    return [{'key': key, 'label': cfg['label']} for key, cfg in _PAGE_HERO_CONTEXTS.items()]
+
+
+def _build_page_hero_from_original(page_key, hero_settings, output_max_width=2200, quality=86, target_ratio=(1600 / 420)):
+    """Genera imagen final del hero aplicando recortes y zoom."""
+    paths = _get_page_hero_paths(page_key)
+    original_path = paths['original_abs']
+    final_path = paths['final_abs']
+
+    if not original_path.exists() and final_path.exists():
+        original_path.parent.mkdir(parents=True, exist_ok=True)
+        original_path.write_bytes(final_path.read_bytes())
+
+    if not original_path.exists():
+        raise FileNotFoundError("No existe imagen original de portada.")
+
+    with Image.open(original_path) as img:
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        width, height = img.size
+        crop_left = max(0, min(30, int(hero_settings.get('crop_left', 0))))
+        crop_right = max(0, min(30, int(hero_settings.get('crop_right', 0))))
+        crop_top = max(0, min(30, int(hero_settings.get('crop_top', 0))))
+        crop_bottom = max(0, min(30, int(hero_settings.get('crop_bottom', 0))))
+
+        # Evita recortes imposibles.
+        if crop_left + crop_right >= 95:
+            crop_right = max(0, 94 - crop_left)
+        if crop_top + crop_bottom >= 95:
+            crop_bottom = max(0, 94 - crop_top)
+
+        x0 = int(width * (crop_left / 100.0))
+        x1 = int(width * (1 - (crop_right / 100.0)))
+        y0 = int(height * (crop_top / 100.0))
+        y1 = int(height * (1 - (crop_bottom / 100.0)))
+        x1 = max(x0 + 10, x1)
+        y1 = max(y0 + 10, y1)
+        img = img.crop((x0, y0, x1, y1))
+
+        width, height = img.size
+        zoom_factor = max(0.01, min(10.0, float(hero_settings.get('zoom', 1.0))))
+        focus_x = max(0, min(200, int(hero_settings.get('position_x', 50))))
+        focus_y = max(0, min(200, int(hero_settings.get('position_y', 45))))
+        out_w = min(output_max_width, max(10, width))
+        out_h = max(10, int(out_w / target_ratio))
+        resampling = Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS
+
+        cover_scale = max(out_w / float(width), out_h / float(height))
+        scale = cover_scale * zoom_factor
+        draw_w = max(1, int(width * scale))
+        draw_h = max(1, int(height * scale))
+
+        # Fondo base: versión cover desenfocada de la misma imagen.
+        bg = img.copy()
+        bg_scale = cover_scale
+        bg_w = max(1, int(width * bg_scale))
+        bg_h = max(1, int(height * bg_scale))
+        bg = bg.resize((bg_w, bg_h), resampling)
+        bg_left = (bg_w - out_w) // 2
+        bg_top = (bg_h - out_h) // 2
+        bg = bg.crop((bg_left, bg_top, bg_left + out_w, bg_top + out_h)).filter(ImageFilter.GaussianBlur(radius=16))
+
+        # Capa principal ajustable por foco.
+        fg = img.resize((draw_w, draw_h), resampling)
+        if draw_w > out_w:
+            fg_x = -int((draw_w - out_w) * (focus_x / 100.0))
+        else:
+            fg_x = (out_w - draw_w) // 2
+        if draw_h > out_h:
+            fg_y = -int((draw_h - out_h) * (focus_y / 100.0))
+        else:
+            fg_y = (out_h - draw_h) // 2
+
+        composed = bg.copy()
+        composed.paste(fg, (fg_x, fg_y))
+        if bool(hero_settings.get('blur_enabled', False)):
+            composed = composed.filter(ImageFilter.GaussianBlur(radius=8))
+        img = composed
+
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        img.save(final_path, format='WEBP', quality=quality, method=6)
+
+
+def get_page_hero_settings(page_key):
+    """Retorna configuración efectiva del hero para una página."""
+    if page_key not in _PAGE_HERO_CONTEXTS:
+        return None
+    paths = _get_page_hero_paths(page_key)
+    settings = _load_site_settings()
+    hero = settings.get('page_heroes', {}).get(page_key, {})
+    image_exists = paths['final_abs'].exists()
+    zoom_raw = max(0.01, min(10.0, float(hero.get('zoom', 1.0))))
+    return {
+        'page_key': page_key,
+        'label': paths['label'],
+        'enabled': bool(hero.get('enabled', False) and image_exists),
+        'image': hero.get('image', paths['final_rel']),
+        'position_x': max(0, min(200, int(hero.get('position_x', 50)))),
+        'position_y': max(0, min(200, int(hero.get('position_y', 45)))),
+        'zoom': zoom_raw,
+        'crop_left': int(hero.get('crop_left', 0)),
+        'crop_right': int(hero.get('crop_right', 0)),
+        'crop_top': int(hero.get('crop_top', 0)),
+        'crop_bottom': int(hero.get('crop_bottom', 0)),
+        'overlay_opacity': float(hero.get('overlay_opacity', 0.45)),
+        'blur_enabled': bool(hero.get('blur_enabled', False)),
+        'image_exists': image_exists,
+        'original_image_exists': paths['original_abs'].exists(),
+    }
+
+
+def update_page_hero_settings(page_key, form_data, image_file=None, delete_image=False):
+    """Actualiza configuración de hero para una página y opcionalmente su imagen."""
+    if page_key not in _PAGE_HERO_CONTEXTS:
+        return False, "Contexto de portada no soportado."
+
+    paths = _get_page_hero_paths(page_key)
+    settings = _load_site_settings()
+    settings.setdefault('page_heroes', {})
+    hero_defaults = _default_site_settings()['page_heroes'][page_key]
+    hero = settings['page_heroes'].get(page_key, hero_defaults.copy())
+    settings['page_heroes'][page_key] = hero
+
+    if delete_image:
+        if paths['final_abs'].exists():
+            paths['final_abs'].unlink()
+        if paths['original_abs'].exists():
+            paths['original_abs'].unlink()
+        settings['page_heroes'][page_key] = hero_defaults.copy()
+        if not _save_site_settings(settings):
+            return False, "No se pudo restablecer la portada."
+        return True, f"Portada de {paths['label']} restablecida al estado por defecto."
+
+    if image_file and image_file.filename:
+        content = image_file.read()
+        if not content:
+            return False, "La imagen seleccionada está vacía."
+        from flask import current_app
+        max_size = current_app.config.get('MAX_HERO_UPLOAD_FILE_SIZE', 120 * 1024 * 1024)
+        if len(content) > max_size:
+            max_mb = round(max_size / (1024 * 1024), 1)
+            return False, f"La imagen excede el tamaño máximo permitido ({max_mb} MB)."
+        detected = imghdr.what(None, h=content)
+        if detected not in {'png', 'jpeg', 'webp'}:
+            return False, "Formato de imagen no válido para hero."
+        try:
+            optimized = _normalize_home_hero_image(content)
+            paths['original_abs'].parent.mkdir(parents=True, exist_ok=True)
+            with paths['original_abs'].open('wb') as f:
+                f.write(optimized)
+            hero['image'] = paths['final_rel']
+        except Exception as e:
+            logger.error(f"No se pudo guardar imagen hero: {e}")
+            return False, "No se pudo procesar la imagen del hero."
+
+    def _safe_int(value, default):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    def _safe_float(value, default):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
+    hero['enabled'] = str(form_data.get('enabled', 'off')).lower() in {'1', 'true', 'on', 'yes'}
+    hero['position_x'] = max(0, min(200, _safe_int(form_data.get('position_x', 50), 50)))
+    hero['position_y'] = max(0, min(200, _safe_int(form_data.get('position_y', 45), 45)))
+    hero['zoom'] = max(0.01, min(10.0, _safe_float(form_data.get('zoom', 1.0), 1.0)))
+    hero['crop_left'] = max(0, min(30, _safe_int(form_data.get('crop_left', 0), 0)))
+    hero['crop_right'] = max(0, min(30, _safe_int(form_data.get('crop_right', 0), 0)))
+    hero['crop_top'] = max(0, min(30, _safe_int(form_data.get('crop_top', 0), 0)))
+    hero['crop_bottom'] = max(0, min(30, _safe_int(form_data.get('crop_bottom', 0), 0)))
+    hero['blur_enabled'] = str(form_data.get('blur_enabled', 'off')).lower() in {'1', 'true', 'on', 'yes'}
+
+    if hero['crop_left'] + hero['crop_right'] >= 95:
+        return False, "El recorte horizontal es excesivo. Ajusta izquierda/derecha."
+    if hero['crop_top'] + hero['crop_bottom'] >= 95:
+        return False, "El recorte vertical es excesivo. Ajusta superior/inferior."
+
+    hero['overlay_opacity'] = max(0.0, min(0.9, _safe_float(form_data.get('overlay_opacity', 0.45), 0.45)))
+
+    try:
+        _build_page_hero_from_original(page_key, hero)
+    except FileNotFoundError:
+        return False, "Primero debes subir una imagen de portada."
+    except Exception as e:
+        logger.error(f"No se pudo regenerar hero final: {e}")
+        return False, "No se pudo generar el encuadre final del hero."
+
+    if not _save_site_settings(settings):
+        return False, "No se pudo guardar la configuración del hero."
+    return True, "Configuración de portada guardada."
+
+
+def get_home_hero_settings():
+    """Compatibilidad: retorna configuración del hero de home."""
+    return get_page_hero_settings('home')
+
+
+def update_home_hero_settings(form_data, image_file=None, delete_image=False):
+    """Compatibilidad: actualiza configuración del hero de home."""
+    return update_page_hero_settings('home', form_data, image_file=image_file, delete_image=delete_image)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

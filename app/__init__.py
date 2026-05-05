@@ -174,7 +174,7 @@ def _register_context_processors(app):
 
 def _register_error_handlers(app):
     """Registra manejadores de errores HTTP."""
-    from flask import render_template
+    from flask import render_template, current_app
 
     @app.errorhandler(404)
     def not_found(error):
@@ -183,6 +183,11 @@ def _register_error_handlers(app):
     @app.errorhandler(500)
     def internal_error(error):
         return render_template('pages/errors/500.html'), 500
+
+    @app.errorhandler(413)
+    def request_entity_too_large(error):
+        max_mb = round((current_app.config.get('MAX_CONTENT_LENGTH', 0) or 0) / (1024 * 1024), 2)
+        return render_template('pages/errors/413.html', max_upload_mb=max_mb), 413
 
 
 def _register_security_headers(app):

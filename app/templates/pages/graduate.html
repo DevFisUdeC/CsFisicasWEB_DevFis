@@ -4,6 +4,10 @@
 {% set hero_title = 'Postgrado' %}
 {% set hero_subtitle = 'Programas de Magíster y Doctorado en Ciencias Físicas' %}
 {% set hero_cta_text = false %}
+{% set hero_background_image = url_for('static', filename=page_hero.image) if page_hero and page_hero.enabled else '' %}
+{% set hero_background_position_x = 50 %}
+{% set hero_background_position_y = 50 %}
+{% set hero_overlay_opacity = page_hero.overlay_opacity if page_hero else 0.45 %}
 {% include 'components/hero.html' %}
 
 <section class="section" aria-labelledby="grad-heading">

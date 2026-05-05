@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section" aria-labelledby="error-heading">
+    <div class="container content-page text-center">
+        <h1 id="error-heading" class="error-code">413</h1>
+        <p class="error-message">El archivo que intentas subir supera el límite permitido.</p>
+        <p>Límite actual del request: {{ max_upload_mb }} MB.</p>
+        <p>Reduce el peso de la imagen o usa un formato comprimido (WebP/JPG) e inténtalo de nuevo.</p>
+        <a href="{{ request.referrer or '/' }}" class="btn btn--primary">Volver</a>
+    </div>
+</section>
+{% endblock %}

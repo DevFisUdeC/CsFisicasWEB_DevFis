@@ -15,10 +15,12 @@ research_bp = Blueprint('research', __name__)
 @research_bp.route('/')
 def index():
     """Página principal de investigación — Líneas."""
-    from app.helpers import get_research_lines
+    from app.helpers import get_research_lines, get_page_hero_settings
     lines = get_research_lines()
+    page_hero = get_page_hero_settings('research')
     logger.info(f"Líneas de investigación renderizadas. Total: {len(lines)}.")
     return render_template('pages/research.html',
+                           page_hero=page_hero,
                            research_lines=lines,
                            page_title='Investigación')
 

@@ -25,5 +25,11 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     logger.info("Iniciando servidor Flask...")
     logger.info("APP_ENV=%s | DEBUG=%s | HOST=%s | PORT=%s", APP_ENV, debug, host, port)
+    logger.info(
+        "Límites upload | MAX_CONTENT_LENGTH=%s MB | MAX_UPLOAD_FILE_SIZE=%s MB | MAX_HERO_UPLOAD_FILE_SIZE=%s MB",
+        round((app.config.get('MAX_CONTENT_LENGTH', 0) or 0) / (1024 * 1024), 2),
+        round((app.config.get('MAX_UPLOAD_FILE_SIZE', 0) or 0) / (1024 * 1024), 2),
+        round((app.config.get('MAX_HERO_UPLOAD_FILE_SIZE', 0) or 0) / (1024 * 1024), 2),
+    )
 
     app.run(host=host, port=port, debug=debug)

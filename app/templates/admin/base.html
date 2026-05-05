@@ -54,6 +54,12 @@
                         <span class="admin-nav__badge">{{ images_count }}</span>
                     </a>
                 </li>
+                <li class="admin-nav__item">
+                    <a href="{{ url_for('admin.page_hero_settings', page_key='home') }}"
+                       class="admin-nav__link {% if active_section and active_section.startswith('appearance-') %}admin-nav__link--active{% endif %}">
+                        <span class="admin-nav__icon">🖼️</span> Edición portadas
+                    </a>
+                </li>
             </ul>
         </aside>
 

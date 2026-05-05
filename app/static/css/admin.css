@@ -477,6 +477,89 @@ textarea.admin-form__control {
     border-color: var(--color-link);
 }
 
+.admin-hero-preview-wrap {
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-hover);
+}
+
+.admin-hero-preview {
+    position: relative;
+    min-height: 280px;
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    overflow: hidden;
+    border-radius: var(--border-radius);
+}
+
+.admin-hero-preview__canvas {
+    width: 100%;
+    height: 280px;
+    display: block;
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+}
+
+.admin-hero-preview__overlay-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--color-text-on-primary);
+    padding: var(--space-xl);
+    gap: var(--space-xs);
+    pointer-events: none;
+}
+
+.admin-hero-preview__overlay-text h3 {
+    color: var(--color-text-on-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.admin-hero-preview__overlay-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.admin-hero-editor {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(380px, 520px);
+    gap: var(--space-xl);
+    align-items: start;
+}
+
+.admin-hero-editor__controls {
+    min-width: 0;
+}
+
+.admin-hero-editor__preview {
+    position: sticky;
+    top: 84px;
+}
+
+.admin-form__actions--inline {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.admin-hero-slider-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: var(--space-md) var(--space-lg);
+}
+
+.admin-form--hero-editor .admin-form__group--slider {
+    margin-bottom: 0;
+}
+
+.admin-form--hero-editor input[type="range"].admin-form__control {
+    width: 100%;
+    max-width: 260px;
+}
+
 
 /* ═══════════════════════════════════════════
    8. Tag Input
@@ -838,6 +921,19 @@ textarea.admin-form__control {
     .admin-form__row,
     .admin-form__row--3 {
         grid-template-columns: 1fr;
+    }
+    .admin-hero-slider-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-form--hero-editor input[type="range"].admin-form__control {
+        width: 100%;
+        max-width: none;
+    }
+    .admin-hero-editor {
+        grid-template-columns: 1fr;
+    }
+    .admin-hero-editor__preview {
+        position: static;
     }
 }
 

@@ -337,6 +337,24 @@
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
     padding: var(--space-4xl) 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero__inner {
+    position: relative;
+    z-index: 1;
+}
+
+.hero--with-image {
+    background-image:
+        linear-gradient(
+            rgba(0, 24, 52, var(--hero-overlay-opacity, 0.45)),
+            rgba(0, 24, 52, var(--hero-overlay-opacity, 0.45))
+        ),
+        var(--hero-bg-image);
+    background-size: cover;
+    background-position: var(--hero-bg-pos-x, 50%) var(--hero-bg-pos-y, 45%);
 }
 
 .hero__title {

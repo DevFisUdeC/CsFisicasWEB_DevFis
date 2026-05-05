@@ -15,10 +15,12 @@ news_bp = Blueprint('news', __name__)
 @news_bp.route('/')
 def index():
     """Listado de noticias."""
-    from app.helpers import get_news
+    from app.helpers import get_news, get_page_hero_settings
     news = get_news()
+    page_hero = get_page_hero_settings('news')
     logger.info(f"Listado de noticias renderizado. Total: {len(news)}.")
     return render_template('pages/news.html',
+                           page_hero=page_hero,
                            news=news,
                            page_title='Noticias')
 

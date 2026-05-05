@@ -8,11 +8,12 @@ from datetime import datetime
 from urllib.parse import urlparse
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, flash
 import logging
+import time
 from app.helpers import (
     get_news, get_news_by_slug, create_news, update_news, delete_news_by_slug,
     get_team, get_member_by_slug, create_team_member, update_team_member, delete_team_member_by_slug,
     upload_to_storage, list_storage_files, delete_from_storage,
-    slugify,
+    slugify, get_page_hero_settings, update_page_hero_settings, get_page_hero_contexts
 )
 from app.auth import login_required
 from app.logging_utils import auto_trace_module_functions
@@ -303,6 +304,54 @@ def image_gallery():
     images = list_storage_files(bucket)
     return render_template('admin/images.html',
                            images=images, active_section='images')
+
+
+@admin_bp.route('/appearance/home-hero', methods=['GET', 'POST'])
+@login_required
+def home_hero_settings():
+    """Compatibilidad con ruta antigua de portada home."""
+    return redirect(url_for('admin.page_hero_settings', page_key='home'))
+
+
+@admin_bp.route('/appearance/about-hero', methods=['GET', 'POST'])
+@login_required
+def about_hero_settings():
+    """Acceso rápido a portada de Departamento."""
+    return redirect(url_for('admin.page_hero_settings', page_key='about'))
+
+
+@admin_bp.route('/appearance/page-hero/<page_key>', methods=['GET', 'POST'])
+@login_required
+def page_hero_settings(page_key):
+    """Configuración local de portada por página (sin DB)."""
+    hero = get_page_hero_settings(page_key)
+    if not hero:
+        flash("La página solicitada no tiene configuración de portada.", "error")
+        return redirect(url_for('admin.dashboard'))
+
+    if request.method == 'POST':
+        action = (request.form.get('action') or 'save').strip().lower()
+        image_file = request.files.get('hero_image')
+        ok, message = update_page_hero_settings(
+            page_key,
+            request.form,
+            image_file=image_file,
+            delete_image=(action == 'delete_image'),
+        )
+        flash(message, "success" if ok else "error")
+        return redirect(url_for('admin.page_hero_settings', page_key=page_key))
+
+    preview_url = ''
+    if hero.get('image_exists') and hero.get('image'):
+        preview_url = f"{url_for('static', filename=hero['image'])}?v={int(time.time())}"
+
+    return render_template(
+        'admin/page_hero.html',
+        hero=hero,
+        hero_preview_url=preview_url,
+        page_contexts=get_page_hero_contexts(),
+        active_section=f'appearance-{page_key}',
+    )
 
 
 @admin_bp.route('/images/upload', methods=['POST'])

@@ -15,11 +15,13 @@ academics_bp = Blueprint('academics', __name__)
 @academics_bp.route('/undergraduate')
 def undergraduate():
     """Página de pregrado — Ciencias Físicas."""
-    from app.helpers import get_programs
+    from app.helpers import get_programs, get_page_hero_settings
     programs = get_programs()
     undergrad = programs.get('undergraduate', {})
+    page_hero = get_page_hero_settings('undergraduate')
     logger.info("Página de pregrado renderizada.")
     return render_template('pages/undergraduate.html',
+                           page_hero=page_hero,
                            program=undergrad,
                            page_title='Pregrado — Ciencias Físicas')
 
@@ -27,11 +29,13 @@ def undergraduate():
 @academics_bp.route('/graduate')
 def graduate():
     """Página de postgrado — Magíster y Doctorado."""
-    from app.helpers import get_programs
+    from app.helpers import get_programs, get_page_hero_settings
     programs = get_programs()
     grad_programs = programs.get('graduate', [])
+    page_hero = get_page_hero_settings('graduate')
     logger.info(f"Página de postgrado renderizada. Programas: {len(grad_programs)}.")
     return render_template('pages/graduate.html',
+                           page_hero=page_hero,
                            programs=grad_programs,
                            page_title='Postgrado')
 

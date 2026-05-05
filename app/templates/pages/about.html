@@ -4,6 +4,10 @@
 {% set hero_title = 'Departamento de Física' %}
 {% set hero_subtitle = 'Facultad de Ciencias Físicas y Matemáticas — Universidad de Concepción' %}
 {% set hero_cta_text = false %}
+{% set hero_background_image = url_for('static', filename=about_hero.image) if about_hero and about_hero.enabled else '' %}
+{% set hero_background_position_x = 50 %}
+{% set hero_background_position_y = 50 %}
+{% set hero_overlay_opacity = about_hero.overlay_opacity if about_hero else 0.45 %}
 {% include 'components/hero.html' %}
 
 <section class="section" id="historia" aria-labelledby="historia-heading">

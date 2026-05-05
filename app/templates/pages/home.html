@@ -9,6 +9,10 @@
 {% set hero_cta_url = url_for('main.students') %}
 {% set hero_cta2_text = 'Postula a Ciencias Físicas' %}
 {% set hero_cta2_url = url_for('academics.undergraduate') %}
+{% set hero_background_image = url_for('static', filename=home_hero.image) if home_hero and home_hero.enabled else '' %}
+{% set hero_background_position_x = 50 %}
+{% set hero_background_position_y = 50 %}
+{% set hero_overlay_opacity = home_hero.overlay_opacity if home_hero else 0.45 %}
 {% include 'components/hero.html' %}
 
 <!-- Accesos por audiencia -->

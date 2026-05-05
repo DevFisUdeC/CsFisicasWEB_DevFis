@@ -16,10 +16,11 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 def home():
     """Página de inicio."""
-    from app.helpers import get_news, get_team, get_research_lines
+    from app.helpers import get_news, get_team, get_research_lines, get_page_hero_settings
     news = get_news()[:6]  # Últimas 6 noticias para home tipo portal
     team_count = len(get_team())
     research_count = len(get_research_lines())
+    home_hero = get_page_hero_settings('home')
     stats = {
         'academics': team_count,
         'students': '200+',
@@ -29,6 +30,7 @@ def home():
     logger.info("Página de inicio renderizada.")
     return render_template('pages/home.html',
                            news=news,
+                           home_hero=home_hero,
                            stats=stats,
                            page_title='Inicio')
 
@@ -36,24 +38,33 @@ def home():
 @main_bp.route('/about')
 def about():
     """Página sobre el departamento."""
+    from app.helpers import get_page_hero_settings
+    about_hero = get_page_hero_settings('about')
     logger.info("Página del departamento renderizada.")
     return render_template('pages/about.html',
+                           about_hero=about_hero,
                            page_title='Departamento')
 
 
 @main_bp.route('/contact')
 def contact():
     """Página de contacto."""
+    from app.helpers import get_page_hero_settings
+    page_hero = get_page_hero_settings('contact')
     logger.info("Página de contacto renderizada.")
     return render_template('pages/contact.html',
+                           page_hero=page_hero,
                            page_title='Contacto')
 
 
 @main_bp.route('/students')
 def students():
     """Página de estudiantes: recursos académicos y documentos."""
+    from app.helpers import get_page_hero_settings
+    page_hero = get_page_hero_settings('students')
     logger.info("Página de estudiantes renderizada.")
     return render_template('pages/students.html',
+                           page_hero=page_hero,
                            page_title='Estudiantes')
 
 

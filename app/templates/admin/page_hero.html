@@ -1,0 +1,118 @@
+{% extends "admin/base.html" %}
+{% block title %}Portada {{ hero.label }}{% endblock %}
+
+{% block content %}
+<div class="admin-page-header">
+    <div>
+        <h2 class="admin-page-header__title">Portada de {{ hero.label }}</h2>
+        <p class="admin-page-header__subtitle">Sube y encuadra una imagen local versionable en Git para esta página.</p>
+    </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form admin-form--hero-editor">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="admin-form__group">
+        <label for="page_selector" class="admin-form__label">Página a editar</label>
+        <select id="page_selector" class="admin-form__control" data-page-hero-selector>
+            {% for ctx in page_contexts %}
+            <option value="{{ url_for('admin.page_hero_settings', page_key=ctx.key) }}" {% if ctx.key == hero.page_key %}selected{% endif %}>
+                {{ ctx.label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="admin-hero-editor">
+        <div class="admin-hero-editor__controls">
+            <h3 class="admin-form__section-title">Imagen y activación</h3>
+            <div class="admin-form__group">
+                <label for="hero_image" class="admin-form__label">Imagen de fondo ({{ hero.label }})</label>
+                <div class="admin-form__file-input-wrapper">
+                    <input type="file" id="hero_image" name="hero_image" accept="image/png, image/jpeg, image/webp" data-page-hero-file>
+                </div>
+                <span class="admin-form__hint">Se guarda localmente en el proyecto. No usa base de datos.</span>
+            </div>
+
+            <div class="admin-form__group">
+                <label class="admin-form__label" for="enabled">
+                    <input type="checkbox" id="enabled" name="enabled" {% if hero.enabled %}checked{% endif %} data-page-hero-enabled>
+                    Activar imagen de portada en {{ hero.label }}
+                </label>
+            </div>
+
+            <h3 class="admin-form__section-title">Encuadre (zoom y foco)</h3>
+            <div class="admin-hero-slider-grid">
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="zoom" class="admin-form__label">Zoom (0.01x a 10x): <strong data-page-hero-zoom-label>{{ hero.zoom }}</strong>x</label>
+                    <input class="admin-form__control" type="range" min="0.01" max="10" step="0.01" id="zoom" name="zoom" value="{{ hero.zoom }}" data-page-hero-zoom>
+                </div>
+
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="position_x" class="admin-form__label">Foco horizontal: <strong data-page-hero-x-label>{{ hero.position_x }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="200" id="position_x" name="position_x" value="{{ hero.position_x }}" data-page-hero-x>
+                </div>
+
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="position_y" class="admin-form__label">Foco vertical: <strong data-page-hero-y-label>{{ hero.position_y }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="200" id="position_y" name="position_y" value="{{ hero.position_y }}" data-page-hero-y>
+                </div>
+            </div>
+
+            <h3 class="admin-form__section-title">Recorte por zonas</h3>
+            <div class="admin-hero-slider-grid">
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="crop_left" class="admin-form__label">Recorte izquierda: <strong data-page-hero-crop-left-label>{{ hero.crop_left }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="30" id="crop_left" name="crop_left" value="{{ hero.crop_left }}" data-page-hero-crop-left>
+                </div>
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="crop_right" class="admin-form__label">Recorte derecha: <strong data-page-hero-crop-right-label>{{ hero.crop_right }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="30" id="crop_right" name="crop_right" value="{{ hero.crop_right }}" data-page-hero-crop-right>
+                </div>
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="crop_top" class="admin-form__label">Recorte superior: <strong data-page-hero-crop-top-label>{{ hero.crop_top }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="30" id="crop_top" name="crop_top" value="{{ hero.crop_top }}" data-page-hero-crop-top>
+                </div>
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="crop_bottom" class="admin-form__label">Recorte inferior: <strong data-page-hero-crop-bottom-label>{{ hero.crop_bottom }}</strong>%</label>
+                    <input class="admin-form__control" type="range" min="0" max="30" id="crop_bottom" name="crop_bottom" value="{{ hero.crop_bottom }}" data-page-hero-crop-bottom>
+                </div>
+            </div>
+
+            <h3 class="admin-form__section-title">Superposición</h3>
+            <div class="admin-hero-slider-grid">
+                <div class="admin-form__group admin-form__group--slider">
+                    <label for="overlay_opacity" class="admin-form__label">Oscurecimiento para legibilidad: <strong data-page-hero-overlay-label>{{ hero.overlay_opacity }}</strong></label>
+                    <input class="admin-form__control" type="range" min="0" max="0.9" step="0.05" id="overlay_opacity" name="overlay_opacity" value="{{ hero.overlay_opacity }}" data-page-hero-overlay>
+                </div>
+                <div class="admin-form__group admin-form__group--slider">
+                    <label class="admin-form__label" for="blur_enabled">
+                        <input type="checkbox" id="blur_enabled" name="blur_enabled" {% if hero.blur_enabled %}checked{% endif %} data-page-hero-blur>
+                        Aplicar blur a la portada
+                    </label>
+                    <span class="admin-form__hint">Útil para desidentificar personas en la imagen.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-hero-editor__preview">
+            <h3 class="admin-form__section-title">Previsualización</h3>
+            <div class="admin-hero-preview-wrap">
+                <div class="admin-hero-preview" data-page-hero-preview data-current-image="{{ hero_preview_url }}">
+                    <canvas class="admin-hero-preview__canvas" data-page-hero-canvas width="1600" height="420"></canvas>
+                    <div class="admin-hero-preview__overlay-text">
+                        <h3>{{ hero.label }}</h3>
+                        <p>Previsualización local de la portada</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-form__actions admin-form__actions--inline">
+                <button type="button" class="btn btn--ghost" data-page-hero-reset>Restablecer encuadre</button>
+                <button type="submit" name="action" value="delete_image" class="btn btn--danger">Eliminar imagen y restaurar</button>
+                <button type="submit" name="action" value="save" class="btn btn--primary">Guardar y aplicar portada</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -15,10 +15,12 @@ people_bp = Blueprint('people', __name__)
 @people_bp.route('/')
 def index():
     """Directorio de académicos."""
-    from app.helpers import get_team
+    from app.helpers import get_team, get_page_hero_settings
     team = get_team()
+    page_hero = get_page_hero_settings('people')
     logger.info(f"Directorio de académicos renderizado. Total: {len(team)}.")
     return render_template('pages/people.html',
+                           page_hero=page_hero,
                            team=team,
                            page_title='Académicos')
 
