@@ -39,6 +39,15 @@
         </div>
     </div>
 
+    <div class="admin-form__group">
+        <label for="orcid" class="admin-form__label">ORCID</label>
+        <input type="url" id="orcid" name="orcid"
+               value="{{ member.orcid if member and member.orcid else '' }}"
+               placeholder="https://orcid.org/0000-0000-0000-0000"
+               class="admin-form__control">
+        <span class="admin-form__hint">Opcional. URL pública del ORCID.</span>
+    </div>
+
     <!-- Cargo + Rol + Área -->
     <div class="admin-form__row--3">
         <div class="admin-form__group">
