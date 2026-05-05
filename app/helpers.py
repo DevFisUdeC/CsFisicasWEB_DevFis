@@ -207,10 +207,24 @@ def _upload_storage_bytes(path, content, content_type='application/octet-stream'
         get_supabase(role='service').storage.from_(_hero_storage_bucket()).upload(
             path=path,
             file=content,
-            file_options={"content-type": content_type, "upsert": "true"},
+            file_options={"content-type": content_type},
         )
         return True
     except Exception as e:
+        err_text = str(e).lower()
+        # Si ya existe, se reemplaza explícitamente (upload->remove->upload)
+        if 'duplicate' in err_text or 'already exists' in err_text:
+            try:
+                get_supabase(role='service').storage.from_(_hero_storage_bucket()).remove([path])
+                get_supabase(role='service').storage.from_(_hero_storage_bucket()).upload(
+                    path=path,
+                    file=content,
+                    file_options={"content-type": content_type},
+                )
+                return True
+            except Exception as inner_e:
+                logger.error(f"No se pudo reemplazar objeto en Storage ({path}): {inner_e}")
+                return False
         logger.error(f"No se pudo subir objeto a Storage ({path}): {e}")
         return False
 
@@ -227,7 +241,11 @@ def _download_storage_bytes(path):
         if hasattr(data, 'read'):
             return data.read()
     except Exception as e:
-        logger.warning(f"No se pudo descargar objeto de Storage ({path}): {e}")
+        # En primera carga es normal que no exista aún.
+        if 'not_found' in str(e).lower():
+            logger.debug(f"Objeto hero aún no existe en Storage ({path}).")
+        else:
+            logger.warning(f"No se pudo descargar objeto de Storage ({path}): {e}")
     return None
 
 
