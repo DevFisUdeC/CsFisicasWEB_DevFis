@@ -9,8 +9,10 @@ import logging
 import os
 import time
 import imghdr
+from io import BytesIO
 
 from werkzeug.utils import secure_filename
+from PIL import Image
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
@@ -187,7 +189,34 @@ def _get_storage_url(bucket, filename):
     return resp
 
 
-def upload_to_storage(file, bucket='uploads', allowed_extensions=None):
+def _normalize_avatar_image(content, size=300, quality=82):
+    """Recorta al centro y redimensiona una imagen para avatar cuadrado."""
+    with Image.open(BytesIO(content)) as img:
+        if img.mode not in ('RGB', 'RGBA'):
+            img = img.convert('RGB')
+        elif img.mode == 'RGBA':
+            # Evita transparencia inesperada en salida comprimida.
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1])
+            img = background
+
+        width, height = img.size
+        min_side = min(width, height)
+        left = (width - min_side) // 2
+        top = (height - min_side) // 2
+        right = left + min_side
+        bottom = top + min_side
+        img = img.crop((left, top, right, bottom))
+
+        resampling = Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS
+        img = img.resize((size, size), resampling)
+
+        out = BytesIO()
+        img.save(out, format='WEBP', quality=quality, method=6)
+        return out.getvalue()
+
+
+def upload_to_storage(file, bucket='uploads', allowed_extensions=None, image_kind='default'):
     """Sube un archivo a Supabase Storage. Retorna la URL pública o None."""
     if allowed_extensions is None:
         allowed_extensions = {'png', 'jpg', 'jpeg', 'webp'}
@@ -214,6 +243,15 @@ def upload_to_storage(file, bucket='uploads', allowed_extensions=None):
         return None
     mime_map = {'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'webp': 'image/webp', 'gif': 'image/gif'}
     content_type = mime_map.get(ext, 'application/octet-stream')
+
+    if image_kind == 'avatar':
+        try:
+            content = _normalize_avatar_image(content, size=300, quality=82)
+            filename = secure_filename(f"{int(time.time())}_avatar.webp")
+            content_type = 'image/webp'
+        except Exception as e:
+            logger.error(f"No se pudo normalizar avatar: {e}")
+            return None
 
     try:
         get_supabase(role='service').storage.from_(bucket).upload(

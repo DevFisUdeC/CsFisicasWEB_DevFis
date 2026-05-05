@@ -46,13 +46,13 @@ def inject_admin_counts():
 
 # ─── Helper interno ─────────────────────────────────────────────────────────
 
-def _upload(file_field):
+def _upload(file_field, image_kind='default'):
     """Atajo para subir un archivo a Supabase Storage desde request.files."""
     logger.debug("upload helper | file_field=%s", file_field)
     f = request.files.get(file_field)
     bucket = current_app.config.get('SUPABASE_BUCKET', 'uploads')
     allowed = current_app.config.get('ALLOWED_EXTENSIONS', {'png', 'jpg', 'jpeg', 'webp'})
-    return upload_to_storage(f, bucket=bucket, allowed_extensions=allowed)
+    return upload_to_storage(f, bucket=bucket, allowed_extensions=allowed, image_kind=image_kind)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -217,7 +217,7 @@ def team_list():
 def create_member():
     """Formulario para agregar un nuevo académico."""
     if request.method == 'POST':
-        photo_url = _upload('photo')
+        photo_url = _upload('photo', image_kind='avatar')
         lines_raw = request.form.get('research_lines', '')
         research_lines = [l.strip() for l in lines_raw.split(',') if l.strip()]
         data = {
@@ -264,7 +264,7 @@ def edit_member(slug):
             "bio": request.form.get('bio', ''),
             "research_lines": [l.strip() for l in lines_raw.split(',') if l.strip()],
         }
-        new_photo = _upload('photo')
+        new_photo = _upload('photo', image_kind='avatar')
         if new_photo:
             data['photo'] = new_photo
         result = update_team_member(slug, data)
