@@ -1799,62 +1799,154 @@
     color: var(--color-text-muted);
 }
 
+.org-chart-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.org-expand-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+    color: var(--color-text);
+    border-radius: 999px;
+    padding: 0.45rem 0.95rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+}
+
+.org-expand-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
 .org-chart-embed {
+    width: 100%;
     margin-top: var(--space-lg);
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-lg);
     padding: clamp(1rem, 2.5vw, 1.75rem);
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: hidden;
+    cursor: zoom-in;
 }
 
 .org-chart-embed .mermaid {
     margin: 0;
-    min-width: 1280px;
+    min-width: 0;
     text-align: center;
 }
 
 .org-chart-embed svg {
-    display: block;
-    min-width: 1280px;
+    display: block !important;
+    margin-inline: auto;
+    width: min(100%, 1240px);
+    max-width: 1240px;
     height: auto;
 }
 
 .org-note--legend {
-    margin-top: var(--space-md);
+    margin-top: var(--space-sm);
     margin-bottom: 0;
     font-size: var(--font-size-sm);
 }
 
-.org-status-chip {
-    margin-top: var(--space-md);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: var(--font-size-sm);
-    color: var(--color-primary);
-    border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-    background: rgba(var(--color-primary-rgb), 0.06);
-    border-radius: 999px;
-    padding: 0.35rem 0.8rem;
+.org-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: none;
 }
 
-.org-status-chip::before {
-    content: '';
-    width: 0.52rem;
-    height: 0.52rem;
-    border-radius: 999px;
-    background: var(--color-primary);
+.org-modal.is-open {
+    display: block;
+}
+
+.org-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 17, 33, 0.68);
+}
+
+.org-modal__dialog {
+    position: relative;
+    margin: min(5vh, 3rem) auto;
+    width: min(95vw, 1500px);
+    height: min(90vh, 920px);
+    border-radius: var(--border-radius-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.org-modal__toolbar {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.org-modal__btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: 0.55rem;
+    padding: 0.38rem 0.62rem;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.org-modal__btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.org-modal__btn--close {
+    margin-left: auto;
+}
+
+.org-modal__viewport {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: #f7f9fc;
+    touch-action: none;
+}
+
+.org-modal__canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center center;
+    will-change: transform;
+    cursor: grab;
+}
+
+.org-modal__canvas svg {
+    width: 1300px;
+    max-width: none;
+    height: auto;
+    display: block;
+}
+
+.org-modal__canvas.is-dragging {
+    cursor: grabbing;
 }
 
 @media (max-width: 900px) {
-    .org-chart-embed .mermaid {
-        min-width: 1100px;
+    .org-modal__dialog {
+        width: 98vw;
+        height: 92vh;
+        margin: 2vh auto;
     }
 
-    .org-chart-embed svg {
-        min-width: 1100px;
+    .org-modal__canvas svg {
+        width: 980px;
     }
 }
 

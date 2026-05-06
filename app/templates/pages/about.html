@@ -38,55 +38,75 @@
     <div class="container content-page">
         <h2 id="organigrama-heading" class="section__title">Organigrama</h2>
         <p class="org-note org-note--pending">Pendiente de actualización final: confirmación oficial de cargos de funcionarios profesionales y laborantes que serán incorporados en cuanto se reciba esa nómina.</p>
-        <div class="org-chart-embed" aria-label="Organigrama propuesto del Departamento de Física">
+        <div class="org-chart-stage">
+            <button type="button" class="org-expand-btn" id="org-expand-btn" aria-controls="org-modal" aria-label="Abrir organigrama ampliado">
+                Abrir vista ampliada
+            </button>
+            <div class="org-chart-embed" id="org-chart-embed" aria-label="Organigrama propuesto del Departamento de Física">
             <pre class="mermaid" id="org-mermaid">
 flowchart TD
     dirDepto["Dirección de Departamento"]
 
     secDir["Secretaría de Dirección"]
     secDoc["Secretaría Docente"]
-    jefeCarrera["Jefatura de Carrera"]
-    coordPost["Coordinación de Postgrado"]
+    ejeAcad["Eje Académico"]
+    ejeAdmin["Eje Administrativo y Soporte"]
 
+    jefeCarrera["Jefatura de Carrera"]
     secCarrera["Secretaría de Carrera"]
-    repDoc["Representación Docente CD"]
+    coordPost["Coordinación de Postgrado"]
+    secPost["Secretaría de Postgrado"]
     dirMag["Dirección de Magíster"]
     dirDoc["Dirección de Doctorado"]
-    secPost["Secretaría de Postgrado"]
     encInv["Encargatura de Investigación"]
     encExt["Encargatura de Extensión"]
+    repDoc["Representación Docente CD"]
     cuerpoAcad["Cuerpo Académico"]
 
     gestionAdmin["Gestión Administrativa"]
     funcProf["Funcionarios Profesionales"]
-    funcLab["Funcionarios Laborantes y Técnicos"]
+    funcLab["Funcionarios Laborantes y Técnicos de Apoyo"]
 
     dirDepto --> secDir
     dirDepto --> secDoc
-    dirDepto --> jefeCarrera
-    dirDepto --> coordPost
-    dirDepto --> encInv
-    dirDepto --> encExt
-    dirDepto --> repDoc
-    dirDepto --> cuerpoAcad
-    dirDepto --> gestionAdmin
+    dirDepto --> ejeAcad
+    dirDepto --> ejeAdmin
 
+    ejeAcad --> jefeCarrera
     jefeCarrera --> secCarrera
+    ejeAcad --> coordPost
+    coordPost --> secPost
     coordPost --> dirMag
     coordPost --> dirDoc
-    coordPost --> secPost
+    ejeAcad --> encInv
+    ejeAcad --> encExt
+    ejeAcad --> repDoc
+    ejeAcad --> cuerpoAcad
+
+    ejeAdmin --> gestionAdmin
     gestionAdmin --> funcProf
     gestionAdmin --> funcLab
             </pre>
-            <p class="org-note org-note--legend">
-                Visualización generada con Mermaid (propuesta en revisión).
-            </p>
-        </div>
-        <div class="org-status-chip" aria-hidden="true">
-            Estado: propuesta preliminar
+            </div>
+            <p class="org-note org-note--legend">Haz click en el organigrama para ampliarlo y navegar.</p>
         </div>
     </div>
- </section>
+</section>
+
+<div class="org-modal" id="org-modal" aria-hidden="true">
+    <div class="org-modal__backdrop" data-org-close="true"></div>
+    <div class="org-modal__dialog" role="dialog" aria-modal="true" aria-label="Organigrama ampliado">
+        <div class="org-modal__toolbar">
+            <button type="button" class="org-modal__btn" data-org-zoom="out">-</button>
+            <button type="button" class="org-modal__btn" data-org-zoom="in">+</button>
+            <button type="button" class="org-modal__btn" data-org-zoom="reset">Reiniciar vista</button>
+            <button type="button" class="org-modal__btn org-modal__btn--close" data-org-close="true">Cerrar</button>
+        </div>
+        <div class="org-modal__viewport" id="org-modal-viewport">
+            <div class="org-modal__canvas" id="org-modal-canvas"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
