@@ -39,49 +39,58 @@
         <h2 id="organigrama-heading" class="section__title">Organigrama</h2>
         <p class="org-note"><strong>Propuesta de organigrama (no final):</strong> esta versión está en revisión y quedará sujeta a validación institucional.</p>
         <p class="org-note org-note--pending">Pendiente de actualización final: confirmación oficial de cargos de funcionarios profesionales y laborantes que serán incorporados en cuanto se reciba esa nómina.</p>
-        <div class="org-chart" role="img" aria-label="Organigrama del Departamento de Física">
-            <div class="org-box org-box--main">Dirección de Departamento</div>
+        <div class="org-chart-embed" aria-label="Organigrama propuesto del Departamento de Física">
+            <pre class="mermaid" id="org-mermaid">
+flowchart TD
+    dirDepto["Dirección de Departamento"]
 
-            <div class="org-row org-row--level-1">
-                <div class="org-box">Secretaría de Dirección</div>
-                <div class="org-box">Jefatura de Carrera</div>
-                <div class="org-box">Coordinación de Postgrado</div>
-                <div class="org-box">Secretaría Docente</div>
-            </div>
+    secDir["Secretaría de Dirección"]
+    secDoc["Secretaría Docente"]
+    jefeCarrera["Jefatura de Carrera"]
+    coordPost["Coordinación de Postgrado"]
 
-            <div class="org-grid-two-col">
-                <div class="org-column">
-                    <div class="org-row">
-                        <div class="org-box">Secretaría de Carrera</div>
-                        <div class="org-box">Representación Docente CD</div>
-                    </div>
-                    <div class="org-row">
-                        <div class="org-box">Dirección de Magíster</div>
-                        <div class="org-box">Dirección de Doctorado</div>
-                        <div class="org-box">Secretaría de Postgrado</div>
-                    </div>
-                    <div class="org-row">
-                        <div class="org-box">Encargatura de Investigación</div>
-                        <div class="org-box">Encargatura de Extensión</div>
-                    </div>
-                    <div class="org-row">
-                        <div class="org-box">Cuerpo Académico</div>
-                    </div>
-                </div>
+    secCarrera["Secretaría de Carrera"]
+    repDoc["Representación Docente CD"]
+    dirMag["Dirección de Magíster"]
+    dirDoc["Dirección de Doctorado"]
+    secPost["Secretaría de Postgrado"]
+    encInv["Encargatura de Investigación"]
+    encExt["Encargatura de Extensión"]
+    cuerpoAcad["Cuerpo Académico"]
 
-                <div class="org-column">
-                    <div class="org-row">
-                        <div class="org-box">Gestión Administrativa</div>
-                    </div>
-                    <div class="org-row">
-                        <div class="org-box">Funcionarios Profesionales</div>
-                    </div>
-                    <div class="org-row">
-                        <div class="org-box">Funcionarios Laborantes y Técnicos de Apoyo</div>
-                    </div>
-                </div>
-            </div>
+    gestionAdmin["Gestión Administrativa"]
+    funcProf["Funcionarios Profesionales (pendiente validación de cargos)"]
+    funcLab["Funcionarios Laborantes y Técnicos (pendiente validación de cargos)"]
+
+    dirDepto --> secDir
+    dirDepto --> secDoc
+    dirDepto --> jefeCarrera
+    dirDepto --> coordPost
+    dirDepto --> encInv
+    dirDepto --> encExt
+    dirDepto --> repDoc
+    dirDepto --> cuerpoAcad
+    dirDepto --> gestionAdmin
+
+    jefeCarrera --> secCarrera
+    coordPost --> dirMag
+    coordPost --> dirDoc
+    coordPost --> secPost
+    gestionAdmin --> funcProf
+    gestionAdmin --> funcLab
+            </pre>
+            <p class="org-note org-note--legend">
+                Visualización generada con Mermaid (propuesta en revisión).
+            </p>
+        </div>
+        <div class="org-status-chip" aria-hidden="true">
+            Estado: propuesta preliminar
         </div>
     </div>
-</section>
+ </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/mermaid.min.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/about-orgchart.js') }}" defer></script>
 {% endblock %}

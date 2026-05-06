@@ -1788,81 +1788,68 @@
    17. Organigrama
    ═══════════════════════════════════════════ */
 
-.org-chart {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-lg);
-    margin-top: var(--space-xl);
-    width: 100%;
-}
-
 .org-note {
     margin: 0 0 var(--space-sm);
     color: var(--color-text-secondary);
+    max-width: 78ch;
 }
 
 .org-note--pending {
     margin-bottom: var(--space-lg);
+    color: var(--color-text-muted);
 }
 
-.org-box {
-    min-width: 260px;
-    padding: var(--space-md) var(--space-lg);
-    background-color: var(--color-bg-card);
+.org-chart-embed {
+    margin-top: var(--space-lg);
+    background: var(--color-bg-card);
     border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.org-chart-embed .mermaid {
+    margin: 0;
+    min-width: 980px;
     text-align: center;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.35;
 }
 
-.org-box--main {
-    min-width: 300px;
-    background-color: var(--color-primary);
-    color: var(--color-text-on-primary);
-    border-color: var(--color-primary-light);
+.org-chart-embed svg {
+    height: auto;
+    max-width: 100%;
 }
 
-.org-box--group {
-    background-color: var(--color-bg-alt);
+.org-note--legend {
+    margin-top: var(--space-md);
+    margin-bottom: 0;
+    font-size: var(--font-size-sm);
 }
 
-.org-row {
-    display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
+.org-status-chip {
+    margin-top: var(--space-md);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+    background: rgba(var(--color-primary-rgb), 0.06);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
 }
 
-.org-row--level-1 {
-    margin-top: var(--space-xs);
+.org-status-chip::before {
+    content: '';
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 999px;
+    background: var(--color-primary);
 }
 
-.org-grid-two-col {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-lg);
-    align-items: start;
-}
-
-.org-column {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-@media (max-width: 980px) {
-    .org-grid-two-col {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 640px) {
-    .org-box {
-        min-width: min(100%, 320px);
+@media (max-width: 900px) {
+    .org-chart-embed .mermaid {
+        min-width: 760px;
     }
 }
 
