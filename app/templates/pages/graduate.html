@@ -13,6 +13,9 @@
 <section class="section" aria-labelledby="grad-heading">
     <div class="container">
         <h2 id="grad-heading" class="section__title">Programas de Postgrado</h2>
+        <p class="section__subtitle">
+            El Doctorado integra las líneas del Magíster y amplía su alcance con áreas adicionales oficialmente declaradas.
+        </p>
         <div class="card-grid card-grid--2">
             {% for prog in programs %}
             <article class="info-card info-card--large" id="{{ prog.id }}">
@@ -25,6 +28,33 @@
             </article>
             {% endfor %}
         </div>
+    </div>
+</section>
+
+<section class="section section--alt" aria-labelledby="grad-lines-heading">
+    <div class="container">
+        <h2 id="grad-lines-heading" class="section__title">Líneas de Investigación Oficiales</h2>
+        <div class="card-grid card-grid--2">
+            <article class="info-card">
+                <h3>Física Teórica</h3>
+                <p>Mecánica Cuántica, Gravitación, Física de Plasmas, Cosmología y Física Nuclear.</p>
+            </article>
+            <article class="info-card">
+                <h3>Física Experimental y Aplicada</h3>
+                <p>Investigación experimental, simulaciones y aplicaciones en problemas físicos contemporáneos.</p>
+            </article>
+            <article class="info-card">
+                <h3>Geofísica</h3>
+                <p>Modelamiento geofísico e instrumentación para estudio de atmósfera, océano y sistemas asociados.</p>
+            </article>
+            <article class="info-card">
+                <h3>Astronomía y Astrofísica</h3>
+                <p>Estudio teórico y observacional de cuerpos celestes, su origen y evolución.</p>
+            </article>
+        </div>
+        <p class="text-muted" style="margin-top: var(--space-md);">
+            Referencia institucional: <a href="https://www.cfm.cl/investigacion/" target="_blank" rel="noopener">Investigación CFM</a>.
+        </p>
     </div>
 </section>
 {% endblock %}
