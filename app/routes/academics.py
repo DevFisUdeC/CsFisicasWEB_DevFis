@@ -4,7 +4,7 @@ Responsabilidad: Pregrado, Postgrado, Malla Curricular.
 """
 
 import logging
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
@@ -25,11 +25,6 @@ def undergraduate():
                            program=undergrad,
                            page_title='Pregrado — Ciencias Físicas')
 
-
-@academics_bp.route('/assets/malla-ciencias-fisicas.jpg')
-def curriculum_image():
-    """Compatibilidad: redirige a la malla estática oficial."""
-    return redirect(url_for('static', filename='docs/Ciencias-Fisicas_malla.jpg'), code=302)
 
 @academics_bp.route('/graduate')
 def graduate():

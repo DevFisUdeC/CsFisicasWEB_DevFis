@@ -5,7 +5,7 @@ Responsabilidad: Home, About (Departamento), Contact.
 
 import json
 import logging
-from flask import Blueprint, render_template, request, current_app, Response, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, Response
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
@@ -67,11 +67,6 @@ def students():
                            page_hero=page_hero,
                            page_title='Estudiantes')
 
-
-@main_bp.route('/students/assets/plano-aulas-udec.png')
-def students_classroom_map():
-    """Compatibilidad: redirige al plano estático oficial."""
-    return redirect(url_for('static', filename='docs/plano-aulas-udec.png'), code=302)
 
 @main_bp.route('/_trace/client-event', methods=['GET', 'POST'])
 def trace_client_event():
