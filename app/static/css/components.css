@@ -1811,13 +1811,14 @@
 
 .org-chart-embed .mermaid {
     margin: 0;
-    min-width: 980px;
+    min-width: 1280px;
     text-align: center;
 }
 
 .org-chart-embed svg {
+    display: block;
+    min-width: 1280px;
     height: auto;
-    max-width: 100%;
 }
 
 .org-note--legend {
@@ -1849,7 +1850,11 @@
 
 @media (max-width: 900px) {
     .org-chart-embed .mermaid {
-        min-width: 760px;
+        min-width: 1100px;
+    }
+
+    .org-chart-embed svg {
+        min-width: 1100px;
     }
 }
 

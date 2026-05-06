@@ -25,7 +25,7 @@
                 secondaryColor: '#ffffff',
                 tertiaryColor: '#f6f9fc',
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '15px',
+                fontSize: '20px',
             },
         });
 
