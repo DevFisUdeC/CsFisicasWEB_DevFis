@@ -14,23 +14,38 @@ _supabase_service: Client | None = None
 _supabase_public: Client | None = None
 
 
-def init_supabase(app) -> Client:
-    """Inicializa clientes Supabase (service + public)."""
+def init_supabase(app) -> Client | None:
+    """Inicializa clientes Supabase (service + public) con fallback tolerante."""
     global _supabase_service, _supabase_public
     url = app.config.get('SUPABASE_URL', '')
     service_key = app.config.get('SUPABASE_SERVICE_KEY', '')
     anon_key = app.config.get('SUPABASE_ANON_KEY', '')
-    if not url or not service_key:
-        logger.error("SUPABASE_URL o SUPABASE_SERVICE_KEY no configuradas.")
-        raise RuntimeError("Faltan credenciales de Supabase. Revisa tu .env")
-    _supabase_service = create_client(url, service_key)
+    if not url:
+        _supabase_service = None
+        _supabase_public = None
+        logger.error("SUPABASE_URL no configurada. App inicia en modo degradado (sin DB/Storage).")
+        return None
+
+    if service_key:
+        _supabase_service = create_client(url, service_key)
+        if anon_key:
+            _supabase_public = create_client(url, anon_key)
+            logger.info("Clientes Supabase inicializados: service y public.")
+        else:
+            _supabase_public = _supabase_service
+            logger.warning("SUPABASE_ANON_KEY no configurada; cliente public usa service_role (menos seguro).")
+        return _supabase_service
+
     if anon_key:
-        _supabase_public = create_client(url, anon_key)
-        logger.info("Clientes Supabase inicializados: service y public.")
-    else:
+        _supabase_service = create_client(url, anon_key)
         _supabase_public = _supabase_service
-        logger.warning("SUPABASE_ANON_KEY no configurada; cliente public usa service_role (menos seguro).")
-    return _supabase_service
+        logger.warning("SUPABASE_SERVICE_KEY no configurada; se usa ANON para todo (modo limitado).")
+        return _supabase_service
+
+    _supabase_service = None
+    _supabase_public = None
+    logger.error("SUPABASE_SERVICE_KEY y SUPABASE_ANON_KEY no configuradas. Modo degradado sin Supabase.")
+    return None
 
 
 def get_supabase(role: str = 'service') -> Client:

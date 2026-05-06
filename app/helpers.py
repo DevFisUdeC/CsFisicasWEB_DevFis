@@ -79,6 +79,26 @@ _HERO_STORAGE_FILES_CACHE = {
 }
 
 
+def _serverless_read_only_fs_enabled():
+    """Indica si se debe evitar persistencia local (ej. Vercel serverless)."""
+    try:
+        from flask import current_app
+        return bool(current_app.config.get('SERVERLESS_READ_ONLY_FS', False))
+    except RuntimeError:
+        return False
+
+
+def _is_read_only_fs_error(error):
+    """Detecta error de filesystem solo lectura."""
+    try:
+        import errno
+        if getattr(error, 'errno', None) == errno.EROFS:
+            return True
+    except Exception:
+        pass
+    return 'read-only file system' in str(error).lower()
+
+
 def _default_ui_settings():
     """Parámetros UI centralizados para evitar hardcode en vistas/controles."""
     return {
@@ -320,13 +340,18 @@ def _load_site_settings():
 def _save_site_settings(settings):
     """Guarda configuración de sitio en archivo JSON local."""
     stored_remote = _save_site_settings_to_storage(settings)
+    if _serverless_read_only_fs_enabled():
+        return stored_remote
     try:
         _SITE_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
         with _SITE_SETTINGS_FILE.open('w', encoding='utf-8') as f:
             json.dump(settings, f, ensure_ascii=False, indent=2)
         return True
     except OSError as e:
-        logger.warning(f"No se pudo guardar site_settings.json local: {e}")
+        if _is_read_only_fs_error(e):
+            logger.info("Persistencia local deshabilitada (filesystem solo lectura). Se usa Storage.")
+        else:
+            logger.warning(f"No se pudo guardar site_settings.json local: {e}")
         return stored_remote
 
 
@@ -680,13 +705,18 @@ def _build_page_hero_from_original(page_key, hero_settings):
             raise RuntimeError("No se pudo guardar imagen final en Storage.")
         _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
 
+    if _serverless_read_only_fs_enabled():
+        return
     try:
         final_path.parent.mkdir(parents=True, exist_ok=True)
         final_path.write_bytes(final_bytes)
     except OSError as e:
         if not _hero_storage_enabled():
             raise
-        logger.warning(f"No se pudo guardar respaldo local de hero final: {e}")
+        if _is_read_only_fs_error(e):
+            logger.info("Respaldo local de hero final omitido (filesystem solo lectura).")
+        else:
+            logger.warning(f"No se pudo guardar respaldo local de hero final: {e}")
 
 
 def get_page_hero_settings(page_key):
@@ -756,13 +786,17 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
 
     if delete_image:
         from app.database import get_supabase
-        try:
-            if paths['final_abs'].exists():
-                paths['final_abs'].unlink()
-            if paths['original_abs'].exists():
-                paths['original_abs'].unlink()
-        except OSError as e:
-            logger.warning(f"No se pudieron eliminar respaldos locales del hero: {e}")
+        if not _serverless_read_only_fs_enabled():
+            try:
+                if paths['final_abs'].exists():
+                    paths['final_abs'].unlink()
+                if paths['original_abs'].exists():
+                    paths['original_abs'].unlink()
+            except OSError as e:
+                if _is_read_only_fs_error(e):
+                    logger.info("Limpieza local de hero omitida (filesystem solo lectura).")
+                else:
+                    logger.warning(f"No se pudieron eliminar respaldos locales del hero: {e}")
         if _hero_storage_enabled():
             try:
                 get_supabase(role='service').storage.from_(_hero_storage_bucket()).remove([
@@ -795,14 +829,18 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
                 if not _upload_storage_image_bytes(paths['storage_original'], optimized):
                     return False, "No se pudo guardar la imagen original en Storage."
                 _HERO_STORAGE_FILES_CACHE['fetched_at'] = 0.0
-            try:
-                paths['original_abs'].parent.mkdir(parents=True, exist_ok=True)
-                with paths['original_abs'].open('wb') as f:
-                    f.write(optimized)
-            except OSError as e:
-                if not _hero_storage_enabled():
-                    raise
-                logger.warning(f"No se pudo guardar respaldo local de hero original: {e}")
+            if not _serverless_read_only_fs_enabled():
+                try:
+                    paths['original_abs'].parent.mkdir(parents=True, exist_ok=True)
+                    with paths['original_abs'].open('wb') as f:
+                        f.write(optimized)
+                except OSError as e:
+                    if not _hero_storage_enabled():
+                        raise
+                    if _is_read_only_fs_error(e):
+                        logger.info("Respaldo local de hero original omitido (filesystem solo lectura).")
+                    else:
+                        logger.warning(f"No se pudo guardar respaldo local de hero original: {e}")
             hero['image'] = paths['final_rel']
         except Exception as e:
             logger.error(f"No se pudo guardar imagen hero: {e}")

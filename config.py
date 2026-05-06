@@ -21,12 +21,24 @@ class Config:
     ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
     ADMIN_PASS = os.environ.get('ADMIN_PASS', 'admin')
     ADMIN_PASS_HASH = os.environ.get('ADMIN_PASS_HASH', '')
-    SUPABASE_URL = os.environ.get('SUPABASE_URL')
-    SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
-    SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
+    SUPABASE_URL = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL')
+    SUPABASE_ANON_KEY = (
+        os.environ.get('SUPABASE_ANON_KEY')
+        or os.environ.get('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+        or os.environ.get('SUPABASE_PUBLISHABLE_KEY')
+    )
+    SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY') or os.environ.get('SUPABASE_SERVICE_ROLE_KEY')
     SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'uploads')
+    _IS_VERCEL = os.environ.get('VERCEL', '').lower() in {'1', 'true', 'yes', 'on'}
     HERO_USE_SUPABASE_STORAGE = os.environ.get('HERO_USE_SUPABASE_STORAGE', 'true').lower() in {'1', 'true', 'yes', 'on'}
-    HERO_SETTINGS_USE_SUPABASE_STORAGE = os.environ.get('HERO_SETTINGS_USE_SUPABASE_STORAGE', 'false').lower() in {'1', 'true', 'yes', 'on'}
+    HERO_SETTINGS_USE_SUPABASE_STORAGE = os.environ.get(
+        'HERO_SETTINGS_USE_SUPABASE_STORAGE',
+        'true' if _IS_VERCEL else 'false',
+    ).lower() in {'1', 'true', 'yes', 'on'}
+    SERVERLESS_READ_ONLY_FS = os.environ.get(
+        'SERVERLESS_READ_ONLY_FS',
+        'true' if _IS_VERCEL else 'false',
+    ).lower() in {'1', 'true', 'yes', 'on'}
     HERO_STORAGE_PREFIX = os.environ.get('HERO_STORAGE_PREFIX', 'hero')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', str(200 * 1024 * 1024)))
