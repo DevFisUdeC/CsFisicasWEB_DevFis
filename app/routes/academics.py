@@ -4,14 +4,12 @@ Responsabilidad: Pregrado, Postgrado, Malla Curricular.
 """
 
 import logging
-from pathlib import Path
-from flask import Blueprint, render_template, send_from_directory, abort
+from flask import Blueprint, render_template, redirect, url_for
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
 academics_bp = Blueprint('academics', __name__)
-DOCS_IMGS_DIR = Path(__file__).resolve().parents[2] / 'Docs' / 'Imgs'
 
 
 @academics_bp.route('/undergraduate')
@@ -30,15 +28,8 @@ def undergraduate():
 
 @academics_bp.route('/assets/malla-ciencias-fisicas.jpg')
 def curriculum_image():
-    """Sirve la malla curricular oficial desde Docs/Imgs."""
-    filename = 'Ciencias-Fisicas_malla.jpg'
-    img_path = DOCS_IMGS_DIR / filename
-    if not img_path.exists():
-        logger.error("No se encontró malla curricular en ruta esperada: %s", img_path)
-        abort(404)
-    # Recurso prácticamente estático: cache largo para mejorar entrega en producción.
-    return send_from_directory(DOCS_IMGS_DIR, filename, max_age=31536000)
-
+    """Compatibilidad: redirige a la malla estática oficial."""
+    return redirect(url_for('static', filename='docs/Ciencias-Fisicas_malla.jpg'), code=302)
 
 @academics_bp.route('/graduate')
 def graduate():

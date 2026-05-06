@@ -5,14 +5,12 @@ Responsabilidad: Home, About (Departamento), Contact.
 
 import json
 import logging
-from pathlib import Path
-from flask import Blueprint, render_template, request, current_app, Response, send_from_directory, abort
+from flask import Blueprint, render_template, request, current_app, Response, redirect, url_for
 from app.logging_utils import auto_trace_module_functions
 
 logger = logging.getLogger(__name__)
 
 main_bp = Blueprint('main', __name__)
-DOCS_IMGS_DIR = Path(__file__).resolve().parents[2] / 'Docs' / 'Imgs'
 
 
 @main_bp.route('/')
@@ -72,15 +70,8 @@ def students():
 
 @main_bp.route('/students/assets/plano-aulas-udec.png')
 def students_classroom_map():
-    """Sirve el plano de aulas desde Docs/Imgs para la página de estudiantes."""
-    filename = 'plano-aulas-udec.png'
-    img_path = DOCS_IMGS_DIR / filename
-    if not img_path.exists():
-        logger.error("No se encontró plano de aulas en ruta esperada: %s", img_path)
-        abort(404)
-    # Recurso de baja rotación: cache largo para reducir latencia y recargas.
-    return send_from_directory(DOCS_IMGS_DIR, filename, max_age=31536000)
-
+    """Compatibilidad: redirige al plano estático oficial."""
+    return redirect(url_for('static', filename='docs/plano-aulas-udec.png'), code=302)
 
 @main_bp.route('/_trace/client-event', methods=['GET', 'POST'])
 def trace_client_event():

@@ -61,5 +61,7 @@ app/static/img/uploads/
 Docs/
 Registro/
 CsFisicasWEB.code-workspace
+!app/static/docs/
+!app/static/docs/**
 
 .vercel
