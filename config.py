@@ -13,8 +13,8 @@ class Config:
     SITE_NAME = 'Departamento de Física'
     SITE_SUBTITLE = 'Universidad de Concepción'
     SITE_URL = 'https://fisica.udec.cl'
-    CONTACT_EMAIL = 'depfisica@udec.cl'
-    CONTACT_PHONE = '+56 41 220 4334'
+    CONTACT_EMAIL = 'contacto@cfm.cl'
+    CONTACT_PHONE = '+56 41 220 4103'
     CONTACT_ADDRESS = 'Avda. Esteban Iturra s/n, Barrio Universitario, Concepción, Chile'
 
 
