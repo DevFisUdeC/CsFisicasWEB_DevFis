@@ -44,17 +44,29 @@
         <p class="text-muted">Fechas académicas, hitos de docencia e información para la planificación semestral.</p>
         <div class="resource-grid">
             <article class="resource-card resource-card--compact">
-                <h3>Calendario de Docencia</h3>
-                <p>Planificación oficial de periodos, cierres y evaluaciones.</p>
+                <h3>Horarios de clases</h3>
+                <p>Horario oficial del semestre para Ciencias Físicas.</p>
+                <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/pdf/horarios/HORAFIS261.pdf" target="_blank" rel="noopener">Abrir horarios (PDF)</a>
             </article>
             <article class="resource-card resource-card--compact">
-                <h3>Agenda académica</h3>
-                <p>Fechas de inscripción, suspensión, reincorporación y trámites críticos.</p>
+                <h3>Evaluaciones</h3>
+                <p>Calendario oficial de evaluaciones del semestre.</p>
+                <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/pdf/evaluaciones/EVALFIS261.pdf" target="_blank" rel="noopener">Abrir evaluaciones (PDF)</a>
             </article>
             <article class="resource-card resource-card--compact">
-                <h3>Comisiones y horarios</h3>
-                <p>Revisión de bloques de clases y ajustes de carga académica con tutoría.</p>
+                <h3>Pauta para tesis pregrado 2026</h3>
+                <p>Documento oficial para autorización y formato de tesis.</p>
+                <a class="btn btn--outline btn--sm" href="https://bibliotecas.udec.cl/documentos/pauta_autorizada_tesis.pdf" target="_blank" rel="noopener">Abrir pauta (PDF)</a>
             </article>
+        </div>
+
+        <div class="curriculum-image students-map">
+            <a href="{{ url_for('main.students_classroom_map') }}" target="_blank" rel="noopener"
+               title="Clic para ver en tamaño completo">
+                <img src="{{ url_for('main.students_classroom_map') }}"
+                     alt="Plano referencial de aulas UdeC" class="curriculum-image__img">
+            </a>
+            <p class="curriculum-image__caption">Plano referencial de aulas UdeC (clic para ver en tamaño completo)</p>
         </div>
     </div>
 </section>
@@ -75,9 +87,9 @@
                 <a class="btn btn--outline btn--sm" href="{{ url_for('research.index') }}">Ir a investigación</a>
             </article>
             <article class="resource-card">
-                <h3>Publicaciones y referencias</h3>
-                <p>Catálogo de publicaciones del departamento para explorar antecedentes de trabajo.</p>
-                <a class="btn btn--outline btn--sm" href="{{ url_for('research.publications') }}">Ver publicaciones</a>
+                <h3>Referencias de investigación</h3>
+                <p>Enlaces de interés y líneas de investigación de la Facultad CFM.</p>
+                <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/investigacion/" target="_blank" rel="noopener">Ir a referencias CFM</a>
             </article>
         </div>
     </div>
