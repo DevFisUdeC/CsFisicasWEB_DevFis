@@ -17,7 +17,13 @@
             {% endif %}
 
             <div class="article-content">
-                <p>{{ article.content }}</p>
+                {% set normalized_content = (article.content | default('') | replace('\r\n', '\n') | replace('\r', '\n')) %}
+                {% for paragraph in normalized_content.split('\n\n') %}
+                    {% set clean_paragraph = paragraph.strip() %}
+                    {% if clean_paragraph %}
+                    <p class="article-content__paragraph">{{ clean_paragraph | e | replace('\n', '<br>') | safe }}</p>
+                    {% endif %}
+                {% endfor %}
             </div>
 
             {% if article.source %}

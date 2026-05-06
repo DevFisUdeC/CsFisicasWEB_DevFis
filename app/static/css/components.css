@@ -1739,13 +1739,48 @@
    ═══════════════════════════════════════════ */
 
 .article-image {
-    width: 100%;
+    width: min(100%, 50vw);
+    max-width: 760px;
     border-radius: var(--border-radius);
+    display: block;
+    margin-inline: auto;
     margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-md);
 }
 
 .article-content {
     margin-bottom: var(--space-xl);
+    max-width: min(100%, 78ch);
+    margin-inline: auto;
+    color: var(--color-text);
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.article-content__paragraph {
+    margin: 0 0 1.15rem;
+    text-wrap: pretty;
+}
+
+.article-content__paragraph:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .article-image {
+        width: min(100%, 70vw);
+    }
+}
+
+@media (max-width: 600px) {
+    .article-image {
+        width: 100%;
+    }
+
+    .article-content {
+        font-size: 1.02rem;
+        line-height: 1.72;
+    }
 }
 
 
