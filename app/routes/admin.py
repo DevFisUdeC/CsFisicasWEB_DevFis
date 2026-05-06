@@ -10,7 +10,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 import logging
 import time
 from app.helpers import (
-    get_news, get_news_by_slug, create_news, update_news, delete_news_by_slug,
+    get_news, get_news_by_id, create_news, update_news_by_id, delete_news_by_id,
     get_team, get_member_by_slug, create_team_member, update_team_member, delete_team_member_by_slug,
     upload_to_storage, list_storage_files, delete_from_storage,
     slugify, get_page_hero_settings, update_page_hero_settings, get_page_hero_contexts
@@ -39,8 +39,8 @@ def inject_admin_counts():
     """Contadores disponibles en todos los templates admin (sidebar badges)."""
     bucket = current_app.config.get('SUPABASE_BUCKET', 'uploads')
     return {
-        'news_count': len(get_news()),
-        'team_count': len(get_team()),
+        'news_count': len(get_news(role='service')),
+        'team_count': len(get_team(role='service')),
         'images_count': len(list_storage_files(bucket)),
     }
 
@@ -108,8 +108,8 @@ def logout():
 @login_required
 def dashboard():
     """Dashboard con resumen general."""
-    news = get_news()
-    team = get_team()
+    news = get_news(role='service')
+    team = get_team(role='service')
     bucket = current_app.config.get('SUPABASE_BUCKET', 'uploads')
     images = list_storage_files(bucket)
     return render_template('admin/dashboard.html',
@@ -125,7 +125,7 @@ def dashboard():
 @login_required
 def news_list():
     """Listado de noticias."""
-    news = get_news()
+    news = get_news(role='service')
     return render_template('admin/news.html', news=news, active_section='news')
 
 
@@ -158,11 +158,11 @@ def create_news_view():
                            active_section='news')
 
 
-@admin_bp.route('/news/edit/<slug>', methods=['GET', 'POST'])
+@admin_bp.route('/news/edit/<int:news_id>', methods=['GET', 'POST'])
 @login_required
-def edit_news_view(slug):
+def edit_news_view(news_id):
     """Editor individual para una noticia."""
-    article = get_news_by_slug(slug)
+    article = get_news_by_id(news_id)
     if not article:
         flash("Noticia no encontrada.", "error")
         return redirect(url_for('admin.news_list'))
@@ -179,7 +179,7 @@ def edit_news_view(slug):
         new_image = _upload('image')
         if new_image:
             data['image'] = new_image
-        result = update_news(slug, data)
+        result = update_news_by_id(news_id, data)
         if result:
             flash("La noticia ha sido actualizada.", "success")
         else:
@@ -190,11 +190,11 @@ def edit_news_view(slug):
                            article=article, active_section='news')
 
 
-@admin_bp.route('/news/delete/<slug>', methods=['POST'])
+@admin_bp.route('/news/delete/<int:news_id>', methods=['POST'])
 @login_required
-def delete_news_view(slug):
+def delete_news_view(news_id):
     """Elimina una noticia específica."""
-    if delete_news_by_slug(slug):
+    if delete_news_by_id(news_id):
         flash("Noticia eliminada permanentemente.", "warning")
     else:
         flash("Error al eliminar la noticia.", "error")
@@ -209,7 +209,7 @@ def delete_news_view(slug):
 @login_required
 def team_list():
     """Listado de académicos."""
-    team = get_team()
+    team = get_team(role='service')
     return render_template('admin/team.html', team=team, active_section='team')
 
 
@@ -249,7 +249,7 @@ def create_member():
 @login_required
 def edit_member(slug):
     """Editor individual para un académico."""
-    member = get_member_by_slug(slug)
+    member = get_member_by_slug(slug, role='service')
     if not member:
         flash("Académico no encontrado.", "error")
         return redirect(url_for('admin.team_list'))

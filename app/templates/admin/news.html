@@ -41,8 +41,8 @@
                 </td>
                 <td>
                     <div class="admin-table__actions">
-                        <a href="{{ url_for('admin.edit_news_view', slug=article.slug) }}" class="btn btn--ghost">Editar</a>
-                        <form action="{{ url_for('admin.delete_news_view', slug=article.slug) }}" method="POST"
+                        <a href="{{ url_for('admin.edit_news_view', news_id=article.id) }}" class="btn btn--ghost">Editar</a>
+                        <form action="{{ url_for('admin.delete_news_view', news_id=article.id) }}" method="POST"
                               data-confirm="¿Eliminar la noticia '{{ article.title }}'? Esta acción no se puede deshacer.">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn--danger">Eliminar</button>

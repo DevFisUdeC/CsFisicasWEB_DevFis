@@ -933,25 +933,36 @@ def update_home_hero_settings(form_data, image_file=None, delete_image=False):
 #   NOTICIAS — Supabase table: public.news
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def get_news():
+def get_news(role='public'):
     """Retorna todas las noticias ordenadas por fecha descendente."""
     from app.database import get_supabase
     try:
-        resp = get_supabase(role='public').table('news').select('*').order('date', desc=True).execute()
+        resp = get_supabase(role=role).table('news').select('*').order('date', desc=True).execute()
         return resp.data or []
     except Exception as e:
         logger.error(f"Error al obtener noticias de Supabase: {e}")
         return []
 
 
-def get_news_by_slug(slug):
+def get_news_by_slug(slug, role='public'):
     """Retorna una noticia por su slug, o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase(role='public').table('news').select('*').eq('slug', slug).limit(1).execute()
+        resp = get_supabase(role=role).table('news').select('*').eq('slug', slug).limit(1).execute()
         return resp.data[0] if resp.data else None
     except Exception as e:
         logger.error(f"Error al obtener noticia '{slug}': {e}")
+        return None
+
+
+def get_news_by_id(news_id):
+    """Retorna una noticia por id, o None (uso admin)."""
+    from app.database import get_supabase
+    try:
+        resp = get_supabase(role='service').table('news').select('*').eq('id', news_id).limit(1).execute()
+        return resp.data[0] if resp.data else None
+    except Exception as e:
+        logger.error(f"Error al obtener noticia id={news_id}: {e}")
         return None
 
 
@@ -979,6 +990,18 @@ def update_news(slug, data):
         return None
 
 
+def update_news_by_id(news_id, data):
+    """Actualiza una noticia por id (uso admin)."""
+    from app.database import get_supabase
+    try:
+        resp = get_supabase(role='service').table('news').update(data).eq('id', news_id).execute()
+        logger.info(f"Noticia actualizada en Supabase por id: {news_id}")
+        return resp.data[0] if resp.data else None
+    except Exception as e:
+        logger.error(f"Error al actualizar noticia id={news_id}: {e}")
+        return None
+
+
 def delete_news_by_slug(slug):
     """Elimina una noticia por slug. Retorna True si se eliminó."""
     from app.database import get_supabase
@@ -991,26 +1014,38 @@ def delete_news_by_slug(slug):
         return False
 
 
+def delete_news_by_id(news_id):
+    """Elimina una noticia por id (uso admin)."""
+    from app.database import get_supabase
+    try:
+        get_supabase(role='service').table('news').delete().eq('id', news_id).execute()
+        logger.info(f"Noticia eliminada de Supabase por id: {news_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Error al eliminar noticia id={news_id}: {e}")
+        return False
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #   ACADÉMICOS — Supabase table: public.team_members
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def get_team():
+def get_team(role='public'):
     """Retorna todos los académicos."""
     from app.database import get_supabase
     try:
-        resp = get_supabase(role='public').table('team_members').select('*').order('name').execute()
+        resp = get_supabase(role=role).table('team_members').select('*').order('name').execute()
         return resp.data or []
     except Exception as e:
         logger.error(f"Error al obtener equipo de Supabase: {e}")
         return []
 
 
-def get_member_by_slug(slug):
+def get_member_by_slug(slug, role='public'):
     """Retorna un académico por su slug, o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase(role='public').table('team_members').select('*').eq('slug', slug).limit(1).execute()
+        resp = get_supabase(role=role).table('team_members').select('*').eq('slug', slug).limit(1).execute()
         return resp.data[0] if resp.data else None
     except Exception as e:
         logger.error(f"Error al obtener académico '{slug}': {e}")
