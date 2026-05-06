@@ -1031,9 +1031,46 @@
     }
 }
 
+/* ═══════════════════════════════════════════
+   8c. Especialidades de Pregrado
+   ═══════════════════════════════════════════ */
+
+.specialization-grid {
+    margin-top: var(--space-xl);
+}
+
+.specialization-card h3 {
+    margin-bottom: var(--space-sm);
+}
+
+.specialization-card p {
+    font-size: var(--font-size-base);
+    line-height: 1.75;
+    margin-bottom: var(--space-md);
+}
+
+.specialization-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--color-text-secondary);
+}
+
+.specialization-list li {
+    margin-bottom: var(--space-sm);
+    line-height: 1.6;
+}
+
+.specialization-list li:last-child {
+    margin-bottom: 0;
+}
+
+.specialization-note {
+    margin-top: var(--space-xl);
+}
+
 
 /* ═══════════════════════════════════════════
-   8c. Curriculum Image
+   8d. Curriculum Image
    ═══════════════════════════════════════════ */
 
 .curriculum-image {
