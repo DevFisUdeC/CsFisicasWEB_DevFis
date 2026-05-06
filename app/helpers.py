@@ -9,6 +9,7 @@ import logging
 import os
 import time
 import imghdr
+from urllib.parse import unquote
 from io import BytesIO
 from pathlib import Path
 
@@ -948,8 +949,16 @@ def get_news_by_slug(slug, role='public'):
     """Retorna una noticia por su slug, o None."""
     from app.database import get_supabase
     try:
-        resp = get_supabase(role=role).table('news').select('*').eq('slug', slug).limit(1).execute()
-        return resp.data[0] if resp.data else None
+        candidates = [slug]
+        decoded = unquote(slug or '')
+        if decoded and decoded not in candidates:
+            candidates.append(decoded)
+
+        for candidate in candidates:
+            resp = get_supabase(role=role).table('news').select('*').eq('slug', candidate).limit(1).execute()
+            if resp.data:
+                return resp.data[0]
+        return None
     except Exception as e:
         logger.error(f"Error al obtener noticia '{slug}': {e}")
         return None
