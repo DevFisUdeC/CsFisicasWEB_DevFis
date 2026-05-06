@@ -41,7 +41,7 @@
 <section class="section section--alt" id="calendario" aria-labelledby="calendario-heading">
     <div class="container content-page">
         <h2 id="calendario-heading">Calendario y horarios</h2>
-        <p class="text-muted">Fechas académicas, hitos de docencia e información para la planificación semestral.</p>
+        <p class="text-muted">Documentos oficiales para planificar clases y evaluaciones del semestre.</p>
         <div class="resource-grid">
             <article class="resource-card resource-card--compact">
                 <h3>Horarios de clases</h3>
@@ -52,11 +52,6 @@
                 <h3>Evaluaciones</h3>
                 <p>Calendario oficial de evaluaciones del semestre.</p>
                 <a class="btn btn--outline btn--sm" href="https://www.cfm.cl/pdf/evaluaciones/EVALFIS261.pdf" target="_blank" rel="noopener">Abrir evaluaciones (PDF)</a>
-            </article>
-            <article class="resource-card resource-card--compact">
-                <h3>Pauta para tesis pregrado 2026</h3>
-                <p>Documento oficial para autorización y formato de tesis.</p>
-                <a class="btn btn--outline btn--sm" href="https://bibliotecas.udec.cl/documentos/pauta_autorizada_tesis.pdf" target="_blank" rel="noopener">Abrir pauta (PDF)</a>
             </article>
         </div>
 
@@ -77,9 +72,9 @@
         <p class="text-muted">Recursos para preparar la práctica profesional, memoria de título y seguimiento del egreso.</p>
         <div class="resource-grid">
             <article class="resource-card">
-                <h3>Formato de memoria</h3>
-                <p>Plantilla y lineamientos para estandarizar la entrega de memoria de título.</p>
-                <a class="btn btn--outline btn--sm" href="{{ url_for('academics.undergraduate') }}#malla-curricular">Ver pregrado</a>
+                <h3>Pauta para tesis pregrado 2026</h3>
+                <p>Documento oficial para autorización, estructura y lineamientos de tesis.</p>
+                <a class="btn btn--outline btn--sm" href="https://bibliotecas.udec.cl/documentos/pauta_autorizada_tesis.pdf" target="_blank" rel="noopener">Abrir pauta (PDF)</a>
             </article>
             <article class="resource-card">
                 <h3>Portafolio de investigación</h3>
@@ -98,11 +93,23 @@
 <section class="section section--alt" id="egresados" aria-labelledby="egresados-heading">
     <div class="container content-page">
         <h2 id="egresados-heading">Egresados y proyección académica</h2>
-        <p class="text-muted">Próximamente incorporaremos listado de titulados, líneas de inserción y oportunidades de postgrado.</p>
-        <div class="cta-banner cta-banner--light">
-            <h3 class="cta-banner__title">¿Buscas oportunidades de postgrado?</h3>
-            <p class="cta-banner__text">Revisa la oferta de magíster y doctorado del departamento y de la Facultad CFM.</p>
-            <a href="{{ url_for('academics.graduate') }}" class="btn btn--primary">Explorar postgrado</a>
+        <p class="text-muted">Alternativas para continuidad académica e inserción laboral de estudiantes y egresados.</p>
+        <div class="resource-grid">
+            <article class="resource-card">
+                <h3>Postgrado en Ciencias Físicas</h3>
+                <p>Revisa programas de Magíster y Doctorado para proyectar continuidad académica y de investigación.</p>
+                <a class="btn btn--outline btn--sm" href="https://cs-fisicas-web-dev-fis.vercel.app/academics/graduate" target="_blank" rel="noopener">Ver postgrado</a>
+            </article>
+            <article class="resource-card">
+                <h3>Portal de empleo UdeC</h3>
+                <p>Ofertas laborales para prácticas, primeros empleos y posiciones profesionales.</p>
+                <a class="btn btn--outline btn--sm" href="https://udec.trabajando.cl/" target="_blank" rel="noopener">Ir a Trabajando UdeC</a>
+            </article>
+            <article class="resource-card">
+                <h3>Ofertas y buscadores UdeC Santiago</h3>
+                <p>Buscadores y convocatorias para fortalecer la empleabilidad y red profesional.</p>
+                <a class="btn btn--outline btn--sm" href="https://santiago.udec.cl/ofertas-y-buscadores" target="_blank" rel="noopener">Ver ofertas y buscadores</a>
+            </article>
         </div>
     </div>
 </section>
