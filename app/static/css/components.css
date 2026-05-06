@@ -1227,12 +1227,13 @@
 
 .research-intro__stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-lg);
     padding: var(--space-xl);
     background: linear-gradient(135deg, rgba(var(--color-primary-rgb, 10, 110, 189), 0.1) 0%, rgba(var(--color-accent-rgb, 212, 175, 55), 0.05) 100%);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--color-border);
+    max-width: 760px;
 }
 
 .research-intro__stat {
@@ -1260,23 +1261,34 @@
         grid-template-columns: 1fr;
         gap: var(--space-md);
     }
+
+    .research-card {
+        padding: var(--space-md);
+    }
 }
 
 /* Research Cards */
+.research-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
 .research-card {
-    padding: var(--space-xl);
+    width: 100%;
+    padding: var(--space-lg) var(--space-xl);
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-lg);
-    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    border-left: 5px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    transition: border-color var(--transition-base), background-color var(--transition-base);
     display: flex;
     flex-direction: column;
 }
 
 .research-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
     border-color: var(--color-primary-light);
+    background-color: var(--color-bg-alt);
 }
 
 .research-card__header {
@@ -1310,15 +1322,15 @@
 
 .research-card__desc {
     color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-    line-height: 1.7;
-    margin-bottom: var(--space-lg);
+    font-size: var(--font-size-base);
+    line-height: 1.65;
+    margin-bottom: var(--space-md);
     flex-grow: 1;
 }
 
 .research-card__footer {
     border-top: 1px solid var(--color-border);
-    padding-top: var(--space-md);
+    padding-top: var(--space-sm);
 }
 
 .research-card__leader {
