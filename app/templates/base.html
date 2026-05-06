@@ -15,6 +15,84 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <style>
+        :root {
+            --ui-navbar-udec-logo-desktop-min: {{ ui_settings.navbar.udec_logo.desktop.min }};
+            --ui-navbar-udec-logo-desktop-fluid: {{ ui_settings.navbar.udec_logo.desktop.fluid }};
+            --ui-navbar-udec-logo-desktop-max: {{ ui_settings.navbar.udec_logo.desktop.max }};
+            --ui-navbar-udec-logo-desktop-max-width: {{ ui_settings.navbar.udec_logo.desktop.max_width }};
+            --ui-navbar-udec-logo-tablet-min: {{ ui_settings.navbar.udec_logo.tablet.min }};
+            --ui-navbar-udec-logo-tablet-fluid: {{ ui_settings.navbar.udec_logo.tablet.fluid }};
+            --ui-navbar-udec-logo-tablet-max: {{ ui_settings.navbar.udec_logo.tablet.max }};
+            --ui-navbar-udec-logo-tablet-max-width: {{ ui_settings.navbar.udec_logo.tablet.max_width }};
+            --ui-navbar-udec-logo-mobile-min: {{ ui_settings.navbar.udec_logo.mobile.min }};
+            --ui-navbar-udec-logo-mobile-fluid: {{ ui_settings.navbar.udec_logo.mobile.fluid }};
+            --ui-navbar-udec-logo-mobile-max: {{ ui_settings.navbar.udec_logo.mobile.max }};
+            --ui-navbar-udec-logo-mobile-max-width: {{ ui_settings.navbar.udec_logo.mobile.max_width }};
+
+            --ui-btn-touch-min-height: {{ ui_settings.buttons.touch_min_height }};
+
+            --ui-hero-desktop-padding-min: {{ ui_settings.hero.layout.desktop.padding_min }};
+            --ui-hero-desktop-padding-fluid: {{ ui_settings.hero.layout.desktop.padding_fluid }};
+            --ui-hero-desktop-padding-max: {{ ui_settings.hero.layout.desktop.padding_max }};
+            --ui-hero-desktop-subtitle-size: {{ ui_settings.hero.layout.desktop.subtitle_size }};
+            --ui-hero-desktop-subtitle-max-width: {{ ui_settings.hero.layout.desktop.subtitle_max_width }};
+
+            --ui-hero-tablet-padding-min: {{ ui_settings.hero.layout.tablet.padding_min }};
+            --ui-hero-tablet-padding-fluid: {{ ui_settings.hero.layout.tablet.padding_fluid }};
+            --ui-hero-tablet-padding-max: {{ ui_settings.hero.layout.tablet.padding_max }};
+            --ui-hero-tablet-min-height-min: {{ ui_settings.hero.layout.tablet.min_height_min }};
+            --ui-hero-tablet-min-height-fluid: {{ ui_settings.hero.layout.tablet.min_height_fluid }};
+            --ui-hero-tablet-min-height-max: {{ ui_settings.hero.layout.tablet.min_height_max }};
+            --ui-hero-tablet-title-min: {{ ui_settings.hero.layout.tablet.title_min }};
+            --ui-hero-tablet-title-fluid: {{ ui_settings.hero.layout.tablet.title_fluid }};
+            --ui-hero-tablet-title-max: {{ ui_settings.hero.layout.tablet.title_max }};
+            --ui-hero-tablet-subtitle-min: {{ ui_settings.hero.layout.tablet.subtitle_min }};
+            --ui-hero-tablet-subtitle-fluid: {{ ui_settings.hero.layout.tablet.subtitle_fluid }};
+            --ui-hero-tablet-subtitle-max: {{ ui_settings.hero.layout.tablet.subtitle_max }};
+            --ui-hero-tablet-compact-min-height-min: {{ ui_settings.hero.layout.tablet.compact_min_height_min }};
+            --ui-hero-tablet-compact-min-height-fluid: {{ ui_settings.hero.layout.tablet.compact_min_height_fluid }};
+            --ui-hero-tablet-compact-min-height-max: {{ ui_settings.hero.layout.tablet.compact_min_height_max }};
+            --ui-hero-tablet-compact-padding-top-min: {{ ui_settings.hero.layout.tablet.compact_padding_top_min }};
+            --ui-hero-tablet-compact-padding-top-fluid: {{ ui_settings.hero.layout.tablet.compact_padding_top_fluid }};
+            --ui-hero-tablet-compact-padding-top-max: {{ ui_settings.hero.layout.tablet.compact_padding_top_max }};
+            --ui-hero-tablet-compact-padding-bottom-min: {{ ui_settings.hero.layout.tablet.compact_padding_bottom_min }};
+            --ui-hero-tablet-compact-padding-bottom-fluid: {{ ui_settings.hero.layout.tablet.compact_padding_bottom_fluid }};
+            --ui-hero-tablet-compact-padding-bottom-max: {{ ui_settings.hero.layout.tablet.compact_padding_bottom_max }};
+            --ui-hero-tablet-compact-title-min: {{ ui_settings.hero.layout.tablet.compact_title_min }};
+            --ui-hero-tablet-compact-title-fluid: {{ ui_settings.hero.layout.tablet.compact_title_fluid }};
+            --ui-hero-tablet-compact-title-max: {{ ui_settings.hero.layout.tablet.compact_title_max }};
+            --ui-hero-tablet-compact-subtitle-min: {{ ui_settings.hero.layout.tablet.compact_subtitle_min }};
+            --ui-hero-tablet-compact-subtitle-fluid: {{ ui_settings.hero.layout.tablet.compact_subtitle_fluid }};
+            --ui-hero-tablet-compact-subtitle-max: {{ ui_settings.hero.layout.tablet.compact_subtitle_max }};
+
+            --ui-hero-mobile-min-height-min: {{ ui_settings.hero.layout.mobile.min_height_min }};
+            --ui-hero-mobile-min-height-fluid: {{ ui_settings.hero.layout.mobile.min_height_fluid }};
+            --ui-hero-mobile-min-height-max: {{ ui_settings.hero.layout.mobile.min_height_max }};
+            --ui-hero-mobile-padding-min: {{ ui_settings.hero.layout.mobile.padding_min }};
+            --ui-hero-mobile-padding-fluid: {{ ui_settings.hero.layout.mobile.padding_fluid }};
+            --ui-hero-mobile-padding-max: {{ ui_settings.hero.layout.mobile.padding_max }};
+            --ui-hero-mobile-title-min: {{ ui_settings.hero.layout.mobile.title_min }};
+            --ui-hero-mobile-title-fluid: {{ ui_settings.hero.layout.mobile.title_fluid }};
+            --ui-hero-mobile-title-max: {{ ui_settings.hero.layout.mobile.title_max }};
+            --ui-hero-mobile-subtitle-size: {{ ui_settings.hero.layout.mobile.subtitle_size }};
+            --ui-hero-mobile-compact-min-height-min: {{ ui_settings.hero.layout.mobile.compact_min_height_min }};
+            --ui-hero-mobile-compact-min-height-fluid: {{ ui_settings.hero.layout.mobile.compact_min_height_fluid }};
+            --ui-hero-mobile-compact-min-height-max: {{ ui_settings.hero.layout.mobile.compact_min_height_max }};
+            --ui-hero-mobile-compact-padding-top-min: {{ ui_settings.hero.layout.mobile.compact_padding_top_min }};
+            --ui-hero-mobile-compact-padding-top-fluid: {{ ui_settings.hero.layout.mobile.compact_padding_top_fluid }};
+            --ui-hero-mobile-compact-padding-top-max: {{ ui_settings.hero.layout.mobile.compact_padding_top_max }};
+            --ui-hero-mobile-compact-padding-bottom-min: {{ ui_settings.hero.layout.mobile.compact_padding_bottom_min }};
+            --ui-hero-mobile-compact-padding-bottom-fluid: {{ ui_settings.hero.layout.mobile.compact_padding_bottom_fluid }};
+            --ui-hero-mobile-compact-padding-bottom-max: {{ ui_settings.hero.layout.mobile.compact_padding_bottom_max }};
+            --ui-hero-mobile-compact-title-min: {{ ui_settings.hero.layout.mobile.compact_title_min }};
+            --ui-hero-mobile-compact-title-fluid: {{ ui_settings.hero.layout.mobile.compact_title_fluid }};
+            --ui-hero-mobile-compact-title-max: {{ ui_settings.hero.layout.mobile.compact_title_max }};
+            --ui-hero-mobile-compact-subtitle-min: {{ ui_settings.hero.layout.mobile.compact_subtitle_min }};
+            --ui-hero-mobile-compact-subtitle-fluid: {{ ui_settings.hero.layout.mobile.compact_subtitle_fluid }};
+            --ui-hero-mobile-compact-subtitle-max: {{ ui_settings.hero.layout.mobile.compact_subtitle_max }};
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -33,6 +111,7 @@
     <!-- Scripts -->
     <script>
         window.APP_DEBUG = {{ 'true' if config.DEBUG else 'false' }};
+        window.UI_SETTINGS = {{ ui_settings | tojson }};
         window.sendClientTrace = function(eventName, payload) {
             if (!window.APP_DEBUG) return;
             try {

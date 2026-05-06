@@ -5,9 +5,9 @@
 {% set hero_subtitle = 'Facultad de Ciencias Físicas y Matemáticas — Universidad de Concepción' %}
 {% set hero_cta_text = false %}
 {% set hero_background_image = about_hero.image_url if about_hero and about_hero.enabled else '' %}
-{% set hero_background_position_x = 50 %}
-{% set hero_background_position_y = 50 %}
-{% set hero_overlay_opacity = about_hero.overlay_opacity if about_hero else 0.45 %}
+{% set hero_background_position_x = about_hero.position_x if about_hero else ui_settings.hero.default_position_x %}
+{% set hero_background_position_y = about_hero.position_y if about_hero else ui_settings.hero.default_position_y %}
+{% set hero_overlay_opacity = about_hero.overlay_opacity if about_hero else ui_settings.hero.default_overlay_opacity %}
 {% include 'components/hero.html' %}
 
 <section class="section" id="historia" aria-labelledby="historia-heading">

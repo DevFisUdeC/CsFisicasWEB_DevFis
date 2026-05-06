@@ -1,0 +1,119 @@
+{
+  "navbar": {
+    "udec_logo": {
+      "desktop": {
+        "min": "80px",
+        "fluid": "6.7vw",
+        "max": "80px",
+        "max_width": "170px"
+      },
+      "tablet": {
+        "min": "54px",
+        "fluid": "6.6vw",
+        "max": "74px",
+        "max_width": "170px"
+      },
+      "mobile": {
+        "min": "64px",
+        "fluid": "17vw",
+        "max": "81px",
+        "max_width": "188px"
+      }
+    }
+  },
+  "buttons": {
+    "touch_min_height": "44px"
+  },
+  "hero": {
+    "position_min": 0,
+    "position_max": 200,
+    "default_position_x": 50,
+    "default_position_y": 45,
+    "zoom_min": 0.01,
+    "zoom_max": 10.0,
+    "zoom_step": 0.01,
+    "default_zoom": 1.0,
+    "crop_min": 0,
+    "crop_max": 30,
+    "overlay_min": 0.0,
+    "overlay_max": 0.9,
+    "overlay_step": 0.05,
+    "default_overlay_opacity": 0.45,
+    "layout": {
+      "desktop": {
+        "padding_min": "3.8rem",
+        "padding_fluid": "6vw",
+        "padding_max": "5rem",
+        "subtitle_size": "var(--font-size-lg)",
+        "subtitle_max_width": "700px"
+      },
+      "tablet": {
+        "padding_min": "2.4rem",
+        "padding_fluid": "10vw",
+        "padding_max": "3.5rem",
+        "min_height_min": "240px",
+        "min_height_fluid": "56vw",
+        "min_height_max": "360px",
+        "title_min": "1.95rem",
+        "title_fluid": "8vw",
+        "title_max": "2.55rem",
+        "subtitle_min": "1.02rem",
+        "subtitle_fluid": "4.6vw",
+        "subtitle_max": "1.2rem",
+        "compact_min_height_min": "210px",
+        "compact_min_height_fluid": "44vw",
+        "compact_min_height_max": "285px",
+        "compact_padding_top_min": "1.8rem",
+        "compact_padding_top_fluid": "7vw",
+        "compact_padding_top_max": "2.5rem",
+        "compact_padding_bottom_min": "1.25rem",
+        "compact_padding_bottom_fluid": "5.5vw",
+        "compact_padding_bottom_max": "2rem",
+        "compact_title_min": "1.8rem",
+        "compact_title_fluid": "7.1vw",
+        "compact_title_max": "2.25rem",
+        "compact_subtitle_min": "0.98rem",
+        "compact_subtitle_fluid": "4.1vw",
+        "compact_subtitle_max": "1.12rem"
+      },
+      "mobile": {
+        "min_height_min": "225px",
+        "min_height_fluid": "60vw",
+        "min_height_max": "320px",
+        "padding_min": "2rem",
+        "padding_fluid": "8vw",
+        "padding_max": "2.8rem",
+        "title_min": "1.85rem",
+        "title_fluid": "9.2vw",
+        "title_max": "2.2rem",
+        "subtitle_size": "1.05rem",
+        "compact_min_height_min": "190px",
+        "compact_min_height_fluid": "50vw",
+        "compact_min_height_max": "250px",
+        "compact_padding_top_min": "1.5rem",
+        "compact_padding_top_fluid": "6.5vw",
+        "compact_padding_top_max": "2.1rem",
+        "compact_padding_bottom_min": "1rem",
+        "compact_padding_bottom_fluid": "5vw",
+        "compact_padding_bottom_max": "1.6rem",
+        "compact_title_min": "1.6rem",
+        "compact_title_fluid": "6.9vw",
+        "compact_title_max": "2rem",
+        "compact_subtitle_min": "0.92rem",
+        "compact_subtitle_fluid": "3.8vw",
+        "compact_subtitle_max": "1.02rem"
+      }
+    },
+    "mobile_pan": {
+      "breakpoint": 768,
+      "wide_ratio": 1.6,
+      "medium_ratio": 1.2,
+      "wide_sweep": 44,
+      "medium_sweep": 30,
+      "narrow_sweep": 18,
+      "duration_wide_s": 22,
+      "duration_medium_s": 24,
+      "duration_narrow_s": 26
+    }
+  }
+}

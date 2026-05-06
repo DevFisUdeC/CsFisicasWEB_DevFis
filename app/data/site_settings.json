@@ -16,14 +16,15 @@
     "about": {
       "enabled": true,
       "image": "img/hero/about-hero.webp",
-      "position_x": 45,
-      "position_y": 45,
-      "zoom": 0.09,
+      "position_x": 50,
+      "position_y": 200,
+      "zoom": 0.5,
       "crop_left": 0,
       "crop_right": 0,
-      "crop_top": 22,
-      "crop_bottom": 11,
-      "overlay_opacity": 0.15
+      "crop_top": 0,
+      "crop_bottom": 0,
+      "overlay_opacity": 0.45,
+      "blur_enabled": false
     },
     "people": {
       "enabled": true,

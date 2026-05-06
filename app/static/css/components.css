@@ -138,9 +138,9 @@
 }
 
 .navbar__udec-logo-img {
-    height: clamp(60px, 6.7vw, 79px);
+    height: clamp(var(--ui-navbar-udec-logo-desktop-min), var(--ui-navbar-udec-logo-desktop-fluid), var(--ui-navbar-udec-logo-desktop-max));
     width: auto;
-    max-width: 180px;
+    max-width: var(--ui-navbar-udec-logo-desktop-max-width);
     object-fit: contain;
     filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
 }
@@ -340,15 +340,16 @@
 
     .navbar__toggle {
         display: flex;
-        order: -1;
-        margin-right: var(--space-xs);
+        order: 2;
+        margin-right: 0;
+        margin-left: var(--space-xs);
         padding: 0.4rem;
         flex-shrink: 0;
     }
 
     .navbar__udec-logo-img {
-        height: clamp(54px, 6.6vw, 74px);
-        max-width: 170px;
+        height: clamp(var(--ui-navbar-udec-logo-tablet-min), var(--ui-navbar-udec-logo-tablet-fluid), var(--ui-navbar-udec-logo-tablet-max));
+        max-width: var(--ui-navbar-udec-logo-tablet-max-width);
     }
 }
 
@@ -356,19 +357,80 @@
     .navbar__topbar-text {
         display: none;
     }
+
+    .navbar__topbar-inner {
+        min-height: 32px;
+    }
+
     .navbar__topbar-links {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: center;
         gap: var(--space-sm);
     }
-    .navbar__udec-logo {
-        display: none;
+
+    .navbar__topbar-links a {
+        font-size: 0.8rem;
     }
+
+    .navbar__inner {
+        min-height: 64px;
+        height: auto;
+        padding-top: var(--space-xs);
+        padding-bottom: var(--space-xs);
+        gap: var(--space-xs);
+        justify-content: space-between;
+    }
+
+    .navbar__right {
+        gap: 0;
+        padding-left: 0;
+        margin-left: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar__udec-logo--left {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 0;
+        padding-right: 0;
+        flex-shrink: 0;
+    }
+
     .navbar__logo-text {
         display: none;
     }
+
+    .navbar__udec-logo-img {
+        height: clamp(var(--ui-navbar-udec-logo-mobile-min), var(--ui-navbar-udec-logo-mobile-fluid), var(--ui-navbar-udec-logo-mobile-max));
+        max-width: var(--ui-navbar-udec-logo-mobile-max-width);
+    }
+
     .navbar__logo-img {
-        height: 40px;
+        height: 36px;
+        max-width: 82px;
+    }
+
+    .navbar__toggle {
+        padding: var(--space-sm);
+        border-radius: var(--border-radius-sm);
+        margin-left: var(--space-sm);
+    }
+
+    .navbar__mobile-menu {
+        padding: var(--space-sm) 0 calc(var(--space-sm) + env(safe-area-inset-bottom));
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+    }
+
+    .navbar__mobile-link {
+        padding: 0.75rem var(--space-lg);
+        font-size: 0.95rem;
+    }
+
+    .navbar__mobile-sublink {
+        font-size: 0.85rem;
     }
 }
 
@@ -415,7 +477,7 @@
 
 .hero {
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
-    padding: var(--space-4xl) 0;
+    padding: clamp(var(--ui-hero-desktop-padding-min), var(--ui-hero-desktop-padding-fluid), var(--ui-hero-desktop-padding-max)) 0;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -435,6 +497,7 @@
         var(--hero-bg-image);
     background-size: cover;
     background-position: var(--hero-bg-pos-x, 50%) var(--hero-bg-pos-y, 45%);
+    background-repeat: no-repeat;
 }
 
 .hero__title {
@@ -444,8 +507,8 @@
 
 .hero__subtitle {
     color: rgba(255, 255, 255, 0.85);
-    font-size: var(--font-size-lg);
-    max-width: 700px;
+    font-size: var(--ui-hero-desktop-subtitle-size);
+    max-width: var(--ui-hero-desktop-subtitle-max-width);
     margin: 0 auto var(--space-xl);
 }
 
@@ -454,6 +517,113 @@
     gap: var(--space-md);
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.hero--compact .hero__subtitle {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: clamp(var(--ui-hero-tablet-padding-min), var(--ui-hero-tablet-padding-fluid), var(--ui-hero-tablet-padding-max)) 0;
+        min-height: clamp(var(--ui-hero-tablet-min-height-min), var(--ui-hero-tablet-min-height-fluid), var(--ui-hero-tablet-min-height-max));
+    }
+
+    .hero--with-image {
+        background-size: cover;
+        background-position: center center, var(--hero-bg-pos-x, 50%) var(--hero-bg-pos-y, 45%);
+    }
+
+    .hero--with-image {
+        animation: hero-pan-horizontal var(--hero-pan-duration, 26s) ease-in-out infinite alternate;
+    }
+
+    .hero__title {
+        font-size: clamp(var(--ui-hero-tablet-title-min), var(--ui-hero-tablet-title-fluid), var(--ui-hero-tablet-title-max));
+        margin-bottom: var(--space-sm);
+        line-height: 1.18;
+    }
+
+    .hero__subtitle {
+        font-size: clamp(var(--ui-hero-tablet-subtitle-min), var(--ui-hero-tablet-subtitle-fluid), var(--ui-hero-tablet-subtitle-max));
+        line-height: 1.32;
+        margin-bottom: var(--space-md);
+        max-width: 34ch;
+    }
+
+    .hero__actions {
+        width: min(100%, 34rem);
+        margin: 0 auto;
+        gap: var(--space-sm);
+    }
+
+    .hero__actions .btn {
+        width: 100%;
+    }
+
+    .hero--compact {
+        min-height: clamp(var(--ui-hero-tablet-compact-min-height-min), var(--ui-hero-tablet-compact-min-height-fluid), var(--ui-hero-tablet-compact-min-height-max));
+        padding-top: clamp(var(--ui-hero-tablet-compact-padding-top-min), var(--ui-hero-tablet-compact-padding-top-fluid), var(--ui-hero-tablet-compact-padding-top-max));
+        padding-bottom: clamp(var(--ui-hero-tablet-compact-padding-bottom-min), var(--ui-hero-tablet-compact-padding-bottom-fluid), var(--ui-hero-tablet-compact-padding-bottom-max));
+    }
+
+    .hero--compact .hero__title {
+        font-size: clamp(var(--ui-hero-tablet-compact-title-min), var(--ui-hero-tablet-compact-title-fluid), var(--ui-hero-tablet-compact-title-max));
+        margin-bottom: var(--space-xs);
+    }
+
+    .hero--compact .hero__subtitle {
+        font-size: clamp(var(--ui-hero-tablet-compact-subtitle-min), var(--ui-hero-tablet-compact-subtitle-fluid), var(--ui-hero-tablet-compact-subtitle-max));
+    }
+}
+
+@media (max-width: 420px) {
+    .hero {
+        min-height: clamp(var(--ui-hero-mobile-min-height-min), var(--ui-hero-mobile-min-height-fluid), var(--ui-hero-mobile-min-height-max));
+        padding: clamp(var(--ui-hero-mobile-padding-min), var(--ui-hero-mobile-padding-fluid), var(--ui-hero-mobile-padding-max)) 0;
+    }
+
+    .hero__inner {
+        padding-inline: var(--space-xs);
+    }
+
+    .hero__title {
+        font-size: clamp(var(--ui-hero-mobile-title-min), var(--ui-hero-mobile-title-fluid), var(--ui-hero-mobile-title-max));
+    }
+
+    .hero__subtitle {
+        font-size: var(--ui-hero-mobile-subtitle-size);
+    }
+
+    .hero--compact {
+        min-height: clamp(var(--ui-hero-mobile-compact-min-height-min), var(--ui-hero-mobile-compact-min-height-fluid), var(--ui-hero-mobile-compact-min-height-max));
+        padding-top: clamp(var(--ui-hero-mobile-compact-padding-top-min), var(--ui-hero-mobile-compact-padding-top-fluid), var(--ui-hero-mobile-compact-padding-top-max));
+        padding-bottom: clamp(var(--ui-hero-mobile-compact-padding-bottom-min), var(--ui-hero-mobile-compact-padding-bottom-fluid), var(--ui-hero-mobile-compact-padding-bottom-max));
+    }
+
+    .hero--compact .hero__title {
+        font-size: clamp(var(--ui-hero-mobile-compact-title-min), var(--ui-hero-mobile-compact-title-fluid), var(--ui-hero-mobile-compact-title-max));
+    }
+
+    .hero--compact .hero__subtitle {
+        font-size: clamp(var(--ui-hero-mobile-compact-subtitle-min), var(--ui-hero-mobile-compact-subtitle-fluid), var(--ui-hero-mobile-compact-subtitle-max));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero--with-image {
+        animation: none;
+        background-position: center center, 50% var(--hero-bg-pos-y, 45%);
+    }
+}
+
+@keyframes hero-pan-horizontal {
+    from {
+        background-position: center center, var(--hero-pan-start, 0%) var(--hero-pan-y, var(--hero-bg-pos-y, 45%));
+    }
+    to {
+        background-position: center center, var(--hero-pan-end, 100%) var(--hero-pan-y, var(--hero-bg-pos-y, 45%));
+    }
 }
 
 
@@ -472,6 +642,7 @@
     cursor: pointer;
     text-decoration: none;
     line-height: 1.5;
+    min-height: var(--ui-btn-touch-min-height);
 }
 
 .btn--primary {

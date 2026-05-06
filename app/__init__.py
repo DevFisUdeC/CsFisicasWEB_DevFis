@@ -68,6 +68,32 @@ def _configure_logging(app):
                     'handlers': ['console'],
                     'propagate': False,
                 },
+                # Reduce ruido de librerías HTTP para dejar trazas de negocio legibles.
+                'httpx': {
+                    'level': 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
+                'httpcore': {
+                    'level': 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
+                'hpack': {
+                    'level': 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
+                'supabase': {
+                    'level': 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
+                'PIL': {
+                    'level': 'WARNING',
+                    'handlers': ['console'],
+                    'propagate': False,
+                },
             },
         }
     )
@@ -162,6 +188,7 @@ def _register_context_processors(app):
     """Variables disponibles en todos los templates."""
     @app.context_processor
     def inject_site_config():
+        from app.helpers import get_ui_settings
         return {
             'site_name': app.config.get('SITE_NAME', 'Departamento de Física'),
             'site_subtitle': app.config.get('SITE_SUBTITLE', 'Universidad de Concepción'),
@@ -169,6 +196,7 @@ def _register_context_processors(app):
             'contact_phone': app.config.get('CONTACT_PHONE', ''),
             'contact_address': app.config.get('CONTACT_ADDRESS', ''),
             'nav_items': _get_nav_items(),
+            'ui_settings': get_ui_settings(),
         }
 
 

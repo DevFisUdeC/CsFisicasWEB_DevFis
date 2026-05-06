@@ -149,8 +149,12 @@
         padding: var(--space-2xl) 0;
     }
 
-    h1 { font-size: var(--font-size-3xl); }
-    h2 { font-size: var(--font-size-2xl); }
+    .section__header {
+        margin-bottom: var(--space-lg);
+    }
+
+    h1 { font-size: clamp(2rem, 8.2vw, var(--font-size-3xl)); }
+    h2 { font-size: clamp(1.55rem, 6.8vw, var(--font-size-2xl)); }
 }
 
 @media (max-width: 480px) {
@@ -158,9 +162,14 @@
         padding: 0 var(--space-md);
     }
 
+    .section {
+        padding: var(--space-xl) 0;
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    h1 { font-size: var(--font-size-2xl); }
+    h1 { font-size: clamp(1.9rem, 9vw, var(--font-size-2xl)); }
+    h2 { font-size: clamp(1.45rem, 7vw, var(--font-size-xl)); }
 }

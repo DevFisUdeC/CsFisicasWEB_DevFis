@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 _DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 _cache = {}
 _SITE_SETTINGS_FILE = Path(_DATA_DIR) / 'site_settings.json'
+_UI_SETTINGS_FILE = Path(_DATA_DIR) / 'ui_settings.json'
 _STATIC_DIR = Path(__file__).resolve().parent / 'static'
 _PAGE_HERO_CONTEXTS = {
     'home': {
@@ -78,6 +79,155 @@ _HERO_STORAGE_FILES_CACHE = {
 }
 
 
+def _default_ui_settings():
+    """Parámetros UI centralizados para evitar hardcode en vistas/controles."""
+    return {
+        'navbar': {
+            'udec_logo': {
+                'desktop': {
+                    'min': '60px',
+                    'fluid': '6.7vw',
+                    'max': '79px',
+                    'max_width': '180px',
+                },
+                'tablet': {
+                    'min': '54px',
+                    'fluid': '6.6vw',
+                    'max': '74px',
+                    'max_width': '170px',
+                },
+                'mobile': {
+                    'min': '64px',
+                    'fluid': '17vw',
+                    'max': '81px',
+                    'max_width': '188px',
+                },
+            }
+        },
+        'buttons': {
+            'touch_min_height': '44px',
+        },
+        'hero': {
+            'position_min': 0,
+            'position_max': 200,
+            'default_position_x': 50,
+            'default_position_y': 45,
+            'zoom_min': 0.01,
+            'zoom_max': 10.0,
+            'zoom_step': 0.01,
+            'default_zoom': 1.0,
+            'crop_min': 0,
+            'crop_max': 30,
+            'overlay_min': 0.0,
+            'overlay_max': 0.9,
+            'overlay_step': 0.05,
+            'default_overlay_opacity': 0.45,
+            'layout': {
+                'desktop': {
+                    'padding_min': '3.8rem',
+                    'padding_fluid': '6vw',
+                    'padding_max': '5rem',
+                    'subtitle_size': 'var(--font-size-lg)',
+                    'subtitle_max_width': '700px',
+                },
+                'tablet': {
+                    'padding_min': '2.4rem',
+                    'padding_fluid': '10vw',
+                    'padding_max': '3.5rem',
+                    'min_height_min': '240px',
+                    'min_height_fluid': '56vw',
+                    'min_height_max': '360px',
+                    'title_min': '1.95rem',
+                    'title_fluid': '8vw',
+                    'title_max': '2.55rem',
+                    'subtitle_min': '1.02rem',
+                    'subtitle_fluid': '4.6vw',
+                    'subtitle_max': '1.2rem',
+                    'compact_min_height_min': '210px',
+                    'compact_min_height_fluid': '44vw',
+                    'compact_min_height_max': '285px',
+                    'compact_padding_top_min': '1.8rem',
+                    'compact_padding_top_fluid': '7vw',
+                    'compact_padding_top_max': '2.5rem',
+                    'compact_padding_bottom_min': '1.25rem',
+                    'compact_padding_bottom_fluid': '5.5vw',
+                    'compact_padding_bottom_max': '2rem',
+                    'compact_title_min': '1.8rem',
+                    'compact_title_fluid': '7.1vw',
+                    'compact_title_max': '2.25rem',
+                    'compact_subtitle_min': '0.98rem',
+                    'compact_subtitle_fluid': '4.1vw',
+                    'compact_subtitle_max': '1.12rem',
+                },
+                'mobile': {
+                    'min_height_min': '225px',
+                    'min_height_fluid': '60vw',
+                    'min_height_max': '320px',
+                    'padding_min': '2rem',
+                    'padding_fluid': '8vw',
+                    'padding_max': '2.8rem',
+                    'title_min': '1.85rem',
+                    'title_fluid': '9.2vw',
+                    'title_max': '2.2rem',
+                    'subtitle_size': '1.05rem',
+                    'compact_min_height_min': '190px',
+                    'compact_min_height_fluid': '50vw',
+                    'compact_min_height_max': '250px',
+                    'compact_padding_top_min': '1.5rem',
+                    'compact_padding_top_fluid': '6.5vw',
+                    'compact_padding_top_max': '2.1rem',
+                    'compact_padding_bottom_min': '1rem',
+                    'compact_padding_bottom_fluid': '5vw',
+                    'compact_padding_bottom_max': '1.6rem',
+                    'compact_title_min': '1.6rem',
+                    'compact_title_fluid': '6.9vw',
+                    'compact_title_max': '2rem',
+                    'compact_subtitle_min': '0.92rem',
+                    'compact_subtitle_fluid': '3.8vw',
+                    'compact_subtitle_max': '1.02rem',
+                },
+            },
+            'mobile_pan': {
+                'breakpoint': 768,
+                'wide_ratio': 1.6,
+                'medium_ratio': 1.2,
+                'wide_sweep': 44,
+                'medium_sweep': 30,
+                'narrow_sweep': 18,
+                'duration_wide_s': 22,
+                'duration_medium_s': 24,
+                'duration_narrow_s': 26,
+            },
+        }
+    }
+
+
+def _deep_merge_dict(base, override):
+    """Merge recursivo simple para diccionarios."""
+    merged = dict(base)
+    for key, value in (override or {}).items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge_dict(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def get_ui_settings():
+    """Carga configuración UI editable desde app/data/ui_settings.json."""
+    settings = _default_ui_settings()
+    if not _UI_SETTINGS_FILE.exists():
+        return settings
+    try:
+        with _UI_SETTINGS_FILE.open('r', encoding='utf-8') as f:
+            disk = json.load(f)
+        if isinstance(disk, dict):
+            settings = _deep_merge_dict(settings, disk)
+    except (json.JSONDecodeError, OSError) as e:
+        logger.warning(f"No se pudo cargar ui_settings.json: {e}")
+    return settings
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #   Datos estáticos (JSON) — research, programs
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -113,19 +263,24 @@ def get_programs():
 
 def _default_site_settings():
     """Configuración por defecto editable por panel admin."""
+    ui_hero = get_ui_settings().get('hero', {})
+    default_x = int(ui_hero.get('default_position_x', 50))
+    default_y = int(ui_hero.get('default_position_y', 45))
+    default_zoom = float(ui_hero.get('default_zoom', 1.0))
+    default_overlay = float(ui_hero.get('default_overlay_opacity', 0.45))
     page_heroes = {}
     for key, cfg in _PAGE_HERO_CONTEXTS.items():
         page_heroes[key] = {
             'enabled': False,
             'image': cfg['final_image_rel'],
-            'position_x': 50,
-            'position_y': 45,
-            'zoom': 1.0,
+            'position_x': default_x,
+            'position_y': default_y,
+            'zoom': default_zoom,
             'crop_left': 0,
             'crop_right': 0,
             'crop_top': 0,
             'crop_bottom': 0,
-            'overlay_opacity': 0.45,
+            'overlay_opacity': default_overlay,
             'blur_enabled': False,
         }
     return {'page_heroes': page_heroes}
@@ -134,13 +289,17 @@ def _default_site_settings():
 def _load_site_settings():
     """Carga configuración de sitio desde archivo JSON local."""
     settings = _default_site_settings()
-    disk_settings = _load_site_settings_from_storage()
-    if disk_settings is None and _SITE_SETTINGS_FILE.exists():
+    disk_settings = None
+    if _SITE_SETTINGS_FILE.exists():
         try:
             with _SITE_SETTINGS_FILE.open('r', encoding='utf-8') as f:
                 disk_settings = json.load(f)
         except (json.JSONDecodeError, OSError) as e:
             logger.error(f"No se pudo cargar site_settings.json local: {e}")
+
+    # Fallback remoto solo cuando no hay configuración local válida.
+    if disk_settings is None:
+        disk_settings = _load_site_settings_from_storage()
 
     if isinstance(disk_settings, dict):
         # Compatibilidad con estructura antigua (home_hero al nivel raíz).
@@ -178,6 +337,15 @@ def _hero_storage_enabled():
         return bool(current_app.config.get('HERO_USE_SUPABASE_STORAGE', True))
     except RuntimeError:
         return True
+
+
+def _hero_settings_storage_enabled():
+    """Controla si los settings JSON se leen/escriben en Storage."""
+    try:
+        from flask import current_app
+        return bool(current_app.config.get('HERO_SETTINGS_USE_SUPABASE_STORAGE', False))
+    except RuntimeError:
+        return False
 
 
 def _hero_storage_bucket():
@@ -319,7 +487,7 @@ def _storage_object_exists(path):
 
 def _load_site_settings_from_storage():
     """Carga settings hero desde Storage cuando están disponibles."""
-    if not _hero_storage_enabled():
+    if not (_hero_storage_enabled() and _hero_settings_storage_enabled()):
         return None
     raw = _download_storage_bytes(_hero_settings_storage_object())
     if not raw:
@@ -335,7 +503,7 @@ def _load_site_settings_from_storage():
 
 def _save_site_settings_to_storage(settings):
     """Guarda settings hero como JSON en Storage."""
-    if not _hero_storage_enabled():
+    if not (_hero_storage_enabled() and _hero_settings_storage_enabled()):
         return False
     try:
         data = json.dumps(settings, ensure_ascii=False, indent=2).encode('utf-8')
@@ -434,9 +602,21 @@ def _build_page_hero_image_bytes(original_content, hero_settings, output_max_wid
         img = img.crop((x0, y0, x1, y1))
 
         width, height = img.size
-        zoom_factor = max(0.01, min(10.0, float(hero_settings.get('zoom', 1.0))))
-        focus_x = max(0, min(200, int(hero_settings.get('position_x', 50))))
-        focus_y = max(0, min(200, int(hero_settings.get('position_y', 45))))
+        ui_hero = get_ui_settings().get('hero', {})
+        zoom_min = float(ui_hero.get('zoom_min', 0.01))
+        zoom_max = float(ui_hero.get('zoom_max', 10.0))
+        default_zoom = float(ui_hero.get('default_zoom', 1.0))
+        pos_min = int(ui_hero.get('position_min', 0))
+        pos_max = int(ui_hero.get('position_max', 200))
+        default_x = int(ui_hero.get('default_position_x', 50))
+        default_y = int(ui_hero.get('default_position_y', 45))
+
+        zoom_factor = max(zoom_min, min(zoom_max, float(hero_settings.get('zoom', default_zoom))))
+        focus_x = max(pos_min, min(pos_max, int(hero_settings.get('position_x', default_x))))
+        focus_y = max(pos_min, min(pos_max, int(hero_settings.get('position_y', default_y))))
+        range_span = max(1, pos_max - pos_min)
+        focus_x_normalized = (focus_x - pos_min) / float(range_span)
+        focus_y_normalized = (focus_y - pos_min) / float(range_span)
         out_w = min(output_max_width, max(10, width))
         out_h = max(10, int(out_w / target_ratio))
         resampling = Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS
@@ -459,11 +639,11 @@ def _build_page_hero_image_bytes(original_content, hero_settings, output_max_wid
         # Capa principal ajustable por foco.
         fg = img.resize((draw_w, draw_h), resampling)
         if draw_w > out_w:
-            fg_x = -int((draw_w - out_w) * (focus_x / 100.0))
+            fg_x = -int((draw_w - out_w) * focus_x_normalized)
         else:
             fg_x = (out_w - draw_w) // 2
         if draw_h > out_h:
-            fg_y = -int((draw_h - out_h) * (focus_y / 100.0))
+            fg_y = -int((draw_h - out_h) * focus_y_normalized)
         else:
             fg_y = (out_h - draw_h) // 2
 
@@ -517,15 +697,29 @@ def get_page_hero_settings(page_key):
     paths = _get_page_hero_paths(page_key)
     settings = _load_site_settings()
     hero = settings.get('page_heroes', {}).get(page_key, {})
+    ui_hero = get_ui_settings().get('hero', {})
+    pos_min = int(ui_hero.get('position_min', 0))
+    pos_max = int(ui_hero.get('position_max', 200))
+    default_x = int(ui_hero.get('default_position_x', 50))
+    default_y = int(ui_hero.get('default_position_y', 45))
+    default_overlay = float(ui_hero.get('default_overlay_opacity', 0.45))
     local_exists = paths['final_abs'].exists()
     storage_exists = _storage_object_exists(paths['storage_final'])
+    original_local_exists = paths['original_abs'].exists()
+    original_storage_exists = _storage_object_exists(paths['storage_original'])
     image_exists = storage_exists or local_exists
-    if storage_exists:
-        image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
-    elif local_exists:
+    if local_exists:
         image_url = url_for('static', filename=paths['final_rel'])
+    elif storage_exists:
+        image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
     else:
         image_url = ''
+    if original_local_exists:
+        original_image_url = url_for('static', filename=paths['original_rel'])
+    elif original_storage_exists:
+        original_image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_original'])
+    else:
+        original_image_url = ''
     zoom_raw = max(0.01, min(10.0, float(hero.get('zoom', 1.0))))
     return {
         'page_key': page_key,
@@ -533,17 +727,18 @@ def get_page_hero_settings(page_key):
         'enabled': bool(hero.get('enabled', True) and image_exists),
         'image': hero.get('image', paths['final_rel']),
         'image_url': image_url,
-        'position_x': max(0, min(200, int(hero.get('position_x', 50)))),
-        'position_y': max(0, min(200, int(hero.get('position_y', 45)))),
+        'position_x': max(pos_min, min(pos_max, int(hero.get('position_x', default_x)))),
+        'position_y': max(pos_min, min(pos_max, int(hero.get('position_y', default_y)))),
         'zoom': zoom_raw,
         'crop_left': int(hero.get('crop_left', 0)),
         'crop_right': int(hero.get('crop_right', 0)),
         'crop_top': int(hero.get('crop_top', 0)),
         'crop_bottom': int(hero.get('crop_bottom', 0)),
-        'overlay_opacity': float(hero.get('overlay_opacity', 0.45)),
+        'overlay_opacity': float(hero.get('overlay_opacity', default_overlay)),
         'blur_enabled': bool(hero.get('blur_enabled', False)),
         'image_exists': image_exists,
-        'original_image_exists': paths['original_abs'].exists() or _storage_object_exists(paths['storage_original']),
+        'original_image_exists': original_local_exists or original_storage_exists,
+        'original_image_url': original_image_url,
     }
 
 
@@ -625,14 +820,28 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
         except (TypeError, ValueError):
             return default
 
+    ui_hero = get_ui_settings().get('hero', {})
+    pos_min = int(ui_hero.get('position_min', 0))
+    pos_max = int(ui_hero.get('position_max', 200))
+    default_x = int(ui_hero.get('default_position_x', 50))
+    default_y = int(ui_hero.get('default_position_y', 45))
+    zoom_min = float(ui_hero.get('zoom_min', 0.01))
+    zoom_max = float(ui_hero.get('zoom_max', 10.0))
+    default_zoom = float(ui_hero.get('default_zoom', 1.0))
+    crop_min = int(ui_hero.get('crop_min', 0))
+    crop_max = int(ui_hero.get('crop_max', 30))
+    overlay_min = float(ui_hero.get('overlay_min', 0.0))
+    overlay_max = float(ui_hero.get('overlay_max', 0.9))
+    default_overlay = float(ui_hero.get('default_overlay_opacity', 0.45))
+
     hero['enabled'] = str(form_data.get('enabled', 'off')).lower() in {'1', 'true', 'on', 'yes'}
-    hero['position_x'] = max(0, min(200, _safe_int(form_data.get('position_x', 50), 50)))
-    hero['position_y'] = max(0, min(200, _safe_int(form_data.get('position_y', 45), 45)))
-    hero['zoom'] = max(0.01, min(10.0, _safe_float(form_data.get('zoom', 1.0), 1.0)))
-    hero['crop_left'] = max(0, min(30, _safe_int(form_data.get('crop_left', 0), 0)))
-    hero['crop_right'] = max(0, min(30, _safe_int(form_data.get('crop_right', 0), 0)))
-    hero['crop_top'] = max(0, min(30, _safe_int(form_data.get('crop_top', 0), 0)))
-    hero['crop_bottom'] = max(0, min(30, _safe_int(form_data.get('crop_bottom', 0), 0)))
+    hero['position_x'] = max(pos_min, min(pos_max, _safe_int(form_data.get('position_x', default_x), default_x)))
+    hero['position_y'] = max(pos_min, min(pos_max, _safe_int(form_data.get('position_y', default_y), default_y)))
+    hero['zoom'] = max(zoom_min, min(zoom_max, _safe_float(form_data.get('zoom', default_zoom), default_zoom)))
+    hero['crop_left'] = max(crop_min, min(crop_max, _safe_int(form_data.get('crop_left', crop_min), crop_min)))
+    hero['crop_right'] = max(crop_min, min(crop_max, _safe_int(form_data.get('crop_right', crop_min), crop_min)))
+    hero['crop_top'] = max(crop_min, min(crop_max, _safe_int(form_data.get('crop_top', crop_min), crop_min)))
+    hero['crop_bottom'] = max(crop_min, min(crop_max, _safe_int(form_data.get('crop_bottom', crop_min), crop_min)))
     hero['blur_enabled'] = str(form_data.get('blur_enabled', 'off')).lower() in {'1', 'true', 'on', 'yes'}
 
     if hero['crop_left'] + hero['crop_right'] >= 95:
@@ -640,7 +849,7 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
     if hero['crop_top'] + hero['crop_bottom'] >= 95:
         return False, "El recorte vertical es excesivo. Ajusta superior/inferior."
 
-    hero['overlay_opacity'] = max(0.0, min(0.9, _safe_float(form_data.get('overlay_opacity', 0.45), 0.45)))
+    hero['overlay_opacity'] = max(overlay_min, min(overlay_max, _safe_float(form_data.get('overlay_opacity', default_overlay), default_overlay)))
 
     try:
         _build_page_hero_from_original(page_key, hero)

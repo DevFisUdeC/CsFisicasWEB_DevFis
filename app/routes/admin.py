@@ -332,18 +332,34 @@ def page_hero_settings(page_key):
     if request.method == 'POST':
         action = (request.form.get('action') or 'save').strip().lower()
         image_file = request.files.get('hero_image')
+        logger.info(
+            "HERO ADMIN SAVE START | page=%s | action=%s | has_image=%s | pos=(%s,%s) | zoom=%s | overlay=%s",
+            page_key,
+            action,
+            bool(image_file and image_file.filename),
+            request.form.get('position_x'),
+            request.form.get('position_y'),
+            request.form.get('zoom'),
+            request.form.get('overlay_opacity'),
+        )
         ok, message = update_page_hero_settings(
             page_key,
             request.form,
             image_file=image_file,
             delete_image=(action == 'delete_image'),
         )
+        logger.info(
+            "HERO ADMIN SAVE END | page=%s | ok=%s | message=%s",
+            page_key,
+            ok,
+            message,
+        )
         flash(message, "success" if ok else "error")
         return redirect(url_for('admin.page_hero_settings', page_key=page_key))
 
     preview_url = ''
     if hero.get('image_exists'):
-        image_url = hero.get('image_url', '')
+        image_url = hero.get('original_image_url') or hero.get('image_url', '')
         if image_url:
             preview_url = f"{image_url}?v={int(time.time())}"
 

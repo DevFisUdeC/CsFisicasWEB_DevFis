@@ -560,6 +560,29 @@ textarea.admin-form__control {
     max-width: 260px;
 }
 
+.admin-range-stepper {
+    margin-top: var(--space-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.admin-range-stepper__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.admin-range-stepper__input.admin-form__control {
+    width: 90px;
+    max-width: 90px;
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
+}
+
 
 /* ═══════════════════════════════════════════
    8. Tag Input

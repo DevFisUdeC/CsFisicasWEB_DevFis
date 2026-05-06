@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.sendClientTrace) window.sendClientTrace('menu_toggle', { label: !isOpen ? 'open' : 'close' });
     });
 
+    // Close menu after tapping any mobile link
+    mobileMenu.addEventListener('click', (e) => {
+        if (e.target.closest('a')) {
+            toggle.setAttribute('aria-expanded', 'false');
+            mobileMenu.hidden = true;
+            toggle.classList.remove('is-active');
+        }
+    });
+
     // Close on outside click
     document.addEventListener('click', (e) => {
         if (!toggle.contains(e.target) && !mobileMenu.contains(e.target)) {
@@ -46,6 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
             toggle.classList.remove('is-active');
             if (window.appLog) window.appLog('DEBUG', 'mobile menu closed by escape');
             if (window.sendClientTrace) window.sendClientTrace('menu_close_escape', { label: 'escape' });
+        }
+    });
+
+    // Keep state consistent when switching back to desktop widths
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1320) {
+            toggle.setAttribute('aria-expanded', 'false');
+            mobileMenu.hidden = true;
+            toggle.classList.remove('is-active');
         }
     });
 });

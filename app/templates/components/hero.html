@@ -2,13 +2,25 @@
 {# Responsabilidad: Banner principal con título, subtítulo y CTA #}
 {# Uso: set variables antes de incluir este componente #}
 <section
-    class="hero{% if hero_background_image %} hero--with-image{% endif %}"
+    class="hero{% if hero_background_image %} hero--with-image{% endif %}{% if not hero_cta_text %} hero--compact{% endif %}"
     aria-labelledby="hero-title"
+    {% if hero_background_image %}data-hero-bg-url="{{ hero_background_image }}"{% endif %}
+    data-hero-position-min="{{ ui_settings.hero.position_min }}"
+    data-hero-position-max="{{ ui_settings.hero.position_max }}"
+    data-hero-pan-breakpoint="{{ ui_settings.hero.mobile_pan.breakpoint }}"
+    data-hero-pan-wide-ratio="{{ ui_settings.hero.mobile_pan.wide_ratio }}"
+    data-hero-pan-medium-ratio="{{ ui_settings.hero.mobile_pan.medium_ratio }}"
+    data-hero-pan-wide-sweep="{{ ui_settings.hero.mobile_pan.wide_sweep }}"
+    data-hero-pan-medium-sweep="{{ ui_settings.hero.mobile_pan.medium_sweep }}"
+    data-hero-pan-narrow-sweep="{{ ui_settings.hero.mobile_pan.narrow_sweep }}"
+    data-hero-pan-wide-duration="{{ ui_settings.hero.mobile_pan.duration_wide_s }}"
+    data-hero-pan-medium-duration="{{ ui_settings.hero.mobile_pan.duration_medium_s }}"
+    data-hero-pan-narrow-duration="{{ ui_settings.hero.mobile_pan.duration_narrow_s }}"
     style="
       --hero-bg-image: url('{{ hero_background_image | default('') }}');
-      --hero-bg-pos-x: {{ hero_background_position_x | default(50) }}%;
-      --hero-bg-pos-y: {{ hero_background_position_y | default(45) }}%;
-      --hero-overlay-opacity: {{ hero_overlay_opacity | default(0.45) }};
+      --hero-bg-pos-x: {{ hero_runtime_position_x | default(ui_settings.hero.default_position_x) }}%;
+      --hero-bg-pos-y: {{ hero_runtime_position_y | default(ui_settings.hero.default_position_y) }}%;
+      --hero-overlay-opacity: {{ hero_overlay_opacity | default(ui_settings.hero.default_overlay_opacity) }};
     "
 >
     <div class="container hero__inner">

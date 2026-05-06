@@ -234,7 +234,116 @@ function initHomeHeroPreview() {
     }
 
     const loadedImage = new Image();
+    let loadedImageSource = '';
     let imageReady = false;
+    const globalUIHero = (window.UI_SETTINGS && window.UI_SETTINGS.hero) || {};
+    const toNumber = (value, fallback) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+    };
+    const xMin = toNumber(inputX ? inputX.min : undefined, toNumber(globalUIHero.position_min, 0));
+    const xMax = toNumber(inputX ? inputX.max : undefined, toNumber(globalUIHero.position_max, 200));
+    const yMin = toNumber(inputY ? inputY.min : undefined, toNumber(globalUIHero.position_min, 0));
+    const yMax = toNumber(inputY ? inputY.max : undefined, toNumber(globalUIHero.position_max, 200));
+    const zoomMin = toNumber(inputZoom ? inputZoom.min : undefined, toNumber(globalUIHero.zoom_min, 0.01));
+    const zoomMax = toNumber(inputZoom ? inputZoom.max : undefined, toNumber(globalUIHero.zoom_max, 10));
+    const overlayMin = toNumber(inputOverlay ? inputOverlay.min : undefined, toNumber(globalUIHero.overlay_min, 0));
+    const overlayMax = toNumber(inputOverlay ? inputOverlay.max : undefined, toNumber(globalUIHero.overlay_max, 0.9));
+
+    const decimalPlacesForStep = (stepValue) => {
+        if (!Number.isFinite(stepValue) || stepValue <= 0) return 3;
+        const text = String(stepValue).toLowerCase();
+        if (text.includes('e-')) {
+            const parts = text.split('e-');
+            const exp = Number(parts[1]);
+            return Number.isFinite(exp) ? exp : 3;
+        }
+        const dot = text.indexOf('.');
+        return dot >= 0 ? (text.length - dot - 1) : 0;
+    };
+    const rangeSteppers = [];
+
+    const getRangeStepValue = (stepInput, defaultStep) => {
+        const raw = toNumber(stepInput ? stepInput.value : undefined, defaultStep);
+        return Math.max(0.001, raw);
+    };
+
+    const applyRangeStep = (rangeInput, stepInput, defaultStep) => {
+        if (!rangeInput) return;
+        rangeInput.step = String(getRangeStepValue(stepInput, defaultStep));
+    };
+
+    const nudgeRangeByStep = (rangeInput, stepInput, defaultStep, direction) => {
+        if (!rangeInput) return;
+        const stepValue = getRangeStepValue(stepInput, defaultStep);
+        const decimals = decimalPlacesForStep(stepValue);
+        const min = toNumber(rangeInput.min, 0);
+        const max = toNumber(rangeInput.max, 100);
+        const current = toNumber(rangeInput.value, toNumber(rangeInput.dataset.default, min));
+        const delta = direction >= 0 ? stepValue : -stepValue;
+        const next = Math.max(min, Math.min(max, current + delta));
+        rangeInput.value = next.toFixed(decimals);
+        rangeInput.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    const mountRangeSteppers = () => {
+        const rangeInputs = document.querySelectorAll('.admin-form--hero-editor .admin-form__group--slider input[type="range"]');
+        rangeInputs.forEach((rangeInput, idx) => {
+            const group = rangeInput.closest('.admin-form__group--slider');
+            if (!group || group.querySelector('[data-range-stepper]')) return;
+
+            const defaultStep = Math.max(0.001, toNumber(rangeInput.step, 0.01));
+            const defaultStepText = String(defaultStep);
+            rangeInput.dataset.baseStep = defaultStepText;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'admin-range-stepper';
+            wrapper.dataset.rangeStepper = 'true';
+
+            const minusBtn = document.createElement('button');
+            minusBtn.type = 'button';
+            minusBtn.className = 'btn btn--ghost btn--sm';
+            minusBtn.textContent = '-';
+
+            const label = document.createElement('label');
+            label.className = 'admin-range-stepper__label';
+            label.setAttribute('for', `range_step_editor_${idx}`);
+            label.appendChild(document.createTextNode('Pasos:'));
+
+            const stepInput = document.createElement('input');
+            stepInput.type = 'number';
+            stepInput.id = `range_step_editor_${idx}`;
+            stepInput.className = 'admin-form__control admin-range-stepper__input';
+            stepInput.min = '0.001';
+            stepInput.step = '0.001';
+            stepInput.value = defaultStepText;
+            stepInput.dataset.default = defaultStepText;
+            label.appendChild(stepInput);
+
+            const plusBtn = document.createElement('button');
+            plusBtn.type = 'button';
+            plusBtn.className = 'btn btn--ghost btn--sm';
+            plusBtn.textContent = '+';
+
+            wrapper.appendChild(minusBtn);
+            wrapper.appendChild(label);
+            wrapper.appendChild(plusBtn);
+            group.appendChild(wrapper);
+
+            const syncStep = () => {
+                applyRangeStep(rangeInput, stepInput, defaultStep);
+                renderPreview(localImageUrl);
+            };
+
+            stepInput.addEventListener('input', syncStep);
+            stepInput.addEventListener('change', syncStep);
+            minusBtn.addEventListener('click', () => nudgeRangeByStep(rangeInput, stepInput, defaultStep, -1));
+            plusBtn.addEventListener('click', () => nudgeRangeByStep(rangeInput, stepInput, defaultStep, 1));
+
+            applyRangeStep(rangeInput, stepInput, defaultStep);
+            rangeSteppers.push({ rangeInput, stepInput, defaultStep });
+        });
+    };
 
     loadedImage.onload = () => {
         imageReady = true;
@@ -257,14 +366,17 @@ function initHomeHeroPreview() {
 
     function drawPreview() {
         const enabled = inputEnabled && inputEnabled.checked;
-        const x = Number(inputX ? inputX.value : 50);
-        const y = Number(inputY ? inputY.value : 45);
-        const zoomFactor = Number(inputZoom ? inputZoom.value : 1);
+        const xDefault = toNumber(inputX ? inputX.value : undefined, (xMin + xMax) / 2);
+        const yDefault = toNumber(inputY ? inputY.value : undefined, (yMin + yMax) / 2);
+        const zoomDefault = toNumber(inputZoom ? inputZoom.value : undefined, 1);
+        const x = toNumber(inputX ? inputX.value : undefined, xDefault);
+        const y = toNumber(inputY ? inputY.value : undefined, yDefault);
+        const zoomFactor = toNumber(inputZoom ? inputZoom.value : undefined, zoomDefault);
         const cropLeft = Number(inputCropLeft ? inputCropLeft.value : 0);
         const cropRight = Number(inputCropRight ? inputCropRight.value : 0);
         const cropTop = Number(inputCropTop ? inputCropTop.value : 0);
         const cropBottom = Number(inputCropBottom ? inputCropBottom.value : 0);
-        const overlay = Number(inputOverlay ? inputOverlay.value : 0.45);
+        const overlay = toNumber(inputOverlay ? inputOverlay.value : undefined, overlayMin);
         const blurEnabled = !!(inputBlur && inputBlur.checked);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -286,7 +398,7 @@ function initHomeHeroPreview() {
         const cH = canvas.height;
         const containScale = Math.min(cW / croppedW, cH / croppedH);
         const coverScale = Math.max(cW / croppedW, cH / croppedH);
-        const scale = coverScale * Math.max(0.01, Math.min(10, zoomFactor));
+        const scale = coverScale * Math.max(zoomMin, Math.min(zoomMax, zoomFactor));
         const drawW = Math.max(1, Math.round(croppedW * scale));
         const drawH = Math.max(1, Math.round(croppedH * scale));
 
@@ -304,46 +416,56 @@ function initHomeHeroPreview() {
         let drawX;
         let drawY;
         if (drawW > cW) {
-            drawX = -Math.round((drawW - cW) * (x / 100));
+            const xNormalized = (x - xMin) / Math.max(1, (xMax - xMin));
+            drawX = -Math.round((drawW - cW) * xNormalized);
         } else {
             drawX = Math.round((cW - drawW) / 2);
         }
         if (drawH > cH) {
-            drawY = -Math.round((drawH - cH) * (y / 100));
+            const yNormalized = (y - yMin) / Math.max(1, (yMax - yMin));
+            drawY = -Math.round((drawH - cH) * yNormalized);
         } else {
             drawY = Math.round((cH - drawH) / 2);
         }
 
         ctx.drawImage(loadedImage, cx0, cy0, croppedW, croppedH, drawX, drawY, drawW, drawH);
         if (blurEnabled) {
-            const snapshot = ctx.getImageData(0, 0, cW, cH);
-            ctx.clearRect(0, 0, cW, cH);
+            // Evita lectura de pixels (getImageData) para no romperse con imágenes cross-origin.
             ctx.save();
             ctx.filter = 'blur(8px)';
-            const temp = document.createElement('canvas');
-            temp.width = cW;
-            temp.height = cH;
-            const tctx = temp.getContext('2d');
-            if (tctx) {
-                tctx.putImageData(snapshot, 0, 0);
-                ctx.drawImage(temp, 0, 0);
-            }
+            ctx.drawImage(loadedImage, cx0, cy0, croppedW, croppedH, drawX, drawY, drawW, drawH);
             ctx.restore();
         }
-        ctx.fillStyle = `rgba(0, 24, 52, ${Math.max(0, Math.min(0.9, overlay))})`;
+        ctx.fillStyle = `rgba(0, 24, 52, ${Math.max(overlayMin, Math.min(overlayMax, overlay))})`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function ensureImageLoaded(imageUrl) {
+        const nextUrl = imageUrl || '';
+        if (!nextUrl) {
+            loadedImageSource = '';
+            imageReady = false;
+            return false;
+        }
+        if (loadedImageSource === nextUrl && imageReady) {
+            return true;
+        }
+        loadedImageSource = nextUrl;
+        imageReady = false;
+        loadedImage.src = nextUrl;
+        return false;
     }
 
     function renderPreview(imageUrl) {
         normalizeCropRanges();
-        const x = inputX ? inputX.value : '50';
-        const y = inputY ? inputY.value : '45';
-        const zoom = inputZoom ? inputZoom.value : '1';
+        const x = inputX ? inputX.value : String((xMin + xMax) / 2);
+        const y = inputY ? inputY.value : String((yMin + yMax) / 2);
+        const zoom = inputZoom ? inputZoom.value : String((zoomMin + zoomMax) / 2);
         const cropLeft = inputCropLeft ? inputCropLeft.value : '0';
         const cropRight = inputCropRight ? inputCropRight.value : '0';
         const cropTop = inputCropTop ? inputCropTop.value : '0';
         const cropBottom = inputCropBottom ? inputCropBottom.value : '0';
-        const overlay = inputOverlay ? inputOverlay.value : '0.45';
+        const overlay = inputOverlay ? inputOverlay.value : String(overlayMin);
 
         if (zoomLabel) zoomLabel.textContent = Number(zoom).toFixed(2);
         if (xLabel) xLabel.textContent = x;
@@ -354,16 +476,14 @@ function initHomeHeroPreview() {
         if (cropBottomLabel) cropBottomLabel.textContent = cropBottom;
         if (overlayLabel) overlayLabel.textContent = overlay;
 
-        if (imageUrl) {
-            imageReady = false;
-            loadedImage.src = imageUrl;
-        } else {
-            imageReady = false;
+        const canDrawNow = ensureImageLoaded(imageUrl);
+        if (canDrawNow || !imageUrl) {
             drawPreview();
         }
     }
 
     let localImageUrl = currentImage;
+    mountRangeSteppers();
     renderPreview(localImageUrl);
 
     if (inputFile) {
@@ -385,14 +505,18 @@ function initHomeHeroPreview() {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            if (inputZoom) inputZoom.value = '1';
-            if (inputX) inputX.value = '50';
-            if (inputY) inputY.value = '45';
-            if (inputCropLeft) inputCropLeft.value = '0';
-            if (inputCropRight) inputCropRight.value = '0';
-            if (inputCropTop) inputCropTop.value = '0';
-            if (inputCropBottom) inputCropBottom.value = '0';
-            if (inputOverlay) inputOverlay.value = '0.45';
+            if (inputZoom) inputZoom.value = inputZoom.dataset.default || String((zoomMin + zoomMax) / 2);
+            if (inputX) inputX.value = inputX.dataset.default || String((xMin + xMax) / 2);
+            if (inputY) inputY.value = inputY.dataset.default || String((yMin + yMax) / 2);
+            if (inputCropLeft) inputCropLeft.value = inputCropLeft.dataset.default || '0';
+            if (inputCropRight) inputCropRight.value = inputCropRight.dataset.default || '0';
+            if (inputCropTop) inputCropTop.value = inputCropTop.dataset.default || '0';
+            if (inputCropBottom) inputCropBottom.value = inputCropBottom.dataset.default || '0';
+            if (inputOverlay) inputOverlay.value = inputOverlay.dataset.default || String(overlayMin);
+            rangeSteppers.forEach(({ rangeInput, stepInput, defaultStep }) => {
+                if (stepInput) stepInput.value = stepInput.dataset.default || String(defaultStep);
+                applyRangeStep(rangeInput, stepInput, defaultStep);
+            });
             renderPreview(localImageUrl);
         });
     }

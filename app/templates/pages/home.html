@@ -10,9 +10,9 @@
 {% set hero_cta2_text = 'Postula a Ciencias Físicas' %}
 {% set hero_cta2_url = url_for('academics.undergraduate') %}
 {% set hero_background_image = home_hero.image_url if home_hero and home_hero.enabled else '' %}
-{% set hero_background_position_x = 50 %}
-{% set hero_background_position_y = 50 %}
-{% set hero_overlay_opacity = home_hero.overlay_opacity if home_hero else 0.45 %}
+{% set hero_background_position_x = home_hero.position_x if home_hero else ui_settings.hero.default_position_x %}
+{% set hero_background_position_y = home_hero.position_y if home_hero else ui_settings.hero.default_position_y %}
+{% set hero_overlay_opacity = home_hero.overlay_opacity if home_hero else ui_settings.hero.default_overlay_opacity %}
 {% include 'components/hero.html' %}
 
 <!-- Accesos por audiencia -->
