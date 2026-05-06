@@ -3,7 +3,13 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": [
+          "Docs/Imgs/Ciencias-Fisicas_malla.jpg",
+          "Docs/Imgs/plano-aulas-udec.png"
+        ]
+      }
     }
   ],
   "routes": [

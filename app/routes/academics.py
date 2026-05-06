@@ -36,7 +36,8 @@ def curriculum_image():
     if not img_path.exists():
         logger.error("No se encontró malla curricular en ruta esperada: %s", img_path)
         abort(404)
-    return send_from_directory(DOCS_IMGS_DIR, filename)
+    # Recurso prácticamente estático: cache largo para mejorar entrega en producción.
+    return send_from_directory(DOCS_IMGS_DIR, filename, max_age=31536000)
 
 
 @academics_bp.route('/graduate')

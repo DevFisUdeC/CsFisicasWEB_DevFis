@@ -78,7 +78,8 @@ def students_classroom_map():
     if not img_path.exists():
         logger.error("No se encontró plano de aulas en ruta esperada: %s", img_path)
         abort(404)
-    return send_from_directory(DOCS_IMGS_DIR, filename)
+    # Recurso de baja rotación: cache largo para reducir latencia y recargas.
+    return send_from_directory(DOCS_IMGS_DIR, filename, max_age=31536000)
 
 
 @main_bp.route('/_trace/client-event', methods=['GET', 'POST'])
