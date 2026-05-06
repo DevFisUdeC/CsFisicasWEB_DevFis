@@ -85,6 +85,7 @@ Archivo `.env` (local):
 - `ADMIN_USER`
 - `ADMIN_PASS` (solo dev) o `ADMIN_PASS_HASH` (recomendado)
 - `SUPABASE_URL`
+- `SUPABASE_ANON_KEY` (o `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
 - `SUPABASE_SERVICE_KEY`
 - `SUPABASE_BUCKET` (opcional, default: `uploads`)
 - `APP_ENV` (`development` o `production`)
@@ -145,11 +146,15 @@ Pasos para desplegar:
    - `ADMIN_USER`
    - `ADMIN_PASS_HASH` (recomendado en producción)
    - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY` (o `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
    - `SUPABASE_SERVICE_KEY`
    - `SUPABASE_BUCKET` (opcional)
+   - `HERO_USE_SUPABASE_STORAGE=true`
+   - `HERO_SETTINGS_USE_SUPABASE_STORAGE=true`
+   - `SERVERLESS_READ_ONLY_FS=true`
 3. Ejecutar deploy (Production).
 
-Nota: si faltan `SUPABASE_URL` o `SUPABASE_SERVICE_KEY`, la app fallará al iniciar por diseño de seguridad.
+Nota: para evitar errores de persistencia de `site-settings.json` en Storage, verifica que el bucket acepte `Content-Type: application/json`.
 
 ## Dependencias principales
 

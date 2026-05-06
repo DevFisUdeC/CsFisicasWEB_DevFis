@@ -12,11 +12,12 @@ logger = logging.getLogger(__name__)
 
 _supabase_service: Client | None = None
 _supabase_public: Client | None = None
+_anon_key_warning_emitted = False
 
 
 def init_supabase(app) -> Client | None:
     """Inicializa clientes Supabase (service + public) con fallback tolerante."""
-    global _supabase_service, _supabase_public
+    global _supabase_service, _supabase_public, _anon_key_warning_emitted
     url = app.config.get('SUPABASE_URL', '')
     service_key = app.config.get('SUPABASE_SERVICE_KEY', '')
     anon_key = app.config.get('SUPABASE_ANON_KEY', '')
@@ -33,7 +34,12 @@ def init_supabase(app) -> Client | None:
             logger.info("Clientes Supabase inicializados: service y public.")
         else:
             _supabase_public = _supabase_service
-            logger.warning("SUPABASE_ANON_KEY no configurada; cliente public usa service_role (menos seguro).")
+            if not _anon_key_warning_emitted:
+                logger.warning(
+                    "SUPABASE_ANON_KEY no configurada; cliente public usa service_role (menos seguro). "
+                    "Define SUPABASE_ANON_KEY o NEXT_PUBLIC_SUPABASE_ANON_KEY en Vercel."
+                )
+                _anon_key_warning_emitted = True
         return _supabase_service
 
     if anon_key:
