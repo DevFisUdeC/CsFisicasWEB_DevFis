@@ -310,15 +310,20 @@ def _load_site_settings():
     """Carga configuración de sitio desde archivo JSON local."""
     settings = _default_site_settings()
     disk_settings = None
-    if _SITE_SETTINGS_FILE.exists():
+    prefer_storage = _serverless_read_only_fs_enabled() and _hero_settings_storage_enabled()
+
+    if prefer_storage:
+        disk_settings = _load_site_settings_from_storage()
+
+    if disk_settings is None and _SITE_SETTINGS_FILE.exists():
         try:
             with _SITE_SETTINGS_FILE.open('r', encoding='utf-8') as f:
                 disk_settings = json.load(f)
         except (json.JSONDecodeError, OSError) as e:
             logger.error(f"No se pudo cargar site_settings.json local: {e}")
 
-    # Fallback remoto solo cuando no hay configuración local válida.
-    if disk_settings is None:
+    # Fallback remoto cuando no hay configuración local válida.
+    if disk_settings is None and not prefer_storage:
         disk_settings = _load_site_settings_from_storage()
 
     if isinstance(disk_settings, dict):
@@ -734,18 +739,33 @@ def get_page_hero_settings(page_key):
     original_local_exists = paths['original_abs'].exists()
     original_storage_exists = _storage_object_exists(paths['storage_original'])
     image_exists = storage_exists or local_exists
-    if local_exists:
-        image_url = url_for('static', filename=paths['final_rel'])
-    elif storage_exists:
-        image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
+    prefer_storage_assets = _serverless_read_only_fs_enabled() and _hero_storage_enabled()
+    if prefer_storage_assets:
+        if storage_exists:
+            image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
+        elif local_exists:
+            image_url = url_for('static', filename=paths['final_rel'])
+        else:
+            image_url = ''
+        if original_storage_exists:
+            original_image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_original'])
+        elif original_local_exists:
+            original_image_url = url_for('static', filename=paths['original_rel'])
+        else:
+            original_image_url = ''
     else:
-        image_url = ''
-    if original_local_exists:
-        original_image_url = url_for('static', filename=paths['original_rel'])
-    elif original_storage_exists:
-        original_image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_original'])
-    else:
-        original_image_url = ''
+        if local_exists:
+            image_url = url_for('static', filename=paths['final_rel'])
+        elif storage_exists:
+            image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_final'])
+        else:
+            image_url = ''
+        if original_local_exists:
+            original_image_url = url_for('static', filename=paths['original_rel'])
+        elif original_storage_exists:
+            original_image_url = _get_storage_url(_hero_storage_bucket(), paths['storage_original'])
+        else:
+            original_image_url = ''
     zoom_raw = max(0.01, min(10.0, float(hero.get('zoom', 1.0))))
     return {
         'page_key': page_key,
