@@ -1149,11 +1149,24 @@ def list_storage_files(bucket='uploads'):
         files = get_supabase(role='service').storage.from_(bucket).list()
         result = []
         for f in files:
-            if f.get('name', '').startswith('.'):
+            name = f.get('name', '')
+            if not name or name.startswith('.'):
                 continue
-            name = f['name']
+            metadata = f.get('metadata') or {}
+            size = metadata.get('size', 0)
+            mimetype = str(metadata.get('mimetype', '')).lower()
+
+            # Supabase puede devolver entradas de carpeta (ej: "hero") que no son archivos.
+            # También ocultamos JSON interno de configuración del sistema.
+            if '/' not in name and '.' not in name and (not mimetype or int(size or 0) == 0):
+                continue
+            if name.endswith('site-settings.json'):
+                continue
+            if mimetype and not mimetype.startswith('image/'):
+                continue
+
             url = _get_storage_url(bucket, name)
-            size_kb = round(f.get('metadata', {}).get('size', 0) / 1024, 1) if f.get('metadata') else 0
+            size_kb = round((float(size) if size else 0) / 1024, 1)
             result.append({
                 'filename': name,
                 'url': url,
