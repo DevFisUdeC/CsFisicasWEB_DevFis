@@ -864,7 +864,8 @@ def update_page_hero_settings(page_key, form_data, image_file=None, delete_image
 
     def _safe_int(value, default):
         try:
-            return int(value)
+            # Acepta valores decimales provenientes de sliders con step fino.
+            return int(round(float(value)))
         except (TypeError, ValueError):
             return default
 
