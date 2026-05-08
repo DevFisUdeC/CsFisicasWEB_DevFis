@@ -1,5 +1,120 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+<style>
+    .image-lightbox {
+        display: none;
+    }
+
+    .image-lightbox:target {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-xl);
+        background: rgba(10, 18, 35, 0.86);
+        backdrop-filter: blur(2px);
+    }
+
+    .image-lightbox__panel {
+        position: relative;
+        width: min(96vw, 1800px);
+        max-height: 94vh;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        background: rgba(6, 16, 31, 0.4);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .image-lightbox__viewport {
+        max-height: 94vh;
+        overflow: auto;
+    }
+
+    .image-lightbox__backdrop-close {
+        position: absolute;
+        inset: 0;
+    }
+
+    .image-lightbox__img {
+        display: block;
+        width: 100%;
+        height: auto;
+        transform-origin: center center;
+        transform: scale(1);
+        transition: transform 0.08s ease-out;
+        cursor: zoom-in;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .image-lightbox__img.is-zoomed {
+        cursor: zoom-out;
+    }
+
+    .image-lightbox__close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        font-size: 1.9rem;
+        line-height: 1;
+        font-weight: 700;
+        color: var(--color-text-on-primary);
+        background: rgba(10, 24, 46, 0.34);
+        backdrop-filter: blur(3px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        text-decoration: none;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .image-lightbox__close:hover,
+    .image-lightbox__close:focus-visible {
+        background: rgba(12, 31, 58, 0.62);
+        outline: 2px solid rgba(255, 255, 255, 0.4);
+        outline-offset: 2px;
+    }
+
+    .image-lightbox__hint {
+        position: absolute;
+        top: 0.9rem;
+        left: 0.9rem;
+        z-index: 3;
+        margin: 0;
+        padding: 0.45rem 0.8rem;
+        border-radius: 0.55rem;
+        background: rgba(7, 16, 29, 0.62);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.82rem;
+        letter-spacing: 0.01em;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+        max-width: min(80vw, 320px);
+    }
+
+    .image-lightbox__hint.is-visible {
+        opacity: 1;
+    }
+
+    @media (pointer: coarse) {
+        .image-lightbox__img {
+            touch-action: none;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 {% set hero_title = 'Ciencias Físicas' %}
 {% set hero_subtitle = 'Carrera de Pregrado — Departamento de Ciencias Físicas' %}
@@ -245,12 +360,28 @@
             program.specializations }}</p>
 
         <div class="curriculum-image">
-            <a href="{{ url_for('static', filename='img/Ciencias-Fisicas_malla.jpg') }}" target="_blank" rel="noopener"
-                title="Clic para ver en tamaño completo">
+            <a href="#malla-lightbox" id="open-malla-preview" title="Clic para ver en tamaño completo">
                 <img src="{{ url_for('static', filename='img/Ciencias-Fisicas_malla.jpg') }}"
                     alt="Malla Curricular de Ciencias Físicas" class="curriculum-image__img">
             </a>
-            <p class="curriculum-image__caption">Clic en la imagen para verla en tamaño completo</p>
+            <p class="curriculum-image__caption">Clic en la imagen para verla maximizada sin salir de esta página</p>
+        </div>
+
+        <div id="malla-lightbox" class="image-lightbox" role="dialog" aria-modal="true"
+            aria-labelledby="malla-lightbox-title">
+            <a href="#malla-curricular" class="image-lightbox__backdrop-close" aria-label="Cerrar previsualización"></a>
+            <div class="image-lightbox__panel">
+                <a href="#malla-curricular" id="close-malla-preview" class="image-lightbox__close"
+                    aria-label="Cerrar previsualización de la malla">
+                    ×
+                </a>
+                <h3 id="malla-lightbox-title" class="sr-only">Previsualización de la malla curricular</h3>
+                <div id="malla-zoom-viewport" class="image-lightbox__viewport">
+                    <img id="malla-zoom-image" src="{{ url_for('static', filename='img/Ciencias-Fisicas_malla.jpg') }}"
+                        alt="Malla Curricular de Ciencias Físicas en vista ampliada" class="image-lightbox__img">
+                </div>
+                <p id="malla-zoom-hint" class="image-lightbox__hint" aria-live="polite"></p>
+            </div>
         </div>
 
     </div>
@@ -296,4 +427,166 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const lightboxHash = '#malla-lightbox';
+        const minScale = 1;
+        const maxScale = 5;
+        const desktopStep = 0.2;
+
+        const lightbox = document.getElementById('malla-lightbox');
+        const openBtn = document.getElementById('open-malla-preview');
+        const closeBtn = document.getElementById('close-malla-preview');
+        const backdropClose = lightbox ? lightbox.querySelector('.image-lightbox__backdrop-close') : null;
+        const zoomImage = document.getElementById('malla-zoom-image');
+        const zoomHint = document.getElementById('malla-zoom-hint');
+
+        if (!lightbox || !zoomImage) return;
+
+        let scale = 1;
+        let pinchStartDistance = null;
+        let pinchStartScale = 1;
+        let hintTimeoutId = null;
+
+        function clamp(value, min, max) {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        function applyScale(nextScale) {
+            scale = clamp(nextScale, minScale, maxScale);
+            zoomImage.style.transform = 'scale(' + scale.toFixed(3) + ')';
+            zoomImage.classList.toggle('is-zoomed', scale > 1.02);
+        }
+
+        function setOriginFromPoint(clientX, clientY) {
+            const rect = zoomImage.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            const x = clamp(((clientX - rect.left) / rect.width) * 100, 0, 100);
+            const y = clamp(((clientY - rect.top) / rect.height) * 100, 0, 100);
+            zoomImage.style.transformOrigin = x + '% ' + y + '%';
+        }
+
+        function resetZoom() {
+            zoomImage.style.transformOrigin = 'center center';
+            applyScale(1);
+        }
+
+        function showHint(message) {
+            if (!zoomHint) return;
+            if (hintTimeoutId) {
+                clearTimeout(hintTimeoutId);
+            }
+            zoomHint.textContent = message;
+            zoomHint.classList.add('is-visible');
+            hintTimeoutId = setTimeout(function () {
+                zoomHint.classList.remove('is-visible');
+            }, 1500);
+        }
+
+        const isDesktopPointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+        if (isDesktopPointer) {
+            zoomImage.addEventListener('wheel', function (event) {
+                if (window.location.hash !== lightboxHash) return;
+                if (!event.altKey) {
+                    showHint('Usa Alt + rueda para acercar/alejar');
+                    return;
+                }
+                event.preventDefault();
+                setOriginFromPoint(event.clientX, event.clientY);
+                const direction = event.deltaY < 0 ? 1 : -1;
+                applyScale(scale + direction * desktopStep);
+            }, { passive: false });
+
+            zoomImage.addEventListener('dblclick', function (event) {
+                if (window.location.hash !== lightboxHash) return;
+                event.preventDefault();
+                if (scale > 1.02) {
+                    resetZoom();
+                } else {
+                    setOriginFromPoint(event.clientX, event.clientY);
+                    applyScale(2);
+                }
+            });
+        }
+
+        const supportsTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (supportsTouch) {
+            zoomImage.addEventListener('touchstart', function (event) {
+                if (window.location.hash !== lightboxHash || event.touches.length !== 2) return;
+                const firstTouch = event.touches[0];
+                const secondTouch = event.touches[1];
+                pinchStartDistance = Math.hypot(
+                    secondTouch.clientX - firstTouch.clientX,
+                    secondTouch.clientY - firstTouch.clientY
+                );
+                pinchStartScale = scale;
+                setOriginFromPoint(
+                    (firstTouch.clientX + secondTouch.clientX) / 2,
+                    (firstTouch.clientY + secondTouch.clientY) / 2
+                );
+            }, { passive: true });
+
+            zoomImage.addEventListener('touchmove', function (event) {
+                if (window.location.hash !== lightboxHash || event.touches.length !== 2 || !pinchStartDistance) return;
+                event.preventDefault();
+                const firstTouch = event.touches[0];
+                const secondTouch = event.touches[1];
+                const currentDistance = Math.hypot(
+                    secondTouch.clientX - firstTouch.clientX,
+                    secondTouch.clientY - firstTouch.clientY
+                );
+                applyScale(pinchStartScale * (currentDistance / pinchStartDistance));
+            }, { passive: false });
+
+            zoomImage.addEventListener('touchend', function () {
+                if (pinchStartDistance && scale <= 1.02) {
+                    resetZoom();
+                }
+                pinchStartDistance = null;
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', resetZoom);
+        }
+        if (backdropClose) {
+            backdropClose.addEventListener('click', resetZoom);
+        }
+        if (openBtn) {
+            openBtn.addEventListener('click', function () {
+                setTimeout(handleLightboxOpened, 0);
+            });
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && window.location.hash === lightboxHash) {
+                event.preventDefault();
+                window.location.hash = '#malla-curricular';
+            }
+        });
+
+        function handleLightboxOpened() {
+            if (window.location.hash !== lightboxHash) return;
+            if (isDesktopPointer) {
+                showHint('Usa Alt + rueda para acercar/alejar');
+            } else {
+                showHint('Usa pinza con dos dedos para hacer zoom');
+            }
+        }
+
+        window.addEventListener('hashchange', function () {
+            if (window.location.hash !== lightboxHash) {
+                resetZoom();
+                if (zoomHint) zoomHint.classList.remove('is-visible');
+            } else {
+                handleLightboxOpened();
+            }
+        });
+
+        handleLightboxOpened();
+    })();
+</script>
 {% endblock %}
